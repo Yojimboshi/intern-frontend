@@ -1,0 +1,70 @@
+// src\store\apps\invoice\index.ts
+import { Dispatch } from 'redux'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+// import axios from 'axios'
+
+interface DataParams {
+  q: string
+  dates?: Date[]
+  status: string
+}
+
+interface Redux {
+  getState: any
+  dispatch: Dispatch<any>
+}
+
+// ** Fetch Invoices
+export const fetchData = createAsyncThunk('appInvoice/fetchData', async (params: DataParams) => {
+  // const response = await axios.get('/apps/invoice/invoices', {
+  //   params
+  // })
+
+  const mockData = {
+    invoices: [], // Replace with mock data
+    params: {}, // Replace with mock data
+    allData: [], // Replace with mock data
+    total: 0, // Replace with mock data
+  }
+
+  return mockData
+})
+
+export const deleteInvoice = createAsyncThunk(
+  'appInvoice/deleteData',
+  async (id: number | string, { getState, dispatch }: Redux) => {
+    // const response = await axios.delete('/apps/invoice/delete', {
+    //   data: id
+    // })
+    // await dispatch(fetchData(getState().invoice.params))
+
+    const mockResponse = {
+      invoices: [], // Replace with mock data
+      params: {}, // Replace with mock data
+      allData: [], // Replace with mock data
+      total: 0, // Replace with mock data
+    }
+    return mockResponse
+  }
+)
+
+export const appInvoiceSlice = createSlice({
+  name: 'appInvoice',
+  initialState: {
+    data: [],
+    total: 1,
+    params: {},
+    allData: []
+  },
+  reducers: {},
+  extraReducers: builder => {
+    builder.addCase(fetchData.fulfilled, (state, action) => {
+      state.data = action.payload.invoices
+      state.params = action.payload.params
+      state.allData = action.payload.allData
+      state.total = action.payload.total
+    })
+  }
+})
+
+export default appInvoiceSlice.reducer

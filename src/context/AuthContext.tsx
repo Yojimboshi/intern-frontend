@@ -1,0 +1,137 @@
+// src\context\AuthContext.tsx
+import { createContext, useEffect, useState, ReactNode } from 'react'
+import { useRouter } from 'next/router'
+import axios from 'axios'
+import authConfig from 'src/configs/auth'
+import { AuthValuesType, LoginParams, ErrCallbackType, UserDataType } from './types'
+
+// ** Defaults
+const defaultProvider: AuthValuesType = {
+  user: null,
+  loading: true,
+  setUser: () => null,
+  setLoading: () => Boolean,
+  login: () => Promise.resolve(),
+  logout: () => Promise.resolve()
+}
+
+const AuthContext = createContext(defaultProvider)
+
+type Props = {
+  children: ReactNode
+}
+
+const AuthProvider = ({ children }: Props) => {
+  // ** States
+  const [user, setUser] = useState<UserDataType | null>(defaultProvider.user)
+  const [loading, setLoading] = useState<boolean>(defaultProvider.loading)
+  const router = useRouter()
+
+  useEffect(() => {
+    console.log("Initializing authentication...");
+    const initAuth = async (): Promise<void> => {
+      const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+      const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
+      const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
+      if (storedToken) {
+        setLoading(true);
+        await axios.get(userEndpoint, {
+          headers: {
+            Authorization: storedToken
+          }
+        }).then(response => {
+          setLoading(false);
+          setUser({ ...response.data });
+        }).catch(() => {
+
+          // if (authConfig.onTokenExpiration === 'logout') {
+          const loginRoute = isAdmin ? '/login/admin' : '/login';
+          router.replace(loginRoute);
+
+          // }
+          localStorage.removeItem('userData');
+
+          // const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refreshToken')).split('=')[1];
+          // localStorage.removeItem(refreshToken); // Assuming you want to remove the refreshToken from localStorage, if it exists
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('isAdmin');
+          setUser(null);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    }
+
+    initAuth();
+  }, []);
+
+  const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
+    const isOnAdminRoute = router.pathname.includes('/admin');
+
+    // Define the endpoint based on the path
+    const loginEndpoint = isOnAdminRoute ? authConfig.adminLoginEndpoint : authConfig.loginEndpoint;
+    const userEndpoint = isOnAdminRoute ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
+
+    if (isOnAdminRoute) {
+      window.localStorage.setItem('isAdmin', 'true');
+    } else {
+      window.localStorage.removeItem('isAdmin');
+    }
+
+    axios.post(loginEndpoint, params, {
+      withCredentials: true  // Ensure that cookies are included with the request
+    }).then(response => {
+      if (!response.data.accessToken) {
+        router.replace(isOnAdminRoute ? '/login/admin' : '/login');
+
+        return; // End the promise chain here as there is no need to continue
+      }
+
+      if (params.rememberMe) {
+        window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.accessToken);
+      }
+
+      // Making the axios call to meEndpoint after successful login
+      return axios.get(userEndpoint, {
+        headers: {
+          Authorization: response.data.accessToken
+        }
+      });
+
+    }).then(response => {
+      if (response) {
+        const returnUrl = router.query.returnUrl;
+        setUser({ ...response.data });
+        if (params.rememberMe) {
+          window.localStorage.setItem('userData', JSON.stringify(response.data));
+        }
+        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
+        router.replace(redirectURL as string);
+      }
+    }).catch(err => {
+      if (errorCallback) errorCallback(err);
+    });
+  }
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+    setUser(null)
+    window.localStorage.removeItem('userData')
+    window.localStorage.removeItem(authConfig.storageTokenKeyName)
+    router.push('/login')
+  }
+
+  const values = {
+    user,
+    loading,
+    setUser,
+    setLoading,
+    login: handleLogin,
+    logout: handleLogout
+  }
+
+  return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>
+}
+
+export { AuthContext, AuthProvider }
