@@ -100,23 +100,26 @@ const AdminLogin = () => {
             <LanguageDropdown settings={settings} saveSettings={saveSettings} />
             <ModeToggler settings={settings} saveSettings={saveSettings} />
           </Box>
-          <Box sx={{ mb: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src='/images/THC.jpg' alt='logo' width='30' height='30' />
-            <Typography variant='h6' sx={{ ml: 2, lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
-              {themeConfig.templateName}
-            </Typography>
-          </Box>
-          <Box sx={{ mb: 6 }}>
+          <Box sx={{ mb: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <Typography variant='h5' sx={{ mb: 1.5, fontWeight: 600, letterSpacing: '0.18px' }}>
               <a href="/login">
                 <span role="img" aria-label="hand">👋🏻</span>
               </a>
-              <Translations text='Welcome to' /> {themeConfig.templateName}!
+              <Translations text='Welcome to' />
             </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <img src='/images/dragon_logo.png' alt='logo' width='30' height='30' />
+              <Typography variant='h6' sx={{ ml: 2, lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
+                {themeConfig.templateName}
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ mb: 6 }}>
             <Typography variant='body2'>
               <Translations text='Please sign-in to your account and start the adventure' />
             </Typography>
           </Box>
+
 
           <Alert icon={false} sx={{ py: 3, mb: 6, ...bgColors.primaryLight, '& .MuiAlert-message': { p: 0 } }}>
             <Typography variant='caption' sx={{ mb: 2, display: 'block', color: 'primary.main' }}>

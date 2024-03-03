@@ -76,13 +76,30 @@ const AnalyticsCongratulations = () => {
               <Button variant='contained' component="a">{t('View Profile')}</Button>
             </Link>
           </Grid>
-          <StyledGrid item xs={12} sm={6}>
-            <Img alt='Congratulations John' src={`/images/cards/illustration-john-${theme.palette.mode}.png`} />
+          <StyledGrid item xs={12} sm={6} sx={{
+            display: 'flex',
+            flexDirection: 'column', // This makes the flex container align its children vertically
+            justifyContent: 'center', // This centers the children vertically in the container
+            alignItems: 'center', // This centers the children horizontally in the container
+            p: 2, // Adds padding inside the StyledGrid for spacing around the image; adjust as needed
+          }}>
+            <Img alt='Congratulations John'
+              src={`/images/cards/illustration-john-${theme.palette.mode}.png`}
+              sx={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                width: 'auto',
+                height: 'auto'
+              }}
+            />
           </StyledGrid>
+
         </Grid>
       </CardContent>
     </Card>
   )
+
 }
 
 export default AnalyticsCongratulations

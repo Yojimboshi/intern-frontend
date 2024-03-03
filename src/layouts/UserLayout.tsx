@@ -20,7 +20,7 @@ import HorizontalNavItems from 'src/navigation/horizontal'
 
 import VerticalAppBarContent from './components/vertical/AppBarContent'
 import HorizontalAppBarContent from './components/horizontal/AppBarContent'
-
+import Translations from 'src/layouts/components/Translations'
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
 
@@ -32,16 +32,15 @@ interface Props {
 const AppBrand = () => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <img src='/images/THC.jpg' alt='logo' width='30' height='30' />
+      <img src='/images/dragon_logo.png' alt='logo' width='30' height='30' />
       <Typography variant='h6' sx={{ ml: 2 }}>
-        THC
+        <Translations text="Dragon Coil" />
       </Typography>
     </Box>
   )
 }
 
 const UserLayout = ({ children, contentHeightFixed }: Props) => {
-  console.log("UserLayout initiated");
   const { settings, saveSettings } = useSettings()
 
   // ** Vars for server side navigation
@@ -57,7 +56,6 @@ const UserLayout = ({ children, contentHeightFixed }: Props) => {
    *  ! Do not change this value unless you know what you are doing. It can break the template.
    */
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
-  console.log('Is menu hidden?', hidden)
 
   if (hidden && settings.layout === 'horizontal') {
     settings.layout = 'vertical'

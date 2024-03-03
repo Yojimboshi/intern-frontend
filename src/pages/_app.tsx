@@ -39,7 +39,7 @@ import 'prismjs/components/prism-tsx'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import 'src/iconify-bundle/icons-bundle-react'
 
-// import 'src/@fake-db'
+import { useTranslation } from 'react-i18next';
 
 type ExtendedAppProps = AppProps & {
   Component: NextPage
