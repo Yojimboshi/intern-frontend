@@ -94,7 +94,7 @@ export const useEWallet = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${EWALLET_URL}/wallet/balances`);
-
+      console.log("response:", response.data)
       return response.data;  // Assuming the API returns the user's balances
     } catch (error) {
       handleError("fetching user balances", error);

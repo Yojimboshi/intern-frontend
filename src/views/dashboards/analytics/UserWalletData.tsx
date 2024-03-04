@@ -5,36 +5,41 @@ import Icon from 'src/@core/components/icon'
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
-import axios from 'src/configs/axiosConfig';
-import { WalletData } from 'src/types/apps/walletTypes';
+import { Tooltip, Avatar } from '@mui/material';
+import { useEWallet } from 'src/hooks/useEWallet';
+import { WalletData, CryptoBalance, EwalletBalance } from 'src/types/apps/walletTypes';
 import Translations from 'src/layouts/components/Translations';
 
 const UserWalletData: React.FC = () => {
-  const [walletData, setWalletData] = useState<WalletData | null>(null);
+  const [walletData, setWalletData] = useState<any[]>([]); // Adjust type as necessary
   const [isOverflowed, setIsOverflowed] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { getUserBalances } = useEWallet();
 
   useEffect(() => {
-    const fetchWalletBalances = async () => {
-      try {
-        const response = await axios.get('/ewallet/wallet/balances');
-        console.log('walletBalances', response.data);
-        if (response.data && response.data.ewalletBalances && Array.isArray(response.data.ewalletBalances)) {
-          setWalletData(response.data);
-        } else {
-          // Handle the case where ewalletBalances is not as expected
-          console.error('Unexpected response structure:', response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching wallet balances:', error);
-      }
+    const fetchAndCombineWalletBalances = async () => {
+      const response = await getUserBalances(); // Assuming this fetches both cryptoWallet and ewallet data
+      const combinedData = [
+        ...response.cryptoBalances.map((item: CryptoBalance) => ({
+          tokenSymbol: item.tokenSymbol,
+          balance: item.totalBalance,
+          fullName: item.tokenSymbol,
+          icon: getIconFromSymbol(item.tokenSymbol),
+        })),
+        ...response.ewalletBalances.map((item: EwalletBalance) => ({
+          tokenSymbol: item.ewalletCoin.symbol,
+          balance: item.balance,
+          fullName: item.ewalletCoin.name,
+        }))
+      ];
+
+      setWalletData(combinedData);
     };
 
-    fetchWalletBalances();
+    fetchAndCombineWalletBalances();
     checkOverflow();
     window.addEventListener('resize', checkOverflow);
 
-    // Cleanup event listener
     return () => window.removeEventListener('resize', checkOverflow);
   }, []);
 
@@ -88,15 +93,30 @@ const UserWalletData: React.FC = () => {
           <Box ref={scrollContainerRef} sx={{ overflowX: 'hidden', display: 'flex', flexGrow: 1 }}>
             <Grid container spacing={2} wrap="nowrap">
               {/* Combine both arrays and map over them for rendering */}
-              {...walletData.ewalletBalances.map((balance: any, index: number) => (
-                <Grid item key={index} xs={12} sm={6} md={4} lg={3} xl={3}>
-                  <CardStatsHorizontal
-                    stats={Number(balance.balance).toFixed(4)}
-                    title={`${balance.tokenSymbol || balance.ewalletCoin.name}`}
-                    icon={<Icon icon={getIconFromSymbol(balance.tokenSymbol || 'wallet')} />}
-                    trendNumber="..."
-                    color="secondary"
-                  />
+              {walletData.map((balance, index) => (
+                <Grid item key={index} xs={12} sm={6} md={4} lg={3} xl={2}>
+                  <Tooltip
+                    title={`${balance.fullName}: ${Number(balance.balance).toFixed(4)}`}
+                    arrow
+                  >
+                    <Avatar
+                      sx={{
+                        bgcolor: 'secondary',
+                        width: 56,
+                        height: 56,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {balance.icon ? (
+                        <Icon icon={balance.icon} />
+                      ) : (
+                        balance.tokenSymbol
+                      )}
+                    </Avatar>
+                  </Tooltip>
                 </Grid>
               ))}
             </Grid>
