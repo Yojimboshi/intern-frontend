@@ -15,24 +15,14 @@ const MiningPage = () => {
   const [view, setView] = useState<'stats' | 'transactions'>('stats');
 
   useEffect(() => {
-    const fetchMiningStats = async () => {
-      if (view === 'stats') {
+    if (view === 'stats') {
+      const fetchStats = async () => {
         const stats = await getUserMiningStats();
         setMiningStats(stats);
-      }
-    };
-    fetchMiningStats();
-  }, [view]);
-
-
-  const handleToggleMining = async () => {
-    await toggleMining();
-    // Conditional fetching moved inside the function
-    if (view === 'stats') {
-      const stats = await getUserMiningStats();
-      setMiningStats(stats);
+      };
+      fetchStats();
     }
-  };
+  }, [view, getUserMiningStats]);
 
   const handleToggleView = (newView: 'stats' | 'transactions') => {
     setView(newView);

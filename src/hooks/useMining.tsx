@@ -8,10 +8,10 @@ const USER_URL = '/mining';
 export const useMining = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleError = (operation: string, error: any) => {
+  const handleError = useCallback((operation: string, error: any) => {
     const errorMessage = error?.response?.data?.message || error.message || "An unknown error occurred.";
     console.error(`Error in ${operation}:`, errorMessage);
-  };
+  }, []);
 
 
   const toggleMining = async () => {
@@ -54,18 +54,18 @@ export const useMining = () => {
   };
 
 
-  const getUserMiningStats = async () => {
+  const getUserMiningStats = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${USER_URL}/stats`);
-      return response.data.stats; // Adjust this line
+      return response.data.stats; // Assuming 'stats' is the correct data key
     } catch (error) {
       handleError("fetching user mining stats", error);
       return null;
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleError]);
 
 
   const getMiningTransactions = async (transactionId?: string): Promise<MiningTransaction[]> => {

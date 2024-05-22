@@ -1,20 +1,13 @@
 // src/pages/apps/hierarchy/MySponsors.tsx
 import { useState, useEffect, forwardRef } from 'react'
 import Link from 'next/link'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import Card from '@mui/material/Card'
-import Tooltip from '@mui/material/Tooltip'
+import {
+  Box, Card, CardContent, CardHeader, FormControl, Grid,
+  IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Tooltip
+} from '@mui/material';
 import { styled } from '@mui/material/styles'
-import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
-import CardHeader from '@mui/material/CardHeader'
-import IconButton from '@mui/material/IconButton'
-import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
-import FormControl from '@mui/material/FormControl'
-import CardContent from '@mui/material/CardContent'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid'
 import Icon from 'src/@core/components/icon'
 import format from 'date-fns/format'
@@ -31,6 +24,7 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import OptionsMenu from 'src/@core/components/option-menu'
 import TableHeader from 'src/views/apps/hierarchy/mySponsors/TableHeader'
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { fetchDownlines } from 'src/store/apps/downlines';
 
 interface InvoiceStatusObj {
   [key: string]: {
@@ -207,84 +201,81 @@ const CustomInput = forwardRef((props: CustomInputProps, ref) => {
 
 const MySponsors = () => {
   // ** State
-  const [dates, setDates] = useState<Date[]>([])
-  const [value, setValue] = useState<string>('')
-  const [statusValue, setStatusValue] = useState<string>('')
-  const [endDateRange, setEndDateRange] = useState<DateType>(null)
-  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([])
-  const [startDateRange, setStartDateRange] = useState<DateType>(null)
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
+  const [dates, setDates] = useState<Date[]>([]);
+  const [value, setValue] = useState<string>('');
+  const [statusValue, setStatusValue] = useState<string>('');
+  const [endDateRange, setEndDateRange] = useState<Date | null>(null);
+  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
+  const [startDateRange, setStartDateRange] = useState<Date | null>(null);
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
 
   // ** Hooks
-  const dispatch = useDispatch<AppDispatch>()
-  const store = useSelector((state: RootState) => state.invoice)
+  const dispatch = useDispatch<AppDispatch>();
+  const downlineData = useSelector((state: RootState) => state.downlines.data);
+  const downlineStatus = useSelector((state: RootState) => state.downlines.status);
+  const downlineError = useSelector((state: RootState) => state.downlines.error);
+
 
   useEffect(() => {
     dispatch(
-      fetchData({
+      fetchDownlines({
         dates,
         q: value,
-        status: statusValue
+        status: statusValue,
       })
-    )
-  }, [dispatch, statusValue, value, dates])
+    );
+  }, [dispatch, dates, value, statusValue]);
 
   const handleFilter = (val: string) => {
-    setValue(val)
-  }
+    setValue(val);
+  };
 
   const handleStatusValue = (e: SelectChangeEvent) => {
-    setStatusValue(e.target.value)
-  }
+    setStatusValue(e.target.value);
+  };
 
-  const handleOnChangeRange = (dates: any) => {
-    const [start, end] = dates
+  const handleOnChangeRange = (dates: [Date | null, Date | null]) => {
+    const [start, end] = dates;
     if (start !== null && end !== null) {
-      setDates(dates)
+      setDates(dates as Date[]);
     }
-    setStartDateRange(start)
-    setEndDateRange(end)
-  }
+    setStartDateRange(start);
+    setEndDateRange(end);
+  };
 
   const columns: GridColDef[] = [
-    ...defaultColumns,
+    // Add your default columns here
     {
-      flex: 0.1,
-      minWidth: 130,
-      sortable: false,
-      field: 'actions',
-      headerName: 'Actions',
-      renderCell: ({ row }: CellType) => (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Tooltip title='View'>
-            <IconButton size='small' component={Link} sx={{ mr: 0.5 }} href={`/apps/invoice/preview/${row.id}`}>
-              <Icon icon='mdi:eye-outline' />
-            </IconButton>
-          </Tooltip>
-          <OptionsMenu
-            iconProps={{ fontSize: 20 }}
-            iconButtonProps={{ size: 'small' }}
-            menuProps={{ sx: { '& .MuiMenuItem-root svg': { mr: 2 } } }}
-            options={[
-              {
-                text: 'Download',
-                icon: <Icon icon='mdi:download' fontSize={20} />
-              },
-              {
-                text: 'Edit',
-                href: `/apps/invoice/edit/${row.id}`,
-                icon: <Icon icon='mdi:pencil-outline' fontSize={20} />
-              },
-              {
-                text: 'Duplicate',
-                icon: <Icon icon='mdi:content-copy' fontSize={20} />
-              }
-            ]}
-          />
-        </Box>
-      )
-    }
-  ]
+      field: 'id',
+      headerName: 'ID',
+      width: 100,
+    },
+    {
+      field: 'name',
+      headerName: 'Name',
+      width: 150,
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      width: 200,
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 120,
+    },
+    {
+      field: 'packageId',
+      headerName: 'Package ID',
+      width: 150,
+    },
+    {
+      field: 'joinedDate',
+      headerName: 'Joined Date',
+      width: 180,
+    },
+  ];
 
   return (
     <DatePickerWrapper>
@@ -345,7 +336,7 @@ const MySponsors = () => {
             <DataGrid
               autoHeight
               pagination
-              rows={store.data}
+              rows={downlineData}
               columns={columns}
               checkboxSelection
               disableRowSelectionOnClick

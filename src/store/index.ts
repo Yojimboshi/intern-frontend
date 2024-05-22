@@ -8,6 +8,7 @@ import calendar from 'src/store/apps/calendar'
 import permissions from 'src/store/apps/permissions'
 import pools from 'src/store/apps/v2Pools';
 import transaction from 'src/store/apps/transaction';
+import downlines from 'src/store/apps/downlines';
 
 export const store = configureStore({
   reducer: {
@@ -18,7 +19,8 @@ export const store = configureStore({
     calendar,
     permissions,
     pools,
-    transaction
+    transaction,
+    downlines
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
