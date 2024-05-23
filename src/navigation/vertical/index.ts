@@ -139,12 +139,12 @@ const userNavItems: VerticalNavItemsType = [
       {
         title: 'Add',
         icon: 'gg:add',
-        path: '/apps/invoice/add'
+        path: '/apps/hierarchy/AddUser'
       },
       {
         title: 'Edit',
         icon: 'mdi:account-edit',
-        path: '/apps/invoice/edit'
+        path: '/apps/hierarchy/EditUser'
       },
 
     ]
