@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import {
-  Box, Button, FormControl, FormControlLabel, FormHelperText, InputLabel,
+  Grid, Box, Button, FormControl, FormControlLabel, FormHelperText, InputLabel,
   MenuItem, Radio, RadioGroup, Select, TextField, Typography
 } from '@mui/material';
 import { addDownlineUser } from 'src/store/apps/user';
@@ -29,7 +29,6 @@ interface Package {
 interface UserData {
   username: string;
   email: string;
-  parentUsername: string;
   contact: number;
   firstName: string;
   lastName: string;
@@ -76,7 +75,6 @@ const schema = yup.object().shape({
 const defaultValues: UserData = {
   username: '',
   email: '',
-  parentUsername: '',
   role: 'member',
   contact: 123,
   firstName: '',
@@ -173,106 +171,101 @@ const AddUser = () => {
         </Typography>
       </Header>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="username"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Username" error={!!errors.username} helperText={errors.username?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Email" error={!!errors.email} helperText={errors.email?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="firstName"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="First Name" error={!!errors.firstName} helperText={errors.firstName?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="lastName"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Last Name" error={!!errors.lastName} helperText={errors.lastName?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="password"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="retypePassword"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Retype Password" type="password" error={!!errors.retypePassword} helperText={errors.retypePassword?.message} />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel id="package-label">Package</InputLabel>
-          <Controller
-            name="packageId"
-            control={control}
-            render={({ field }) => (
-              <Select {...field} labelId="package-label" label="Package" error={!!errors.packageId}>
-                {packages.map(pkg => (
-                  <MenuItem key={pkg.id} value={pkg.id}>{pkg.packageName}</MenuItem>
-                ))}
-              </Select>
-            )}
-          />
-          {errors.packageId && <FormHelperText error>{errors.packageId.message}</FormHelperText>}
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="role"
-            control={control}
-            render={({ field }) => (
-              <RadioGroup row {...field}>
-                <FormControlLabel value="member" control={<Radio />} label="Member" />
-              </RadioGroup>
-            )}
-          />
-          {errors.role && <FormHelperText error>{errors.role.message}</FormHelperText>}
-        </FormControl>
-        {/* <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="position"
-            control={control}
-            render={({ field }) => (
-              <RadioGroup row {...field}>
-                <FormControlLabel value="left" control={<Radio />} label="Left" />
-                <FormControlLabel value="right" control={<Radio />} label="Right" />
-              </RadioGroup>
-            )}
-          />
-          {errors.position && <FormHelperText error>{errors.position.message}</FormHelperText>}
-        </FormControl> */}
-        <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-          Add User
-        </Button>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="username"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Username" error={!!errors.username} helperText={errors.username?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Email" error={!!errors.email} helperText={errors.email?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="firstName"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="First Name" error={!!errors.firstName} helperText={errors.firstName?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Last Name" error={!!errors.lastName} helperText={errors.lastName?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <Controller
+                name="retypePassword"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Retype Password" type="password" error={!!errors.retypePassword} helperText={errors.retypePassword?.message} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel id="package-label">Package</InputLabel>
+              <Controller
+                name="packageId"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} labelId="package-label" label="Package" error={!!errors.packageId}>
+                    {packages.map(pkg => (
+                      <MenuItem key={pkg.id} value={pkg.id}>{pkg.packageName}</MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.packageId && <FormHelperText error>{errors.packageId.message}</FormHelperText>}
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+              Add User
+            </Button>
+          </Grid>
+        </Grid>
       </form>
     </Box>
   );
+
 };
 
 export default AddUser;

@@ -110,7 +110,9 @@ export const toggleBanStatus = createAsyncThunk(
 export const addDownlineUser = createAsyncThunk(
   'appUsers/addDownlineUser',
   async (data: { [key: string]: number | string | boolean }, { getState, dispatch }: Redux) => {
+    console.log('addDownlineUser payload:', data);
     const response = await axiosInstance.post('/users/add-downline', data);  // Adjust endpoint as needed
+    console.log('addDownlineUser response:', response.data);
     dispatch(fetchData(getState().user.params));
 
     return response.data;
