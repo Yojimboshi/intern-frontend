@@ -10,7 +10,7 @@ import {
   Box, Button, FormControl, FormControlLabel, FormHelperText, InputLabel,
   MenuItem, Radio, RadioGroup, Select, TextField, Typography
 } from '@mui/material';
-import { addUser } from 'src/store/apps/user';
+import { addDownlineUser } from 'src/store/apps/user';
 import { AppDispatch } from 'src/store';
 import Icon from 'src/@core/components/icon';
 import axios from 'src/configs/axiosConfig';
@@ -35,8 +35,8 @@ interface UserData {
   lastName: string;
   password: string;
   packageId: string;
-  role: 'admin' | 'member';
-  position: 'left' | 'right' | '';
+  role: 'member';
+  // position: 'left' | 'right' | '';
   retypePassword: string;
   isEmpty: boolean;
 }
@@ -81,7 +81,7 @@ const defaultValues: UserData = {
   contact: 123,
   firstName: '',
   lastName: '',
-  position: 'left',
+  // position: 'left',
   password: '',
   packageId: '',
   retypePassword: '',
@@ -99,11 +99,9 @@ const Header = styled(Box)(({ theme }) => ({
 
 const AddUser = () => {
   const [packages, setPackages] = useState<Package[]>([]);
-  const [formValues, setFormValues] = useState<UserData>(defaultValues);
   const dispatch = useDispatch<AppDispatch>();
-  const store = useSelector((state: RootState) => state.user);
   const { reset, setError, control, handleSubmit, formState: { errors }, setValue } = useForm({
-    defaultValues: formValues,
+    defaultValues,
     mode: 'onChange',
     resolver: yupResolver(schema)
   });
@@ -115,7 +113,7 @@ const AddUser = () => {
         if (storedPackages) {
           setPackages(JSON.parse(storedPackages));
         } else {
-          const response = await axios.get('admin/packages');
+          const response = await axios.get('users/packages');
           const fetchedPackages: Package[] = response.data.packages;
           localStorage.setItem('planPackages', JSON.stringify(fetchedPackages));
           setPackages(fetchedPackages);
@@ -129,7 +127,6 @@ const AddUser = () => {
   }, []);
 
   const handleInputChange = (name: keyof UserData, value: any) => {
-    setFormValues(prev => ({ ...prev, [name]: value }));
     setValue(name, value);
   };
 
@@ -137,8 +134,9 @@ const AddUser = () => {
     try {
       console.log('Submit button pressed', data);
 
-      if (store.allData.some((u: any) => u.email === data.email || u.username === data.username)) {
-        store.allData.forEach((u: any) => {
+      const allData = JSON.parse(localStorage.getItem('allUserData') || '[]');
+      if (allData.some((u: any) => u.email === data.email || u.username === data.username)) {
+        allData.forEach((u: any) => {
           if (u.email === data.email) {
             setError('email', {
               message: 'Email already exists!'
@@ -155,9 +153,8 @@ const AddUser = () => {
           const payload = { ...data };
           console.log('Payload for submission:', payload);
 
-          dispatch(addUser(payload));
-          setFormValues(defaultValues);
-          reset();
+          dispatch(addDownlineUser(payload));
+          reset(defaultValues);
         } catch (error: any) {
           console.error('Error adding user:', error.response || error.message);
           console.log('Error details:', error);
@@ -251,14 +248,13 @@ const AddUser = () => {
             control={control}
             render={({ field }) => (
               <RadioGroup row {...field}>
-                <FormControlLabel value="admin" control={<Radio />} label="Admin" />
                 <FormControlLabel value="member" control={<Radio />} label="Member" />
               </RadioGroup>
             )}
           />
           {errors.role && <FormHelperText error>{errors.role.message}</FormHelperText>}
         </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        {/* <FormControl fullWidth sx={{ mb: 2 }}>
           <Controller
             name="position"
             control={control}
@@ -270,7 +266,7 @@ const AddUser = () => {
             )}
           />
           {errors.position && <FormHelperText error>{errors.position.message}</FormHelperText>}
-        </FormControl>
+        </FormControl> */}
         <Button type="submit" variant="contained" sx={{ mt: 2 }}>
           Add User
         </Button>

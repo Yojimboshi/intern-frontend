@@ -97,7 +97,6 @@ export const addUser = createAsyncThunk(
   }
 )
 
-// ** Toggle Ban Status
 export const toggleBanStatus = createAsyncThunk(
   'appUsers/toggleBanStatus',
   async ({ id, action }: { id: number | string; action: 'ban' | 'restrict' | 'activate' }, { getState, dispatch }: Redux) => {
@@ -107,6 +106,16 @@ export const toggleBanStatus = createAsyncThunk(
     return response.data
   }
 )
+
+export const addDownlineUser = createAsyncThunk(
+  'appUsers/addDownlineUser',
+  async (data: { [key: string]: number | string | boolean }, { getState, dispatch }: Redux) => {
+    const response = await axiosInstance.post('/users/add-downline', data);  // Adjust endpoint as needed
+    dispatch(fetchData(getState().user.params));
+
+    return response.data;
+  }
+);
 
 export const appUsersSlice = createSlice({
   name: 'appUsers',
@@ -119,27 +128,23 @@ export const appUsersSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchData.fulfilled, (state, action) => {
-      console.log('fetchData.fulfilled: payload', action.payload);
       state.data = action.payload.users
       state.total = action.payload.total
       state.params = action.payload.params
       state.allData = action.payload.allData
     })
     builder.addCase(updateUser.fulfilled, (state, action) => {
-
-      // Assuming the response data includes the updated user object
       const updatedUser = action.payload;
-
-      // Find the index of the user in the current state
       const index = state.data.findIndex((user) => user.id === updatedUser.id);
-
-      // If the user is found, update it
       if (index !== -1) {
         state.data[index] = {
           ...state.data[index],
           ...updatedUser,
         };
       }
+    });
+    builder.addCase(addDownlineUser.fulfilled, (state, action) => {
+      state.data.push(action.payload);
     });
   }
 })
