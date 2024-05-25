@@ -55,3 +55,11 @@ export type ProjectListDataType = {
   progressValue: number
   progressColor: ThemeColor
 }
+
+
+export interface RegisterUserPayload {
+  username: string;
+  email: string;
+  password: string;
+  referralId?: string; // Optional field
+}

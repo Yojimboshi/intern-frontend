@@ -1,39 +1,25 @@
-// ** React Imports
+// src\pages\register\index.tsx
 import { ReactNode, useState } from 'react'
-
-// ** Next Import
+import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
 import Link from 'next/link'
-
-// ** MUI Components
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Checkbox from '@mui/material/Checkbox'
-import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
-import IconButton from '@mui/material/IconButton'
 import Box, { BoxProps } from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import { styled, useTheme } from '@mui/material/styles'
-import InputAdornment from '@mui/material/InputAdornment'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import MuiFormControlLabel, { FormControlLabelProps } from '@mui/material/FormControlLabel'
-
-// ** Icon Imports
+import Translations from 'src/layouts/components/Translations';
 import Icon from 'src/@core/components/icon'
-
-// ** Configs
 import themeConfig from 'src/configs/themeConfig'
-
-// ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
-
-// ** Hooks
 import { useSettings } from 'src/@core/hooks/useSettings'
-
-// ** Demo Imports
 import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
+import { registerUser } from 'src/store/apps/user';
+import { RegisterUserPayload } from 'src/types/apps/userTypes';
+import {
+  TextField, FormControl, InputLabel, OutlinedInput, InputAdornment,
+  IconButton, Checkbox, Button, Divider
+} from '@mui/material';
 
 // ** Styled Components
 const RegisterIllustrationWrapper = styled(Box)<BoxProps>(({ theme }) => ({
@@ -92,18 +78,42 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 }))
 
 const Register = () => {
-  // ** States
-  const [showPassword, setShowPassword] = useState<boolean>(false)
 
-  // ** Hooks
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [formData, setFormData] = useState<RegisterUserPayload>({
+    username: '',
+    email: '',
+    password: '',
+    referralId: ''
+  });
+
   const theme = useTheme()
   const { settings } = useSettings()
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   // ** Vars
   const { skin } = settings
-
   const imageSource = skin === 'bordered' ? 'auth-v2-register-illustration-bordered' : 'auth-v2-register-illustration'
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await dispatch<any>(registerUser(formData)).unwrap();
+      router.push('/additional-details');
+    } catch (error: any) {
+      console.error('Error during registration:', error);
+      if (error.response && error.response.status === 403) {
+        router.push('/additional-details');
+      }
+    }
+  };
 
   return (
     <Box className='content-right'>
@@ -215,15 +225,44 @@ const Register = () => {
               </Typography>
             </Box>
             <Box sx={{ mb: 6 }}>
-              <TypographyStyled variant='h5'>Adventure starts here 🚀</TypographyStyled>
-              <Typography variant='body2'>Make your app management easy and fun!</Typography>
+              <TypographyStyled variant='h5'>Adventure starts here 🚀
+                <Translations text='Welcome to' /> {themeConfig.templateName}!</TypographyStyled>
             </Box>
-            <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-              <TextField autoFocus fullWidth sx={{ mb: 4 }} label='Username' placeholder='johndoe' />
-              <TextField fullWidth label='Email' sx={{ mb: 4 }} placeholder='user@email.com' />
+            <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+              <TextField
+                name='username'
+                value={formData.username}
+                onChange={handleInputChange}
+                autoFocus
+                fullWidth
+                sx={{ mb: 4 }}
+                label='Username'
+                placeholder='johndoe'
+              />
+              <TextField
+                name='email'
+                value={formData.email}
+                onChange={handleInputChange}
+                fullWidth
+                label='Email'
+                sx={{ mb: 4 }}
+                placeholder='user@email.com'
+              />
+              <TextField
+                name='referralId'
+                value={formData.referralId}
+                onChange={handleInputChange}
+                fullWidth
+                label='Referral ID (optional)'
+                sx={{ mb: 4 }}
+                placeholder='Enter referral ID'
+              />
               <FormControl fullWidth>
                 <InputLabel htmlFor='auth-login-v2-password'>Password</InputLabel>
                 <OutlinedInput
+                  name='password'
+                  value={formData.password}
+                  onChange={handleInputChange}
                   label='Password'
                   id='auth-login-v2-password'
                   type={showPassword ? 'text' : 'password'}
@@ -231,7 +270,7 @@ const Register = () => {
                     <InputAdornment position='end'>
                       <IconButton
                         edge='end'
-                        onMouseDown={e => e.preventDefault()}
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         <Icon icon={showPassword ? 'mdi:eye-outline' : 'mdi:eye-off-outline'} />

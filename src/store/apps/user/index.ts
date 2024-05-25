@@ -1,11 +1,9 @@
 // src\store\apps\user\index.ts
 import { Dispatch } from 'redux'
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { UsersType } from 'src/types/apps/userTypes'
-
-// ** Axios Imports
 import axiosInstance from 'src/configs/axiosConfig';
+import { RegisterUserPayload } from 'src/types/apps/userTypes';
 
 interface DataParams {
   q: string
@@ -18,6 +16,7 @@ interface Redux {
   getState: any
   dispatch: Dispatch<any>
 }
+
 
 // Helper function to determine avatarColor based on accountStatus
 const getAvatarColor = (status: string) => {
@@ -107,12 +106,27 @@ export const toggleBanStatus = createAsyncThunk(
   }
 )
 
+export const registerUser = createAsyncThunk(
+  'user/registerUser',
+  async (data: RegisterUserPayload, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/users/register', data);
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      }
+      throw error;
+    }
+  }
+);
+
 export const addDownlineUser = createAsyncThunk(
   'appUsers/addDownlineUser',
   async (data: { [key: string]: number | string | boolean }, { getState, dispatch }: Redux) => {
-    console.log('addDownlineUser payload:', data);
+
     const response = await axiosInstance.post('/users/add-downline', data);  // Adjust endpoint as needed
-    console.log('addDownlineUser response:', response.data);
+
     dispatch(fetchData(getState().user.params));
 
     return response.data;

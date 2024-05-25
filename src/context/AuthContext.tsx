@@ -28,43 +28,41 @@ const AuthProvider = ({ children }: Props) => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log("Initializing authentication...");
     const initAuth = async (): Promise<void> => {
       const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
       const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
       const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
+
       if (storedToken) {
         setLoading(true);
-        await axios.get(userEndpoint, {
-          headers: {
-            Authorization: storedToken
-          }
-        }).then(response => {
+        try {
+          const response = await axios.get(userEndpoint, {
+            headers: {
+              Authorization: storedToken
+            }
+          });
           setLoading(false);
           setUser({ ...response.data });
-        }).catch(() => {
 
-          // if (authConfig.onTokenExpiration === 'logout') {
-          const loginRoute = isAdmin ? '/login/admin' : '/login';
-          router.replace(loginRoute);
-
-          // }
+          // Redirect to registration completion if registration is not complete
+          if (response.data.registrationComplete === false) {
+            router.replace('/complete-registration');
+          }
+        } catch (error) {
+          setLoading(false);
+          setUser(null);
           localStorage.removeItem('userData');
-
-          // const refreshToken = document.cookie.split('; ').find(row => row.startsWith('refreshToken')).split('=')[1];
-          // localStorage.removeItem(refreshToken); // Assuming you want to remove the refreshToken from localStorage, if it exists
           localStorage.removeItem('accessToken');
           localStorage.removeItem('isAdmin');
-          setUser(null);
-          setLoading(false);
-        });
+          router.replace(isAdmin ? '/login/admin' : '/login');
+        }
       } else {
         setLoading(false);
       }
-    }
+    };
 
     initAuth();
-  }, []);
+  }, [router]);
 
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
     const isOnAdminRoute = router.pathname.includes('/admin');
@@ -103,21 +101,28 @@ const AuthProvider = ({ children }: Props) => {
       if (response) {
         const returnUrl = router.query.returnUrl;
         setUser({ ...response.data });
+
         if (params.rememberMe) {
           window.localStorage.setItem('userData', JSON.stringify(response.data));
         }
-        const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
-        router.replace(redirectURL as string);
+
+        // Redirect to registration completion if registration is not complete
+        if (response.data.registrationComplete === false) {
+          router.replace('/complete-registration');
+        } else {
+          const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
+          router.replace(redirectURL as string);
+        }
       }
     }).catch(err => {
       if (errorCallback) errorCallback(err);
     });
-  }
+  };
 
   const handleLogout = () => {
-    console.log("Logging out...");
     setUser(null)
     window.localStorage.removeItem('userData')
+    window.localStorage.removeItem('isAdmin')
     window.localStorage.removeItem(authConfig.storageTokenKeyName)
     router.push('/login')
   }
