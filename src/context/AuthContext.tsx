@@ -46,7 +46,7 @@ const AuthProvider = ({ children }: Props) => {
 
           // Redirect to registration completion if registration is not complete
           if (response.data.registrationComplete === false) {
-            router.replace('/complete-registration');
+            router.replace('/register/complete-registration');
           }
         } catch (error) {
           setLoading(false);
@@ -108,7 +108,7 @@ const AuthProvider = ({ children }: Props) => {
 
         // Redirect to registration completion if registration is not complete
         if (response.data.registrationComplete === false) {
-          router.replace('/complete-registration');
+          router.replace('/register/complete-registration');
         } else {
           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
           router.replace(redirectURL as string);

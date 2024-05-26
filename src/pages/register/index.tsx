@@ -17,8 +17,8 @@ import FooterIllustrationsV2 from 'src/views/pages/auth/FooterIllustrationsV2'
 import { registerUser } from 'src/store/apps/user';
 import { RegisterUserPayload } from 'src/types/apps/userTypes';
 import {
-  TextField, FormControl, InputLabel, OutlinedInput, InputAdornment,
-  IconButton, Checkbox, Button, Divider
+  TextField, FormControl, InputLabel, OutlinedInput, InputAdornment, DialogActions,
+  IconButton, Checkbox, Button, Divider, DialogTitle, Dialog, DialogContent, DialogContentText
 } from '@mui/material';
 
 // ** Styled Components
@@ -78,7 +78,7 @@ const LinkStyled = styled(Link)(({ theme }) => ({
 }))
 
 const Register = () => {
-
+  const [openDialog, setOpenDialog] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [formData, setFormData] = useState<RegisterUserPayload>({
     username: '',
@@ -106,6 +106,7 @@ const Register = () => {
     e.preventDefault();
     try {
       await dispatch<any>(registerUser(formData)).unwrap();
+      setOpenDialog(true);
       router.push('/additional-details');
     } catch (error: any) {
       console.error('Error during registration:', error);
@@ -113,6 +114,11 @@ const Register = () => {
         router.push('/additional-details');
       }
     }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    router.push('/additional-details');
   };
 
   return (
@@ -332,9 +338,28 @@ const Register = () => {
                 </IconButton>
               </Box>
             </form>
+
+
           </BoxWrapper>
         </Box>
       </RightWrapper>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>Registration Complete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Your registration has been completed successfully.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
