@@ -127,8 +127,6 @@ export const addDownlineUser = createAsyncThunk(
 
     const response = await axiosInstance.post('/users/add-downline', data);  // Adjust endpoint as needed
 
-    dispatch(fetchData(getState().user.params));
-
     return response.data;
   }
 );

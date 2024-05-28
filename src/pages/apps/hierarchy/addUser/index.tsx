@@ -8,7 +8,8 @@ import { useDispatch } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import {
   Grid, Box, Button, FormControl, FormControlLabel, FormHelperText, InputLabel,
-  MenuItem, Radio, RadioGroup, Select, TextField, Typography
+  MenuItem, Radio, RadioGroup, Select, TextField, Typography, Checkbox,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress
 } from '@mui/material';
 import { addDownlineUser } from 'src/store/apps/user';
 import { AppDispatch } from 'src/store';
@@ -97,6 +98,10 @@ const Header = styled(Box)(({ theme }) => ({
 
 const AddUser = () => {
   const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activateUser, setActivateUser] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [addedUser, setAddedUser] = useState<UserData | null>(null);
   const dispatch = useDispatch<AppDispatch>();
   const { reset, setError, control, handleSubmit, formState: { errors }, setValue } = useForm({
     defaultValues,
@@ -124,11 +129,14 @@ const AddUser = () => {
     fetchPackages();
   }, []);
 
+
   const handleInputChange = (name: keyof UserData, value: any) => {
     setValue(name, value);
   };
 
+
   const onSubmit = async (data: UserData) => {
+    setLoading(true);
     try {
       console.log('Submit button pressed', data);
 
@@ -147,20 +155,41 @@ const AddUser = () => {
           }
         });
       } else {
-        try {
-          const payload = { ...data };
-          console.log('Payload for submission:', payload);
+        const payload = { ...data };
+        dispatch(addDownlineUser(payload));
+        setAddedUser(payload);
 
-          dispatch(addDownlineUser(payload));
+        if (activateUser) {
+          setOpenDialog(true);
+        } else {
           reset(defaultValues);
-        } catch (error: any) {
-          console.error('Error adding user:', error.response || error.message);
-          console.log('Error details:', error);
         }
       }
     } catch (error) {
       console.error('Error during form submission:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleActivateUser = async () => {
+    if (!addedUser) return;
+    try {
+      setLoading(true);
+      await axios.post('/crypto/activate-downline', { downlineUsername: addedUser.username, depositAmount: addedUser.packageId });
+      console.log('Downline user activated successfully');
+      setOpenDialog(false);
+      reset(defaultValues);
+    } catch (error) {
+      console.error('Failed to activate downline user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    reset(defaultValues);
   };
 
   return (
@@ -178,7 +207,8 @@ const AddUser = () => {
                 name="username"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Username" error={!!errors.username} helperText={errors.username?.message} />
+                  <TextField {...field} label="Username" error={!!errors.username} helperText={errors.username?.message}
+                    onChange={(e) => handleInputChange('username', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -189,7 +219,8 @@ const AddUser = () => {
                 name="email"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Email" error={!!errors.email} helperText={errors.email?.message} />
+                  <TextField {...field} label="Email" error={!!errors.email} helperText={errors.email?.message}
+                    onChange={(e) => handleInputChange('email', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -200,7 +231,8 @@ const AddUser = () => {
                 name="firstName"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="First Name" error={!!errors.firstName} helperText={errors.firstName?.message} />
+                  <TextField {...field} label="First Name" error={!!errors.firstName} helperText={errors.firstName?.message}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -211,7 +243,8 @@ const AddUser = () => {
                 name="lastName"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Last Name" error={!!errors.lastName} helperText={errors.lastName?.message} />
+                  <TextField {...field} label="Last Name" error={!!errors.lastName} helperText={errors.lastName?.message}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -222,7 +255,8 @@ const AddUser = () => {
                 name="password"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message} />
+                  <TextField {...field} label="Password" type="password" error={!!errors.password} helperText={errors.password?.message}
+                    onChange={(e) => handleInputChange('password', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -233,7 +267,8 @@ const AddUser = () => {
                 name="retypePassword"
                 control={control}
                 render={({ field }) => (
-                  <TextField {...field} label="Retype Password" type="password" error={!!errors.retypePassword} helperText={errors.retypePassword?.message} />
+                  <TextField {...field} label="Retype Password" type="password" error={!!errors.retypePassword} helperText={errors.retypePassword?.message}
+                    onChange={(e) => handleInputChange('retypePassword', e.target.value)} />
                 )}
               />
             </FormControl>
@@ -257,12 +292,35 @@ const AddUser = () => {
           </Grid>
 
           <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={<Checkbox checked={activateUser} onChange={(e) => setActivateUser(e.target.checked)} />}
+                label="Activate User"
+              />
+            </Grid>
             <Button type="submit" variant="contained" sx={{ mt: 2 }}>
               Add User
             </Button>
           </Grid>
         </Grid>
       </form>
+
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>Activate User</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to activate this user?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleActivateUser} color="primary" autoFocus disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : 'Activate'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 
