@@ -2,25 +2,32 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Button, Box, Typography, CircularProgress } from '@mui/material';
+import {
+  Button, Box, Typography, CircularProgress, Snackbar, Alert
+  , Table, TableBody, TableCell, TableHead, TableRow, Select, MenuItem
+} from '@mui/material';
 import { useCrypto } from 'src/hooks/useCrypto';
 import axiosInstance from 'src/configs/axiosConfig';
 import { UsersType } from 'src/types/apps/userTypes';
 
 const ActivateAccount = () => {
   const router = useRouter();
-  const { generateNewAddress, loading } = useCrypto();
+  const { generateNewAddress, fetchDepositData, loading } = useCrypto();
   const [addresses, setAddresses] = useState({
     erc20Address: '',
     trc20Address: '',
     solanaAddress: ''
   });
   const [userPackage, setUserPackage] = useState<UsersType['package'] | null>(null);
+  const [hasAddress, setHasAddress] = useState<boolean | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState('ERC20');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     const fetchUserPackage = async () => {
       try {
-        const response = await axiosInstance.get<UsersType>('/user/current');
+        const response = await axiosInstance.get<UsersType>('/users/current');
         const userPackage = response.data.package;
         setUserPackage(userPackage || null);
       } catch (error) {
@@ -28,7 +35,24 @@ const ActivateAccount = () => {
       }
     };
 
+    const fetchData = async () => {
+      try {
+        const data = await fetchDepositData();
+        setHasAddress(data.hasAddresses);
+        if (data.hasAddresses) {
+          setAddresses({
+            erc20Address: data.erc20Address || '',
+            trc20Address: data.trc20Address || '',
+            solanaAddress: data.solanaAddress || ''
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch deposit data:', error);
+      }
+    };
+
     fetchUserPackage();
+    fetchData();
   }, []);
 
 
@@ -53,6 +77,19 @@ const ActivateAccount = () => {
     } catch (error) {
       console.error('Failed to activate account:', error);
     }
+  };
+
+  const handleNetworkChange = (event: any) => {
+    setSelectedNetwork(event.target.value);
+  };
+
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setSnackbarMessage('Address copied to clipboard!');
+      setSnackbarOpen(true);
+    }).catch((err) => {
+      console.error('Failed to copy text: ', err);
+    });
   };
 
   return (
@@ -81,10 +118,44 @@ const ActivateAccount = () => {
           </Button>
         )}
         {(addresses.erc20Address || addresses.trc20Address || addresses.solanaAddress) && (
-          <Box sx={{ mt: 2 }}>
-            {addresses.erc20Address && <Typography>ERC20 Address: {addresses.erc20Address}</Typography>}
-            {addresses.trc20Address && <Typography>TRC20 Address: {addresses.trc20Address}</Typography>}
-            {addresses.solanaAddress && <Typography>Solana Address: {addresses.solanaAddress}</Typography>}
+          <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Network</TableCell>
+                  <TableCell>Address</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>ERC20|BEP20</TableCell>
+                  <TableCell
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(addresses.erc20Address || '')}
+                  >
+                    {addresses.erc20Address}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>TRC20</TableCell>
+                  <TableCell
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(addresses.trc20Address || '')}
+                  >
+                    {addresses.trc20Address}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Solana</TableCell>
+                  <TableCell
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(addresses.solanaAddress || '')}
+                  >
+                    {addresses.solanaAddress}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </Box>
         )}
         {(addresses.erc20Address || addresses.trc20Address || addresses.solanaAddress) && (
@@ -105,6 +176,15 @@ const ActivateAccount = () => {
           Back
         </Button>
       </Box>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

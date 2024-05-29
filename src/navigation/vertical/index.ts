@@ -127,11 +127,6 @@ const userNavItems: VerticalNavItemsType = [
     icon: 'mdi:account-group',
     children: [
       {
-        title: 'Tree',
-        icon: 'tabler:binary-tree-2',
-        path: '/apps/hierarchy'
-      },
-      {
         title: 'My Sponsors',
         icon: 'octicon:sponsor-tiers-16',
         path: '/apps/hierarchy/mySponsors'
@@ -141,12 +136,6 @@ const userNavItems: VerticalNavItemsType = [
         icon: 'gg:add',
         path: '/apps/hierarchy/addUser'
       },
-      {
-        title: 'Edit',
-        icon: 'mdi:account-edit',
-        path: '/apps/hierarchy/editUser'
-      },
-
     ]
   },
   {

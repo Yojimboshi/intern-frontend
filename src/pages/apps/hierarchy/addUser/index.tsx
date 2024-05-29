@@ -174,9 +174,17 @@ const AddUser = () => {
 
   const handleActivateUser = async () => {
     if (!addedUser) return;
+
+    const selectedPackage = packages.find(pkg => pkg.id === addedUser.packageId);
+
+    if (!selectedPackage) {
+      console.error('Selected package not found');
+      return;
+    }
+
     try {
       setLoading(true);
-      await axios.post('/crypto/activate-downline', { downlineUsername: addedUser.username, depositAmount: addedUser.packageId });
+      await axios.post('/crypto/activate-downline', { downlineUsername: addedUser.username, depositAmount: selectedPackage.price });
       console.log('Downline user activated successfully');
       setOpenDialog(false);
       reset(defaultValues);

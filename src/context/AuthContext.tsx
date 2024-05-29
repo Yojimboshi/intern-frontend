@@ -47,6 +47,8 @@ const AuthProvider = ({ children }: Props) => {
           // Redirect to registration completion if registration is not complete
           if (response.data.registrationComplete === false) {
             router.replace('/register/complete-registration');
+          } else if (response.data.packageActivated === false) {
+            router.replace('/register/complete-registration/activate');
           }
         } catch (error) {
           setLoading(false);
@@ -62,12 +64,10 @@ const AuthProvider = ({ children }: Props) => {
     };
 
     initAuth();
-  }, [router]);
+  }, []);
 
   const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
     const isOnAdminRoute = router.pathname.includes('/admin');
-
-    // Define the endpoint based on the path
     const loginEndpoint = isOnAdminRoute ? authConfig.adminLoginEndpoint : authConfig.loginEndpoint;
     const userEndpoint = isOnAdminRoute ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
 
@@ -109,6 +109,8 @@ const AuthProvider = ({ children }: Props) => {
         // Redirect to registration completion if registration is not complete
         if (response.data.registrationComplete === false) {
           router.replace('/register/complete-registration');
+        } else if (response.data.packageActivated === false) {
+          router.replace('/register/complete-registration/activate');
         } else {
           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
           router.replace(redirectURL as string);

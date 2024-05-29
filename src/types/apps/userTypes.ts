@@ -1,7 +1,7 @@
 // src\types\apps\userTypes.ts
 import { ThemeColor } from 'src/@core/layouts/types'
 
-interface PackageType {
+export interface PackageType {
   id: number;
   packageName: string;
   price: number;
