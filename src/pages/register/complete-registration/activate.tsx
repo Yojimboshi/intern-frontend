@@ -3,24 +3,30 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Button, Box, Typography, CircularProgress, Snackbar, Alert
-  , Table, TableBody, TableCell, TableHead, TableRow, Select, MenuItem
+  Button, Box, Typography, CircularProgress, Snackbar, Alert, Avatar
+  , Table, TableBody, TableCell, TableHead, TableRow, Tooltip
 } from '@mui/material';
+import Icon from 'src/@core/components/icon'
 import { useCrypto } from 'src/hooks/useCrypto';
+import axios from 'axios';
 import axiosInstance from 'src/configs/axiosConfig';
+import { useEWallet } from 'src/hooks/useEWallet';
+import { CryptoBalance } from 'src/types/apps/walletTypes';
 import { UsersType } from 'src/types/apps/userTypes';
 
 const ActivateAccount = () => {
   const router = useRouter();
-  const { generateNewAddress, fetchDepositData, loading } = useCrypto();
+  const { generateNewAddress, fetchDepositData } = useCrypto();
   const [addresses, setAddresses] = useState({
     erc20Address: '',
     trc20Address: '',
     solanaAddress: ''
   });
+  const [loading, setLoading] = useState(false);
   const [userPackage, setUserPackage] = useState<UsersType['package'] | null>(null);
-  const [hasAddress, setHasAddress] = useState<boolean | null>(null);
-  const [selectedNetwork, setSelectedNetwork] = useState('ERC20');
+  const { getUserBalances } = useEWallet();
+  const [usdtBalance, setUsdtBalance] = useState<CryptoBalance | null>(null);
+  const [dragonBalance, setDragonBalance] = useState<CryptoBalance | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -38,7 +44,6 @@ const ActivateAccount = () => {
     const fetchData = async () => {
       try {
         const data = await fetchDepositData();
-        setHasAddress(data.hasAddresses);
         if (data.hasAddresses) {
           setAddresses({
             erc20Address: data.erc20Address || '',
@@ -51,9 +56,43 @@ const ActivateAccount = () => {
       }
     };
 
+    const fetchBalances = async () => {
+      try {
+        const response = await getUserBalances();
+        const mappedBalances = response.cryptoBalances.map((item: CryptoBalance) => ({
+          ...item,
+          fullName: item.tokenSymbol,
+          icon: getIconFromSymbol(item.tokenSymbol),
+        }));
+        const usdtData = mappedBalances.find((item: CryptoBalance) => item.tokenSymbol === 'USDT');
+        const dragonData = mappedBalances.find((item: CryptoBalance) => item.tokenSymbol === 'DRAGON');
+        setUsdtBalance(usdtData || null);
+        setDragonBalance(dragonData || null);
+      } catch (error) {
+        console.error('Failed to fetch balances:', error);
+      }
+    };
+
     fetchUserPackage();
     fetchData();
-  }, []);
+    fetchBalances();
+
+    console.log("usdtBalance", usdtBalance);
+    console.log("dragonBalance", dragonBalance);
+  }, [getUserBalances]);
+
+
+  const getIconFromSymbol = (tokenSymbol: string) => {
+    const icons: { [key: string]: string } = {
+      BTC: 'currency-btc',
+      ETH: 'ethereum',
+      USDT: 'currency-usd-circle',
+      DRAGON: 'dragon', // Assuming 'dragon' is available in the icon set
+      DAI: 'currency-usd',
+    };
+
+    return `mdi-${icons[tokenSymbol.toUpperCase()] || 'coin'}`;
+  };
 
 
   const handleGenerateAddress = async () => {
@@ -71,17 +110,25 @@ const ActivateAccount = () => {
 
 
   const handleActivateAccount = async () => {
+    setLoading(true);
     try {
       await axiosInstance.post('/crypto/activate-account', { depositAmount: userPackage?.price });
-      router.push('/'); // Redirect to home or another appropriate page after activation
+      setSnackbarMessage('Account activated successfully!');
+      setSnackbarOpen(true);
+      router.push('/');
     } catch (error) {
       console.error('Failed to activate account:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 400 && error.response?.data?.message) {
+        setSnackbarMessage(error.response.data.message);
+      } else {
+        setSnackbarMessage('Failed to activate account');
+      }
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleNetworkChange = (event: any) => {
-    setSelectedNetwork(event.target.value);
-  };
 
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -106,6 +153,52 @@ const ActivateAccount = () => {
         <Typography variant="h6" sx={{ mt: 2 }}>
           Required Deposit Amount: ${userPackage.price}
         </Typography>
+      )}
+      {usdtBalance && (
+        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <Tooltip title={`USDT: ${Number(usdtBalance.totalBalance).toFixed(4)}`} arrow>
+            <Avatar
+              sx={{
+                bgcolor: 'secondary.main',
+                width: 56,
+                height: 56,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <Icon icon={usdtBalance.icon} />
+            </Avatar>
+          </Tooltip>
+          <Typography variant="h6" sx={{ ml: 2 }}>
+            {String(usdtBalance.tokenSymbol)}
+            ${Number(usdtBalance.totalBalance).toFixed(4)}
+          </Typography>
+        </Box>
+      )}
+      {dragonBalance && (
+        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <Tooltip title={`DRAGON: ${Number(dragonBalance.totalBalance).toFixed(4)}`} arrow>
+            <Avatar
+              sx={{
+                bgcolor: 'secondary.main',
+                width: 56,
+                height: 56,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <Icon icon={dragonBalance.icon} />
+            </Avatar>
+          </Tooltip>
+          <Typography variant="h6" sx={{ ml: 2 }}>
+            {String(dragonBalance.tokenSymbol)}
+            ${Number(dragonBalance.totalBalance).toFixed(4)}
+          </Typography>
+        </Box>
       )}
       <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {!addresses.erc20Address && !addresses.trc20Address && !addresses.solanaAddress && (
@@ -181,7 +274,7 @@ const ActivateAccount = () => {
         autoHideDuration={3000}
         onClose={() => setSnackbarOpen(false)}
       >
-        <Alert onClose={() => setSnackbarOpen(false)} severity="success">
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarMessage.includes('successfully') ? "success" : "error"}>
           {snackbarMessage}
         </Alert>
       </Snackbar>

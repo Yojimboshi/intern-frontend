@@ -1,5 +1,5 @@
 // src\pages\register\index.tsx
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useEffect } from 'react'
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import Link from 'next/link'
@@ -96,6 +96,13 @@ const Register = () => {
   // ** Vars
   const { skin } = settings
   const imageSource = skin === 'bordered' ? 'auth-v2-register-illustration-bordered' : 'auth-v2-register-illustration'
+
+  useEffect(() => {
+    const { referralId } = router.query;
+    if (referralId) {
+      setFormData(prevState => ({ ...prevState, referralId: referralId as string }));
+    }
+  }, [router.query]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

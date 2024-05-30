@@ -131,7 +131,7 @@ const userNavItems: HorizontalNavItemsType = [
     title: 'Apps',
     children: [
       {
-        title: 'Hierarchy',
+        title: 'My Group',
         icon: 'mdi:account-group',
         children: [
           {

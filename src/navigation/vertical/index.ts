@@ -123,7 +123,7 @@ const userNavItems: VerticalNavItemsType = [
     sectionTitle: 'Apps & Pages'
   },
   {
-    title: 'Hierarchy',
+    title: 'My Group',
     icon: 'mdi:account-group',
     children: [
       {

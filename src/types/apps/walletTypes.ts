@@ -4,7 +4,8 @@ export interface CryptoBalance {
   id: number;
   userId: number;
   tokenSymbol: string;
-  totalBalance: string; // Assuming balance is a string to handle large numbers or precision
+  totalBalance: string;
+  icon: string;
 }
 
 export interface EwalletCoin {
