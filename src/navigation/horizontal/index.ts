@@ -144,6 +144,11 @@ const userNavItems: HorizontalNavItemsType = [
             icon: 'gg:add',
             path: '/apps/hierarchy/addUser'
           },
+          {
+            title: 'Referral Program',
+            icon: 'mdi:share-variant',
+            path: '/apps/hierarchy/referralProgram'
+          }
         ]
       },
       {
