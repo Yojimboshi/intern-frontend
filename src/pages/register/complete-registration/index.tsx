@@ -12,16 +12,15 @@ import { yupResolver } from '@hookform/resolvers/yup';
 interface FormData {
   firstName: string;
   lastName: string;
-  referredBy: string;
   packageId: string;
 }
 
 const schema = yup.object().shape({
   firstName: yup.string().required('First Name is required'),
   lastName: yup.string().required('Last Name is required'),
-  referredBy: yup.string().optional(),
   packageId: yup.string().required('Package is required')
 });
+
 
 const CompleteRegistration = () => {
   const router = useRouter();
@@ -29,6 +28,7 @@ const CompleteRegistration = () => {
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
   });
+
 
   useEffect(() => {
     const fetchUserState = async () => {
@@ -66,7 +66,7 @@ const CompleteRegistration = () => {
   const onSubmit = async (data: FormData) => {
     try {
       // Send data to your backend to update user information
-      await axiosInstance.put('/users/update', data);
+      await axiosInstance.post('/users/complete-registration', data);
       router.push('/register/complete-registration/activate'); // Redirect to activation page
     } catch (error) {
       console.error('Failed to complete registration:', error);
@@ -104,21 +104,6 @@ const CompleteRegistration = () => {
                 label="Last Name"
                 error={!!errors.lastName}
                 helperText={errors.lastName?.message}
-                fullWidth
-              />
-            )}
-          />
-        </FormControl>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <Controller
-            name="referredBy"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Referred By (Optional)"
-                error={!!errors.referredBy}
-                helperText={errors.referredBy?.message}
                 fullWidth
               />
             )}

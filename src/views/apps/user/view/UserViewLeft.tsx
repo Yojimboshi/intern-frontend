@@ -168,8 +168,6 @@ const UserViewLeft = () => {
     try {
       // Assuming data has a userId property
       const userId = data.id;
-      console.log("userId", userId);
-      console.log("Selected Plan", selectedPlan);
 
       // Send a POST request to the backend to upgrade the plan
       const response = await axios.post('users/upgrades', { userId, newPackageId: selectedPlan });
