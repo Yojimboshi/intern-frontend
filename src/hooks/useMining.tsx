@@ -58,6 +58,7 @@ export const useMining = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${USER_URL}/stats`);
+      console.log(response.data)
       return response.data.stats; // Assuming 'stats' is the correct data key
     } catch (error) {
       handleError("fetching user mining stats", error);
