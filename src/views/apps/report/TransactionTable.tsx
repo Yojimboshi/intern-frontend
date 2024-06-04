@@ -1,12 +1,10 @@
 // src\views\apps\report\TransactionTable.tsx
-import { useEffect, useState } from 'react'
-
+import { useEffect, useState, useCallback } from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import Card from '@mui/material/Card';
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { useDispatch, useSelector } from 'react-redux'
-
 import { fetchTransactions } from 'src/store/apps/transaction';
 import { RootState, AppDispatch } from 'src/store'
 import {
@@ -15,7 +13,8 @@ import {
   v2PoolTransactionType,
   UpgradeHistoryType,
   ActiveBonusTransactionType,
-  PassiveBonusTransactionType
+  PassiveBonusTransactionType,
+  RegisteredUserTransactionType
 } from 'src/types/apps/transactionTypes';
 
 // ** Custom Components Imports
@@ -77,6 +76,13 @@ const getColumnsForType = (type: string): GridColDef[] => {
         { field: 'lpTokensBurned', headerName: 'LP Tokens Burned', width: 120 },
         { field: 'date', headerName: 'Date', width: 150 },
       ];
+    case 'registeredUsers':
+      return [
+        { field: 'id', headerName: 'User ID', width: 100 },
+        { field: 'username', headerName: 'Username', width: 150 },
+        { field: 'email', headerName: 'Email', width: 200 },
+        { field: 'createdAt', headerName: 'Registration Date', width: 150 },
+      ];
     default:
       return [
         { field: 'col1', headerName: 'Column 1', width: 150 },
@@ -92,7 +98,7 @@ const TransactionTable = () => {
   const [selectedType, setSelectedType] = useState('all');
   const [transactionType, setTransactionType] = useState<string>('')
   const [searchQuery, setSearchQuery] = useState('');
-  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 })
+  const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 })
   const dispatch = useDispatch<AppDispatch>();
 
   const transactions = useSelector((state: RootState) => {
@@ -109,6 +115,8 @@ const TransactionTable = () => {
         return state.transaction.activeBonus as ActiveBonusTransactionType[];
       case 'passiveBonus':
         return state.transaction.passiveBonus as PassiveBonusTransactionType[];
+      case 'registeredUsers':
+        return state.transaction.registeredUsers as RegisteredUserTransactionType[];
       default:
         return [];
     }
@@ -116,28 +124,36 @@ const TransactionTable = () => {
 
   useEffect(() => {
     if (transactionType) {
-      dispatch(fetchTransactions({ type: transactionType }))
+      dispatch(fetchTransactions({ type: transactionType, searchQuery, page: paginationModel.page, pageSize: paginationModel.pageSize }))
     }
-  }, [dispatch, transactionType])
+  }, [dispatch, transactionType, searchQuery, paginationModel.page, paginationModel.pageSize])
+
 
   const handleTypeChange = (event: SelectChangeEvent) => {
     const newType = event.target.value as string;
-    setTransactionType(newType); // This will trigger the useEffect
-    setSelectedType(newType); // Ensure selectedType is also updated if it's used elsewhere
+    setTransactionType(newType);
+    setSelectedType(newType);
+    setPaginationModel({ page: 0, pageSize: 100 });
   };
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
-  // const handleFilter = useCallback((val: string) => {
-  //   setValue(val)
-  // }, [])
+  const handleFilter = useCallback((val: string) => {
+    setSearchQuery(val);
+  }, []);
 
   const handleRefresh = () => {
-    // Dispatch fetchTransactions with the current selectedType
     if (selectedType) {
-      dispatch(fetchTransactions({ type: selectedType, forceRefresh: true }));
+      dispatch(fetchTransactions({
+        type: selectedType,
+        forceRefresh: true,
+        searchQuery,
+        page: paginationModel.page,
+        pageSize: paginationModel.pageSize
+      }));
     }
   };
 
@@ -162,6 +178,7 @@ const TransactionTable = () => {
             <MenuItem value="upgradeHistory">Upgrade History</MenuItem>
             <MenuItem value="activeBonus">Active Bonus</MenuItem>
             <MenuItem value="passiveBonus">Passive Bonus</MenuItem>
+            <MenuItem value="registeredUsers">Registered Users</MenuItem>
           </Select>
         </FormControl>
       </Grid>

@@ -58,7 +58,7 @@ export const useMining = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${USER_URL}/stats`);
-      console.log(response.data)
+
       return response.data.stats; // Assuming 'stats' is the correct data key
     } catch (error) {
       handleError("fetching user mining stats", error);
@@ -69,13 +69,13 @@ export const useMining = () => {
   }, [handleError]);
 
 
-  const getMiningTransactions = async (transactionId?: string): Promise<MiningTransaction[]> => {
+  const getMiningTransactions = async (transactionId?: string, limit = 10, offset = 0): Promise<MiningTransaction[]> => {
     setLoading(true);
     try {
-      const url = transactionId ? `${USER_URL}/transactions/${transactionId}` : `${USER_URL}/transactions`;
+      const url = transactionId ? `${USER_URL}/transactions/${transactionId}` : `${USER_URL}/transactions?limit=${limit}&offset=${offset}`;
       const response = await axios.get(url);
-      // Ensure the response is always an array
-      return Array.isArray(response.data) ? response.data : [response.data];
+      const transactions = response.data.transactions || [];
+      return Array.isArray(transactions) ? transactions : [transactions];
     } catch (error) {
       handleError("fetching mining transactions", error);
       return []; // Return an empty array in case of error
@@ -84,27 +84,32 @@ export const useMining = () => {
     }
   };
 
-  const getAllUserMiningStats = async () => {
+  const getAllUserMiningStats = async (limit = 50, offset = 0) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${USER_URL}/admin/stats`);
-      // Ensure the response is always an array, even when the backend returns a single object or null
+      const response = await axios.get(`${USER_URL}/admin/stats`, {
+        params: { limit, offset }
+      });
+      // Ensure the response structure matches the expected format
       const data = response.data;
-      return Array.isArray(data) ? data : data ? [data] : [];
+      return data && data.allStats ? data : { allStats: [], totalAmountMined: 0 };
     } catch (error) {
       handleError("fetching all user mining stats", error);
-      return []; // Return an empty array in case of error
+      return { allStats: [], totalAmountMined: 0 }; // Return a default structure in case of error
     } finally {
       setLoading(false);
     }
   };
 
 
-  const getAllMiningTransactions = useCallback(async () => {
+  const getAllMiningTransactions = useCallback(async (limit = 50, offset = 0) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${USER_URL}/admin/transactions`);
-      return Array.isArray(response.data) ? response.data : [];
+      const response = await axios.get(`${USER_URL}/admin/transactions`, {
+        params: { limit, offset }
+      });
+      const transactions = response.data.transactions || [];
+      return Array.isArray(transactions) ? transactions : [transactions];
     } catch (error) {
       console.error("Error fetching all mining transactions:", error);
       return [];
@@ -112,6 +117,8 @@ export const useMining = () => {
       setLoading(false);
     }
   }, []);
+
+
 
   const updateMiningActivity = async (userId: string, activityData: object) => {
     setLoading(true);

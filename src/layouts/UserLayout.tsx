@@ -61,9 +61,6 @@ const UserLayout = ({ children, contentHeightFixed }: Props) => {
     settings.layout = 'vertical'
   }
 
-  // ** Debug log to check navigation items
-  console.log('Vertical Navigation Items:', VerticalNavItems())
-  console.log('Horizontal Navigation Items:', HorizontalNavItems())
 
   return (
     <Layout

@@ -4,18 +4,23 @@ export interface MiningStats {
   userId: number;
   username: string;
   level: number;
-  hourlyMiningRate: number;
-  totalAmountMined: number;
-  isMining: boolean;
+  hourlyMiningCount: number;
+  totalMined: number;
+  totalClaimedRewards: number;
+  lastMiningTime: string;
+  penaltyApplied: boolean;
+  dateRecorded: string;
 }
 
 export interface MiningTransaction {
-  id: string;
-  userId: string;
-  amount: number;
-  date: string; // Consider using Date type if you're manipulating dates
+  id: number;
+  userId: number;
+  username: string;
+  amount: string;
+  date: string;
   status: 'pending' | 'completed' | 'failed';
-  // Add other relevant fields here
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MiningTransactionsState {

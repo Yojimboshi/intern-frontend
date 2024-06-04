@@ -63,3 +63,10 @@ export interface PassiveBonusTransactionType {
   transactionType: 'daily-dividend' | 'registration' | 'upgrade';
   relatedPackageId?: number; // Optional as per your model
 }
+
+export interface RegisteredUserTransactionType {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: string;
+}
