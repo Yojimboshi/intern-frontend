@@ -72,17 +72,8 @@ function getTransactionArrayByType(type: string, state: TransactionState):
 export const fetchTransactions = createAsyncThunk(
   'transaction/fetchTransactions',
   async (params: DataParams, { getState, rejectWithValue }) => {
-    const { type, forceRefresh, page = 0, pageSize = 100, searchQuery } = params;
+    const { type, page = 0, pageSize = 100 } = params;
     const state = getState() as RootState;
-
-    if (!forceRefresh) {
-      const transactions = getTransactionArrayByType(type, state.transaction);
-      if (transactions && transactions.length > 0) {
-        console.log(`Transactions of type ${type} fetched from store`);
-
-        return { type, data: transactions };
-      }
-    }
 
     console.log('Requesting transactions with params:', params);
     try {

@@ -1,5 +1,5 @@
 // src\views\apps\report\TransactionTable.tsx
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import Card from '@mui/material/Card';
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
@@ -124,9 +124,9 @@ const TransactionTable = () => {
 
   useEffect(() => {
     if (transactionType) {
-      dispatch(fetchTransactions({ type: transactionType, searchQuery, page: paginationModel.page, pageSize: paginationModel.pageSize }))
+      dispatch(fetchTransactions({ type: transactionType, page: paginationModel.page, pageSize: paginationModel.pageSize }))
     }
-  }, [dispatch, transactionType, searchQuery, paginationModel.page, paginationModel.pageSize])
+  }, [dispatch, transactionType, paginationModel.page, paginationModel.pageSize])
 
 
   const handleTypeChange = (event: SelectChangeEvent) => {
@@ -149,15 +149,28 @@ const TransactionTable = () => {
     if (selectedType) {
       dispatch(fetchTransactions({
         type: selectedType,
-        forceRefresh: true,
-        searchQuery,
         page: paginationModel.page,
         pageSize: paginationModel.pageSize
-      }));
+      })).catch((error) => {
+        console.error("Error in fetchTransactions:", error);
+      });
     }
   };
 
   const columns = getColumnsForType(transactionType)
+
+  const filteredTransactions = useMemo(() => {
+    if (!searchQuery) {
+      return transactions;
+    }
+    const query = searchQuery.toLowerCase();
+    return transactions.filter(transaction => {
+      // Modify this based on the fields you want to search
+      return Object.values(transaction).some(value =>
+        String(value).toLowerCase().includes(query)
+      );
+    });
+  }, [transactions, searchQuery]);
 
   return (
     <Grid container spacing={6}>
@@ -193,7 +206,7 @@ const TransactionTable = () => {
           />
           <DataGrid
             autoHeight
-            rows={transactions || []}
+            rows={filteredTransactions || []}
             columns={columns}
             checkboxSelection
             disableRowSelectionOnClick
