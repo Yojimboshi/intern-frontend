@@ -54,10 +54,10 @@ const adminNavItems: HorizontalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     children: [
       {
         title: 'User Mining Stats',
@@ -185,10 +185,10 @@ const userNavItems: HorizontalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     children: [
       {
         title: 'Mining Stats',
