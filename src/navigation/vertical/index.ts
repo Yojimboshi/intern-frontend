@@ -7,8 +7,8 @@ const adminNavItems: VerticalNavItemsType = [
   {
     title: 'Dashboards',
     icon: 'mdi:home-outline',
-    badgeContent: 'new',
-    badgeColor: 'error',
+    badgeContent: 'ADMIN',
+    badgeColor: 'info',
     path: '/dashboards/analytics'
   },
   {
@@ -138,6 +138,8 @@ const userNavItems: VerticalNavItemsType = [
       },
       {
         title: 'Referral Program',
+        badgeContent: 'new',
+        badgeColor: 'error',
         icon: 'mdi:share-variant',
         path: '/apps/hierarchy/referralProgram'
       }

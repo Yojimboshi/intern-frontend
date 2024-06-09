@@ -7,7 +7,8 @@ import {
   v2PoolTransactionType,
   UpgradeHistoryType,
   ActiveBonusTransactionType,
-  PassiveBonusTransactionType
+  PassiveBonusTransactionType,
+  RegisteredUserTransactionType
 } from 'src/types/apps/transactionTypes';
 import axiosInstance from 'src/configs/axiosConfig';
 
@@ -18,6 +19,9 @@ interface DataParams {
   startDate?: string;
   endDate?: string;
   forceRefresh?: boolean;
+  page?: number;
+  pageSize?: number;
+  searchQuery?: string;
 }
 
 interface TransactionState {
@@ -27,6 +31,7 @@ interface TransactionState {
   upgradeHistory: UpgradeHistoryType[];
   activeBonus: ActiveBonusTransactionType[];
   passiveBonus: PassiveBonusTransactionType[];
+  registeredUsers: RegisteredUserTransactionType[]; // Add this state
 }
 
 const initialState: TransactionState = {
@@ -36,11 +41,14 @@ const initialState: TransactionState = {
   upgradeHistory: [],
   activeBonus: [],
   passiveBonus: [],
+  registeredUsers: [] // Initialize this state
 };
+
 
 function getTransactionArrayByType(type: string, state: TransactionState):
   EwalletTransactionType[] | CryptoTransactionType[] | v2PoolTransactionType[] |
-  UpgradeHistoryType[] | ActiveBonusTransactionType[] | PassiveBonusTransactionType[] | undefined {
+  UpgradeHistoryType[] | ActiveBonusTransactionType[] | PassiveBonusTransactionType[] |
+  RegisteredUserTransactionType[] | undefined {
   switch (type) {
     case 'ewallet':
       return state.ewallet;
@@ -54,6 +62,8 @@ function getTransactionArrayByType(type: string, state: TransactionState):
       return state.activeBonus;
     case 'passiveBonus':
       return state.passiveBonus;
+    case 'registeredUsers':
+      return state.registeredUsers;
     default:
       return undefined;
   }
@@ -62,17 +72,8 @@ function getTransactionArrayByType(type: string, state: TransactionState):
 export const fetchTransactions = createAsyncThunk(
   'transaction/fetchTransactions',
   async (params: DataParams, { getState, rejectWithValue }) => {
-    const { type, forceRefresh } = params;
+    const { type, page = 0, pageSize = 100 } = params;
     const state = getState() as RootState;
-
-    if (!forceRefresh) {
-      const transactions = getTransactionArrayByType(type, state.transaction);
-      if (transactions && transactions.length > 0) {
-        console.log(`Transactions of type ${type} fetched from store`);
-
-        return { type, data: transactions };
-      }
-    }
 
     console.log('Requesting transactions with params:', params);
     try {
@@ -115,6 +116,9 @@ export const appTransactionsSlice = createSlice({
             break;
           case 'passiveBonus':
             state.passiveBonus = data || [];
+            break;
+          case 'registeredUsers':
+            state.registeredUsers = data || [];
             break;
           default:
             break;

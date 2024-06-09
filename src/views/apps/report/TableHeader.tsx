@@ -51,6 +51,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
             <MenuItem value="upgradeHistory">Upgrade History</MenuItem>
             <MenuItem value="activeBonus">Active Bonus</MenuItem>
             <MenuItem value="passiveBonus">Passive Bonus</MenuItem>
+            <MenuItem value="registeredUsers">Registered Users</MenuItem>
           </Select>
         </FormControl>
       </Box>

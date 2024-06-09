@@ -7,6 +7,8 @@ const adminNavItems: HorizontalNavItemsType = [
   {
     icon: 'mdi:home-outline',
     title: 'Dashboards',
+    badgeContent: 'ADMIN',
+    badgeColor: 'info',
     path: '/dashboards/analytics'
   },
   {
@@ -69,6 +71,8 @@ const adminNavItems: HorizontalNavItemsType = [
   },
   {
     title: 'v2Pools',
+    badgeContent: 'new',
+    badgeColor: 'error',
     icon: 'icon-park-twotone:curve-adjustment',
     children: [
       {

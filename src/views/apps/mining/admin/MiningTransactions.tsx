@@ -1,23 +1,38 @@
 // src/views/apps/mining/admin/MiningTransactions.tsx
-import React, { useEffect, useState, useCallback } from 'react';
-import { Box, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useMining } from 'src/hooks/useMining';
 import { MiningTransaction } from 'src/types/apps/miningTypes';
 
 const MiningTransactions = () => {
-  const { getAllMiningTransactions, loading } = useMining();
+  const { getAllMiningTransactions } = useMining();
   const [transactions, setTransactions] = useState<MiningTransaction[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [offset, setOffset] = useState<number>(0);
+  const limit = 50;
+
+  const fetchTransactions = async (offset: number, limit: number) => {
+    const data = await getAllMiningTransactions(limit, offset);
+    if (data) {
+      setTransactions(prevTransactions => [...prevTransactions, ...data]);
+    }
+  };
 
   useEffect(() => {
-    const fetchAllTransactions = async () => {
-      const transactionsData = await getAllMiningTransactions(); // Directly using the returned array
-      setTransactions(transactionsData); // No need to check for data.transactions
-    };
+    fetchTransactions(0, limit); // Initial fetch
+  }, []); // Empty dependency array to run only once
 
-    fetchAllTransactions();
-  }, []);
+  useEffect(() => {
+    if (offset > 0) {
+      fetchTransactions(offset, limit);
+    }
+  }, [offset]); // Only run when offset changes
 
-  if (loading) {
+  const handleLoadMore = () => {
+    setOffset(prevOffset => prevOffset + limit);
+  };
+
+  if (loading && offset === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
         <CircularProgress />
@@ -35,6 +50,7 @@ const MiningTransactions = () => {
           <TableHead>
             <TableRow>
               <TableCell>Transaction ID</TableCell>
+              <TableCell>Username</TableCell>
               <TableCell align="right">User ID</TableCell>
               <TableCell align="right">Amount</TableCell>
               <TableCell align="right">Date</TableCell>
@@ -50,6 +66,7 @@ const MiningTransactions = () => {
                 <TableCell component="th" scope="row">
                   {transaction.id}
                 </TableCell>
+                <TableCell>{transaction.username}</TableCell>
                 <TableCell align="right">{transaction.userId}</TableCell>
                 <TableCell align="right">{transaction.amount}</TableCell>
                 <TableCell align="right">{new Date(transaction.date).toLocaleDateString()}</TableCell>
@@ -59,6 +76,11 @@ const MiningTransactions = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box mt={2} textAlign="center">
+        <Button variant="contained" color="primary" onClick={handleLoadMore} disabled={loading}>
+          {loading ? 'Loading...' : 'Load More'}
+        </Button>
+      </Box>
     </Box>
   );
 };
