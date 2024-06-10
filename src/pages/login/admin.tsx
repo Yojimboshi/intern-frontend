@@ -108,7 +108,7 @@ const AdminLogin = () => {
               <Translations text='Welcome to' />
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <img src='/images/dragon_logo.png' alt='logo' width='30' height='30' />
+              <img src='/images/logo.png' alt='logo' width='30' height='30' />
               <Typography variant='h6' sx={{ ml: 2, lineHeight: 1, fontWeight: 700, fontSize: '1.5rem !important' }}>
                 {themeConfig.templateName}
               </Typography>
