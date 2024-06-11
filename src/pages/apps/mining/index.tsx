@@ -39,7 +39,7 @@ const MiningPage = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h4" gutterBottom>Mining Dashboard</Typography>
+        <Typography variant="h4" gutterBottom>🎋Bamboo Harvest Dashboard</Typography>
         <MiningToggle />
       </Grid>
       <Grid item xs={12}>
