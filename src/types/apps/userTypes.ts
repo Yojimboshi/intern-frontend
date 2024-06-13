@@ -5,10 +5,10 @@ export interface PackageType {
   id: number;
   packageName: string;
   price: number;
-  sponsorBonusPercentage: number;
-  matchingBonusPercentage: number;
-  hierarchyBonusPercentage: number;
-  maxHierarchyChildren: number;
+  referralBonusPercentage: number;
+  miningBonusPercentage: number;
+  signupBonus: number;
+  activityBonus: number;
 }
 
 export type UsersType = {
@@ -32,9 +32,10 @@ export type UsersType = {
   referralId?: string | null;
   referredBy?: string | null;
   parentId?: string | null;
-  sponsorBonus?: number;
-  matchingBonus?: number;
-  hierarchyBonus?: number;
+  referralBonusPercentage?: number;
+  miningBonusPercentage?: number;
+  signupBonus?: number;
+  activityBonus?: number;
   leftCarryForward?: number;
   rightCarryForward?: number;
   lastWithdrawalDate?: string | null;
