@@ -1,6 +1,6 @@
 // src\pages\apps\mining\index.tsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { Grid, Button, Typography, CircularProgress, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Grid, Button, Typography, CircularProgress, Box, Snackbar, Alert } from '@mui/material';
 import Icon from 'src/@core/components/icon'
 import Translations from 'src/layouts/components/Translations';
 import { useRouter } from 'next/router';
@@ -10,9 +10,11 @@ import MiningStats from 'src/views/apps/mining/MiningStats';
 import Transactions from 'src/views/apps/mining/Transactions';
 
 const MiningPage = () => {
-  const { toggleMining, getUserMiningStats, loading } = useMining();
+  const { getUserMiningStats, claimMiningRewards, loading } = useMining();
   const [miningStats, setMiningStats] = useState<any>(null);
   const [view, setView] = useState<'stats' | 'transactions'>('stats');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     if (view === 'stats') {
@@ -27,6 +29,23 @@ const MiningPage = () => {
   const handleToggleView = (newView: 'stats' | 'transactions') => {
     setView(newView);
   };
+
+
+  const handleClaimRewards = async () => {
+    const result = await claimMiningRewards();
+    if (result) {
+      setSnackbarMessage(result.message);
+      setSnackbarOpen(true);
+    } else {
+      setSnackbarMessage("Failed to claim rewards.");
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
 
   if (loading) {
     return (
@@ -44,6 +63,9 @@ const MiningPage = () => {
       </Grid>
       <Grid item xs={12}>
         <Box display="flex" justifyContent="space-around" my={2}>
+          <Button variant="contained" onClick={handleClaimRewards} disabled={loading}>
+            {loading ? 'Claiming...' : 'Claim Rewards'}
+          </Button>
           <Button variant={view === 'stats' ? 'contained' : 'outlined'} onClick={() => handleToggleView('stats')}>View Stats</Button>
           <Button variant={view === 'transactions' ? 'contained' : 'outlined'} onClick={() => handleToggleView('transactions')}>View Transactions</Button>
         </Box>
@@ -58,6 +80,16 @@ const MiningPage = () => {
           <Transactions />
         </Grid>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };

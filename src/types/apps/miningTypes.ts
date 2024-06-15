@@ -3,9 +3,9 @@
 export interface MiningStats {
   userId: number;
   username: string;
-  level: number;
-  hourlyMiningCount: number;
-  totalMined: number;
+  miningBonusPercentage: number;
+  hourlyMiningRate: number;
+  totalAmountMined: number;
   totalClaimedRewards: number;
   lastMiningTime: string;
   penaltyApplied: boolean;
