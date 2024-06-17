@@ -88,7 +88,8 @@ const DepositView: React.FC<DepositViewProps> = ({ addresses, hasAddress, onGene
                     >
                       <MenuItem value="ERC20">ERC20</MenuItem>
                       <MenuItem value="BEP20">BEP20</MenuItem>
-                      <MenuItem value="MATIC">Goerli</MenuItem>
+                      <MenuItem value="BEP20Testnet">BEP20Testnet</MenuItem>
+                      <MenuItem value="Sepolia">Sepolia</MenuItem>
                     </Select>
                   </TableCell>
                   <TableCell

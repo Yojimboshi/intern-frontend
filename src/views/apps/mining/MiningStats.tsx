@@ -15,7 +15,7 @@ const MiningStats: React.FC<MiningStatsProps> = ({ stats }) => {
         </Typography>
         {statsAvailable ? (
           <Box>
-            <Typography variant="body1">Level: {stats.level || 'N/A'}</Typography>
+            <Typography variant="body1">miningBonusPercentage: {stats.miningBonusPercentage || 'N/A'}</Typography>
             <Typography variant="body1">Hourly Mining Rate: {stats.hourlyMiningRate ? `${stats.hourlyMiningRate} coins` : 'N/A'}</Typography>
             <Typography variant="body1">Total Amount Mined: {stats.totalAmountMined ? `${stats.totalAmountMined} coins` : 'N/A'}</Typography>
           </Box>

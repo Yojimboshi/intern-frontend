@@ -14,6 +14,9 @@ import { useEWallet } from 'src/hooks/useEWallet';
 import { CryptoBalance } from 'src/types/apps/walletTypes';
 import { UsersType } from 'src/types/apps/userTypes';
 
+const TOKEN_SYMBOL = 'DRAGON';
+const TOKEN_ICON = 'dragon';
+
 const ActivateAccount = () => {
   const router = useRouter();
   const { generateNewAddress, fetchDepositData } = useCrypto();
@@ -26,7 +29,7 @@ const ActivateAccount = () => {
   const [userPackage, setUserPackage] = useState<UsersType['package'] | null>(null);
   const { getUserBalances } = useEWallet();
   const [usdtBalance, setUsdtBalance] = useState<CryptoBalance | null>(null);
-  const [dragonBalance, setDragonBalance] = useState<CryptoBalance | null>(null);
+  const [tokenBalance, setTokenBalance] = useState<CryptoBalance | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -65,9 +68,9 @@ const ActivateAccount = () => {
           icon: getIconFromSymbol(item.tokenSymbol),
         }));
         const usdtData = mappedBalances.find((item: CryptoBalance) => item.tokenSymbol === 'USDT');
-        const dragonData = mappedBalances.find((item: CryptoBalance) => item.tokenSymbol === 'DRAGON');
+        const tokenData = mappedBalances.find((item: CryptoBalance) => item.tokenSymbol === TOKEN_SYMBOL);
         setUsdtBalance(usdtData || null);
-        setDragonBalance(dragonData || null);
+        setTokenBalance(tokenData || null);
       } catch (error) {
         console.error('Failed to fetch balances:', error);
       }
@@ -77,8 +80,6 @@ const ActivateAccount = () => {
     fetchData();
     fetchBalances();
 
-    console.log("usdtBalance", usdtBalance);
-    console.log("dragonBalance", dragonBalance);
   }, [getUserBalances]);
 
 
@@ -87,7 +88,7 @@ const ActivateAccount = () => {
       BTC: 'currency-btc',
       ETH: 'ethereum',
       USDT: 'currency-usd-circle',
-      DRAGON: 'dragon', // Assuming 'dragon' is available in the icon set
+      [TOKEN_SYMBOL]: TOKEN_ICON, // Dynamic token icon
       DAI: 'currency-usd',
     };
 
@@ -177,9 +178,9 @@ const ActivateAccount = () => {
           </Typography>
         </Box>
       )}
-      {dragonBalance && (
+      {tokenBalance && (
         <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <Tooltip title={`DRAGON: ${Number(dragonBalance.totalBalance).toFixed(4)}`} arrow>
+          <Tooltip title={`DRAGON: ${Number(tokenBalance.totalBalance).toFixed(4)}`} arrow>
             <Avatar
               sx={{
                 bgcolor: 'secondary.main',
@@ -191,12 +192,12 @@ const ActivateAccount = () => {
                 cursor: 'pointer',
               }}
             >
-              <Icon icon={dragonBalance.icon} />
+              <Icon icon={tokenBalance.icon} />
             </Avatar>
           </Tooltip>
           <Typography variant="h6" sx={{ ml: 2 }}>
-            {String(dragonBalance.tokenSymbol)}
-            ${Number(dragonBalance.totalBalance).toFixed(4)}
+            {String(tokenBalance.tokenSymbol)}
+            ${Number(tokenBalance.totalBalance).toFixed(4)}
           </Typography>
         </Box>
       )}

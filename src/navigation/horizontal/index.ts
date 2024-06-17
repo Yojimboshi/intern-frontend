@@ -7,6 +7,8 @@ const adminNavItems: HorizontalNavItemsType = [
   {
     icon: 'mdi:home-outline',
     title: 'Dashboards',
+    badgeContent: 'ADMIN',
+    badgeColor: 'info',
     path: '/dashboards/analytics'
   },
   {
@@ -52,10 +54,10 @@ const adminNavItems: HorizontalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     children: [
       {
         title: 'User Mining Stats',
@@ -69,6 +71,8 @@ const adminNavItems: HorizontalNavItemsType = [
   },
   {
     title: 'v2Pools',
+    badgeContent: 'new',
+    badgeColor: 'error',
     icon: 'icon-park-twotone:curve-adjustment',
     children: [
       {
@@ -181,10 +185,10 @@ const userNavItems: HorizontalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     children: [
       {
         title: 'Mining Stats',

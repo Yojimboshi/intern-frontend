@@ -1,5 +1,5 @@
 // src\layouts\UserLayout.tsx
-import { ReactNode } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -32,9 +32,9 @@ interface Props {
 const AppBrand = () => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <img src='/images/dragon_logo.png' alt='logo' width='30' height='30' />
+      <img src='/images/logo.png' alt='logo' width='30' height='30' />
       <Typography variant='h6' sx={{ ml: 2 }}>
-        <Translations text="Dragon Coil" />
+        <Translations text="LuckyPanda" />
       </Typography>
     </Box>
   )
@@ -57,13 +57,23 @@ const UserLayout = ({ children, contentHeightFixed }: Props) => {
    */
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
-  if (hidden && settings.layout === 'horizontal') {
-    settings.layout = 'vertical'
-  }
+  useEffect(() => {
+    const savedSettings = JSON.parse(localStorage.getItem('settings') || '{}');
+    if (savedSettings.layout) {
+      saveSettings({ ...settings, layout: savedSettings.layout });
+    }
+  }, []);
 
-  // ** Debug log to check navigation items
-  console.log('Vertical Navigation Items:', VerticalNavItems())
-  console.log('Horizontal Navigation Items:', HorizontalNavItems())
+  useEffect(() => {
+    localStorage.setItem('settings', JSON.stringify(settings));
+  }, [settings]);
+
+  // Update layout setting if hidden and layout is horizontal
+  useEffect(() => {
+    if (hidden && settings.layout === 'horizontal') {
+      saveSettings({ ...settings, layout: 'vertical' });
+    }
+  }, [hidden, settings.layout, saveSettings]);
 
   return (
     <Layout

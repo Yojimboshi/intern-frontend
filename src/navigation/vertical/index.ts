@@ -7,8 +7,8 @@ const adminNavItems: VerticalNavItemsType = [
   {
     title: 'Dashboards',
     icon: 'mdi:home-outline',
-    badgeContent: 'new',
-    badgeColor: 'error',
+    badgeContent: 'ADMIN',
+    badgeColor: 'info',
     path: '/dashboards/analytics'
   },
   {
@@ -50,10 +50,10 @@ const adminNavItems: VerticalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     path: '/apps/mining/admin',
   },
   {
@@ -138,6 +138,8 @@ const userNavItems: VerticalNavItemsType = [
       },
       {
         title: 'Referral Program',
+        badgeContent: 'new',
+        badgeColor: 'error',
         icon: 'mdi:share-variant',
         path: '/apps/hierarchy/referralProgram'
       }
@@ -172,10 +174,10 @@ const userNavItems: VerticalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     path: '/apps/mining',
   },
   {
