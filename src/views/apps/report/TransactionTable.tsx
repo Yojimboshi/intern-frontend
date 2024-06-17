@@ -20,6 +20,15 @@ import {
 // ** Custom Components Imports
 import TableHeader from 'src/views/apps/report/TableHeader';
 
+type TransactionType =
+  | EwalletTransactionType
+  | CryptoTransactionType
+  | v2PoolTransactionType
+  | UpgradeHistoryType
+  | ActiveBonusTransactionType
+  | PassiveBonusTransactionType
+  | RegisteredUserTransactionType;
+
 const getColumnsForType = (type: string): GridColDef[] => {
   switch (type) {
     case 'activeBonus':
@@ -101,7 +110,7 @@ const TransactionTable = () => {
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 100 })
   const dispatch = useDispatch<AppDispatch>();
 
-  const transactions = useSelector((state: RootState) => {
+  const transactions = useSelector((state: RootState): TransactionType[] => {
     switch (selectedType) {
       case 'ewallet':
         return state.transaction.ewallet as EwalletTransactionType[];
@@ -164,7 +173,7 @@ const TransactionTable = () => {
       return transactions;
     }
     const query = searchQuery.toLowerCase();
-    return transactions.filter(transaction => {
+    return transactions.filter((transaction: TransactionType) => {
       // Modify this based on the fields you want to search
       return Object.values(transaction).some(value =>
         String(value).toLowerCase().includes(query)

@@ -65,10 +65,10 @@ const initialData: UsersType = {
     id: 0,
     packageName: '',
     price: 0,
-    sponsorBonusPercentage: 0,
-    matchingBonusPercentage: 0,
-    hierarchyBonusPercentage: 0,
-    maxHierarchyChildren: 0,
+    referralBonusPercentage: 0,
+    miningBonusPercentage: 0,
+    signupBonus: 0,
+    activityBonus: 0,
   },
   isEmpty: false,
   packageId: "",
@@ -305,7 +305,7 @@ const UserViewLeft = ({ userData }: UserViewLeftProps) => {
                   <Typography variant="subtitle2" sx={{ mr: 2, color: 'text.primary' }}>
                     Sponsor Bonus:
                   </Typography>
-                  <Typography variant="body2">${data.sponsorBonus}</Typography>
+                  <Typography variant="body2">${data.referralBonusPercentage}</Typography>
                 </Box>
                 {/* ... other bonus details ... */}
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
