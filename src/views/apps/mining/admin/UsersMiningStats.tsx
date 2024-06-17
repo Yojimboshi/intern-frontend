@@ -70,9 +70,9 @@ const UsersMiningStats = () => {
               >
                 <TableCell>{stat.userId}</TableCell>
                 <TableCell>{stat.username}</TableCell>
-                <TableCell align="right">{stat.level}</TableCell>
-                <TableCell align="right">{stat.hourlyMiningCount}</TableCell>
-                <TableCell align="right">{stat.totalMined}</TableCell>
+                <TableCell align="right">{stat.miningBonusPercentage}</TableCell>
+                <TableCell align="right">{stat.hourlyMiningRate}</TableCell>
+                <TableCell align="right">{stat.totalAmountMined}</TableCell>
                 <TableCell align="right">{stat.totalClaimedRewards}</TableCell>
                 <TableCell align="right">{new Date(stat.lastMiningTime).toLocaleString()}</TableCell>
                 <TableCell align="right">{stat.penaltyApplied ? 'Yes' : 'No'}</TableCell>
