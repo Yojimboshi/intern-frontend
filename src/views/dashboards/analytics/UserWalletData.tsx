@@ -61,16 +61,10 @@ const UserWalletData: React.FC = () => {
 
 
   const getIconFromSymbol = (tokenSymbol: string) => {
-    const icons: { [key: string]: string } = {
-      BTC: 'currency-btc',
-      ETH: 'ethereum',
-      USDT: 'currency-usd-circle',
-      DUMMY: 'diamond-stone',
-      DAI: 'currency-usd',
-    };
-
-    return `mdi-${icons[tokenSymbol.toUpperCase()] || 'coin'}`;
+    return `/images/icons/${tokenSymbol.toUpperCase()}.png`;
   };
+
+
 
   return (
     <Box sx={{ position: 'relative', width: '100%', mt: 4 }}>
@@ -111,7 +105,11 @@ const UserWalletData: React.FC = () => {
                       }}
                     >
                       {balance.icon ? (
-                        <Icon icon={balance.icon} />
+                        <img
+                          src={balance.icon}
+                          alt={balance.tokenSymbol}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
                       ) : (
                         balance.tokenSymbol
                       )}
