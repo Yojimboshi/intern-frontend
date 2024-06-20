@@ -33,10 +33,10 @@ interface Package {
   id: string | number;
   packageName: string;
   price: number;
-  sponsorBonusPercentage: number;
-  matchingBonusPercentage: number;
-  hierarchyBonusPercentage: number;
-  maxHierarchyChildren: number;
+  referralBonusPercentage: number;
+  miningBonusPercentage: number;
+  signupBonus: number;
+  activityBonus: number;
 }
 
 interface UserData {

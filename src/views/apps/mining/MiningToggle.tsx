@@ -46,7 +46,7 @@ const MiningToggle: React.FC = () => {
     icon = "mdi:speedometer";
   }
 
-  const buttonColor: ThemeColor = isPenaltyApplicable ? 'warning' : 'primary';
+  const buttonColor: ThemeColor = !isMining ? 'primary' : isPenaltyApplicable ? 'error' : 'warning';
 
   if (loading) {
     return (
