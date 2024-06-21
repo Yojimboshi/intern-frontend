@@ -3,19 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
-  Button, Box, Typography, CircularProgress, Snackbar, Alert, Avatar
-  , Table, TableBody, TableCell, TableHead, TableRow, Tooltip
+  Button, Box, Typography, CircularProgress, Snackbar, Alert, Avatar, InputLabel
+  , Table, TableBody, TableCell, TableHead, TableRow, Tooltip, FormControl, Select, MenuItem
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import Icon from 'src/@core/components/icon'
 import { useCrypto } from 'src/hooks/useCrypto';
 import axios from 'axios';
 import axiosInstance from 'src/configs/axiosConfig';
 import { useEWallet } from 'src/hooks/useEWallet';
+import { PackageType } from 'src/types/apps/userTypes'
 import { CryptoBalance } from 'src/types/apps/walletTypes';
 import { UsersType } from 'src/types/apps/userTypes';
 
-const TOKEN_SYMBOL = 'DRAGON';
-const TOKEN_ICON = 'dragon';
+const TOKEN_SYMBOL = 'LUCKYP';
+const TOKEN_ICON = 'LUCKYP';
 
 const ActivateAccount = () => {
   const router = useRouter();
@@ -27,6 +29,8 @@ const ActivateAccount = () => {
   });
   const [loading, setLoading] = useState(false);
   const [userPackage, setUserPackage] = useState<UsersType['package'] | null>(null);
+  const [packages, setPackages] = useState<PackageType[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<UsersType['package'] | null>(null);
   const { getUserBalances } = useEWallet();
   const [usdtBalance, setUsdtBalance] = useState<CryptoBalance | null>(null);
   const [tokenBalance, setTokenBalance] = useState<CryptoBalance | null>(null);
@@ -39,12 +43,23 @@ const ActivateAccount = () => {
         const response = await axiosInstance.get<UsersType>('/users/current');
         const userPackage = response.data.package;
         setUserPackage(userPackage || null);
+        setSelectedPackage(userPackage || null);
       } catch (error) {
         console.error('Failed to fetch user package:', error);
       }
     };
 
-    const fetchData = async () => {
+
+    const fetchPackages = async () => {
+      try {
+        const response = await axiosInstance.get('/users/packages');
+        setPackages(response.data.packages);
+      } catch (error) {
+        console.error('Failed to fetch packages:', error);
+      }
+    };
+
+    const fetchAddressData = async () => {
       try {
         const data = await fetchDepositData();
         if (data.hasAddresses) {
@@ -77,7 +92,8 @@ const ActivateAccount = () => {
     };
 
     fetchUserPackage();
-    fetchData();
+    fetchPackages();
+    fetchAddressData();
     fetchBalances();
 
   }, [getUserBalances]);
@@ -109,11 +125,16 @@ const ActivateAccount = () => {
     }
   };
 
+  const handlePackageChange = (event: SelectChangeEvent<number>) => {
+    const selectedPkg = packages.find(pkg => pkg.id === event.target.value);
+    setSelectedPackage(selectedPkg);
+  };
+
 
   const handleActivateAccount = async () => {
     setLoading(true);
     try {
-      await axiosInstance.post('/crypto/activate-account', { depositAmount: userPackage?.price });
+      await axiosInstance.post('/crypto/activate-account', { depositAmount: selectedPackage?.price, packageId: selectedPackage?.id });
       setSnackbarMessage('Account activated successfully!');
       setSnackbarOpen(true);
       router.push('/');
@@ -145,14 +166,29 @@ const ActivateAccount = () => {
       <Typography component="h1" variant="h5">
         Activate Your Account
       </Typography>
-      {userPackage && (
+      <FormControl sx={{ mt: 2 }}>
+        <InputLabel id="package-label">Change Package</InputLabel>
+        <Select
+          labelId="package-label"
+          value={selectedPackage?.id || ''}
+          onChange={handlePackageChange}
+          label="Change Package"
+        >
+          {packages.map(pkg => (
+            <MenuItem key={pkg.id} value={pkg.id}>
+              {pkg.packageName} - ${pkg.price}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {selectedPackage && (
         <Typography variant="h6" sx={{ mt: 2 }}>
-          Your Package: {userPackage.packageName.toUpperCase()}
+          Your Package: {selectedPackage.packageName.toUpperCase()}
         </Typography>
       )}
-      {userPackage && (
+      {selectedPackage && (
         <Typography variant="h6" sx={{ mt: 2 }}>
-          Required Deposit Amount: ${userPackage.price}
+          Required Deposit Amount: ${selectedPackage.price}
         </Typography>
       )}
       {usdtBalance && (
@@ -180,7 +216,7 @@ const ActivateAccount = () => {
       )}
       {tokenBalance && (
         <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <Tooltip title={`DRAGON: ${Number(tokenBalance.totalBalance).toFixed(4)}`} arrow>
+          <Tooltip title={`LUCKYP: ${Number(tokenBalance.totalBalance).toFixed(4)}`} arrow>
             <Avatar
               sx={{
                 bgcolor: 'secondary.main',
