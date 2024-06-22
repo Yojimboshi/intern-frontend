@@ -48,7 +48,7 @@ const AuthProvider = ({ children }: Props) => {
           if (response.data.registrationComplete === false) {
             router.replace('/register/complete-registration');
           } else if (response.data.packageActivated === false) {
-            router.replace('/register/complete-registration/activate');
+            router.replace('/register/complete-registration/activatePackage');
           }
         } catch (error) {
           setLoading(false);
@@ -110,7 +110,7 @@ const AuthProvider = ({ children }: Props) => {
         if (response.data.registrationComplete === false) {
           router.replace('/register/complete-registration');
         } else if (response.data.packageActivated === false) {
-          router.replace('/register/complete-registration/activate');
+          router.replace('/register/complete-registration/activatePackage');
         } else {
           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
           router.replace(redirectURL as string);

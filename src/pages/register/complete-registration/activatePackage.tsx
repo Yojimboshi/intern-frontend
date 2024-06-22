@@ -1,4 +1,4 @@
-// src\pages\register\complete-registration\activate.tsx
+// src\pages\register\complete-registration\activatePackage.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
@@ -19,7 +19,7 @@ import { UsersType } from 'src/types/apps/userTypes';
 const TOKEN_SYMBOL = 'LUCKYP';
 const TOKEN_ICON = 'LUCKYP';
 
-const ActivateAccount = () => {
+const ActivatePackage = () => {
   const router = useRouter();
   const { generateNewAddress, fetchDepositData } = useCrypto();
   const [addresses, setAddresses] = useState({
@@ -319,4 +319,4 @@ const ActivateAccount = () => {
   );
 };
 
-export default ActivateAccount;
+export default ActivatePackage;
