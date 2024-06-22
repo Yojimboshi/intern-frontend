@@ -20,17 +20,17 @@ const UserWalletData: React.FC = () => {
     const fetchAndCombineWalletBalances = async () => {
       const response = await getUserBalances(); // Assuming this fetches both cryptoWallet and ewallet data
       const combinedData = [
-        ...response.cryptoBalances.map((item: CryptoBalance) => ({
+        ...(response.cryptoBalances?.map((item: CryptoBalance) => ({
           tokenSymbol: item.tokenSymbol,
           balance: item.totalBalance,
           fullName: item.tokenSymbol,
           icon: getIconFromSymbol(item.tokenSymbol),
-        })),
-        ...response.ewalletBalances.map((item: EwalletBalance) => ({
+        })) || []),
+        ...(response.ewalletBalances?.map((item: EwalletBalance) => ({
           tokenSymbol: item.ewalletCoin.symbol,
           balance: item.balance,
           fullName: item.ewalletCoin.name,
-        }))
+        })) || [])
       ];
 
       setWalletData(combinedData);
