@@ -17,10 +17,7 @@ interface AclGuardProps {
 }
 
 const AclGuard = (props: AclGuardProps) => {
-  // ** Props
   const { aclAbilities, children, guestGuard = false, authGuard = true } = props
-
-  // ** Hooks
   const auth = useAuth()
   const router = useRouter()
 

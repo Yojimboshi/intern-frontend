@@ -2,7 +2,7 @@
 import { ReactNode, useEffect } from 'react'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-
+import themeConfig from 'src/configs/themeConfig';
 // ** Layout Imports
 // !Do not remove this Layout import
 import Layout from 'src/@core/layouts/Layout'
@@ -31,14 +31,14 @@ interface Props {
 
 const AppBrand = () => {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>
       <img src='/images/logo.png' alt='logo' width='30' height='30' />
-      <Typography variant='h6' sx={{ ml: 2 }}>
-        <Translations text="LuckyPanda" />
+      <Typography variant='h6' sx={{ ml: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <Translations text={themeConfig.templateName} />
       </Typography>
     </Box>
-  )
-}
+  );
+};
 
 const UserLayout = ({ children, contentHeightFixed }: Props) => {
   const { settings, saveSettings } = useSettings()
