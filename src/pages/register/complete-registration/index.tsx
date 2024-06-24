@@ -39,7 +39,7 @@ const CompleteRegistration = () => {
         if (user.registrationComplete === false) {
           // Stay on this page
         } else if (user.packageActivated === false) {
-          router.replace('/register/complete-registration/activate');
+          router.replace('/register/complete-registration/activatePackage');
         } else {
           const returnUrl = router.query.returnUrl;
           const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
@@ -67,7 +67,7 @@ const CompleteRegistration = () => {
     try {
       // Send data to your backend to update user information
       await axiosInstance.post('/users/complete-registration', data);
-      router.push('/register/complete-registration/activate'); // Redirect to activation page
+      router.push('/register/complete-registration/activatePackage'); // Redirect to activation page
     } catch (error) {
       console.error('Failed to complete registration:', error);
     }

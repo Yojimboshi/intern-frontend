@@ -1,9 +1,7 @@
 // src\pages\apps\hierarchy\index.tsx
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
-
 import CardSnippet from 'src/@core/components/card-snippet'
-
 import TreeViewRichObject from 'src/views/apps/hierarchy/TreeViewRichObject'
 
 const TreeView = () => {

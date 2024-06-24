@@ -71,7 +71,6 @@ if (themeConfig.routingLoader) {
 }
 
 const Guard = ({ children, authGuard, guestGuard }: GuardProps) => {
-  console.log("Guard status:", { authGuard, guestGuard });
   if (guestGuard) {
 
     return <GuestGuard fallback={<Spinner />}>{children}</GuestGuard>
@@ -98,11 +97,8 @@ const App = (props: ExtendedAppProps) => {
     });
 
   const setConfig = Component.setConfig ?? undefined
-
   const authGuard = Component.authGuard ?? true
-
   const guestGuard = Component.guestGuard ?? false
-
   const aclAbilities = Component.acl ?? defaultACLObj
 
   return (
