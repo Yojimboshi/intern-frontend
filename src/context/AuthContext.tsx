@@ -106,8 +106,9 @@ const AuthProvider = ({ children }: Props) => {
           window.localStorage.setItem('userData', JSON.stringify(response.data));
         }
 
-        // Redirect to registration completion if registration is not complete
-        if (response.data.registrationComplete === false) {
+        if (response.data.emailVerified === 0) {
+          router.replace('/verify-email');
+        } else if (response.data.registrationComplete === false) {
           router.replace('/register/complete-registration');
         } else if (response.data.packageActivated === false) {
           router.replace('/register/complete-registration/activatePackage');
