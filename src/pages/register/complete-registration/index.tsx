@@ -123,7 +123,7 @@ const CompleteRegistration = () => {
               >
                 {packages.map(pkg => (
                   <MenuItem key={pkg.id} value={pkg.id}>
-                    {pkg.packageName}
+                    {pkg.packageName} - ${pkg.price}
                   </MenuItem>
                 ))}
               </Select>

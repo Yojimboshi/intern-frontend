@@ -50,10 +50,10 @@ const adminNavItems: VerticalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     path: '/apps/mining/admin',
   },
   {
@@ -174,10 +174,10 @@ const userNavItems: VerticalNavItemsType = [
     ]
   },
   {
-    title: 'Mining',
+    title: 'Bamboo Harvesting',
     badgeContent: 'new',
     badgeColor: 'error',
-    icon: 'mdi:pickaxe',
+    icon: 'mdi:leaf',
     path: '/apps/mining',
   },
   {

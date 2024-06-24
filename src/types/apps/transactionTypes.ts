@@ -65,7 +65,7 @@ export interface PassiveBonusTransactionType {
 }
 
 export interface RegisteredUserTransactionType {
-  id: string;
+  id: number;
   username: string;
   email: string;
   createdAt: string;

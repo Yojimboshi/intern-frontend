@@ -1,5 +1,5 @@
 {
-  "Dragon Coil": "龍繞明燈",
+  "LuckyPanda": "幸运熊猫",
   "Dashboards": "仪表板",
   "CRM": "关系管理",
   "Analytics": " 分析管理",
@@ -68,6 +68,7 @@
   "My Sponsors": "我的下线",
   "Crypto Wallet": "加密货币钱包",
   "Wallet": "钱包",
+  "User Wallet Balances": "钱包余额",
   "Report & Transaction": "交易与报告记录",
   "Network": "网络",
   "Address": "地址",

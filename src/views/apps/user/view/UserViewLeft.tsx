@@ -71,10 +71,10 @@ const initialData: UsersType = {
     id: 4,
     packageName: 'V4',
     price: 1000,
-    sponsorBonusPercentage: 10,
-    matchingBonusPercentage: 5,
-    hierarchyBonusPercentage: 2,
-    maxHierarchyChildren: 3,
+    referralBonusPercentage: 10,
+    miningBonusPercentage: 5,
+    signupBonus: 2,
+    activityBonus: 3,
   },
   isEmpty: false,
   packageId: "4",
@@ -308,9 +308,9 @@ const UserViewLeft = () => {
                 {/* Additional bonus and package details can be added here */}
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography variant="subtitle2" sx={{ mr: 2, color: 'text.primary' }}>
-                    Sponsor Bonus:
+                    Referral Bonus:
                   </Typography>
-                  <Typography variant="body2">${data.sponsorBonus}</Typography>
+                  <Typography variant="body2">${data.package?.referralBonusPercentage}</Typography>
                 </Box>
                 {/* ... other bonus details ... */}
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
@@ -498,7 +498,7 @@ const UserViewLeft = () => {
                 >
                   <Icon icon='mdi:circle' fontSize='0.625rem' />
                   <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    Sponsor Bonus: {data.package?.sponsorBonusPercentage ?? 'N/A'}%
+                    Referral Bonus: {data.package?.referralBonusPercentage ?? 'N/A'}%
                   </Typography>
                 </Box>
                 <Box
@@ -512,7 +512,7 @@ const UserViewLeft = () => {
                 >
                   <Icon icon='mdi:circle' fontSize='0.625rem' />
                   <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    Matching Bonus: {data.package?.matchingBonusPercentage ?? 'N/A'}%
+                    Mining Bonus: {data.package?.miningBonusPercentage ?? 'N/A'}%
                   </Typography>
                 </Box>
                 <Box
@@ -526,7 +526,7 @@ const UserViewLeft = () => {
                 >
                   <Icon icon='mdi:circle' fontSize='0.625rem' />
                   <Typography component='span' sx={{ fontSize: '0.875rem' }}>
-                    Hierarchy Bonus: {data.package?.hierarchyBonusPercentage ?? 'N/A'}%
+                    Hierarchy Bonus: {data.package?.signupBonus ?? 'N/A'}%
                   </Typography>
                 </Box>
 
@@ -571,7 +571,7 @@ const UserViewLeft = () => {
                 sx={{ px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`] }}
               >
                 <DialogContentText variant='body2' sx={{ textAlign: 'center' }} id='user-view-plans-description'>
-                  Choose the best plan for the user.
+                  Choose the best plan for you.
                 </DialogContentText>
               </DialogContent>
 
@@ -614,7 +614,7 @@ const UserViewLeft = () => {
                 }}
               >
                 <Typography sx={{ fontWeight: 500, mb: 2, fontSize: '0.875rem' }}>
-                  User current plan is standard plan
+                  User current plan is {data.package?.packageName}
                 </Typography>
                 <Box
                   sx={{
@@ -635,9 +635,19 @@ const UserViewLeft = () => {
                         fontSize: '3rem !important'
                       }}
                     >
-                      99
+                      {data.package?.price}
                     </Typography>
-                    <Sub>/ month</Sub>
+                    <Typography
+                      sx={{
+                        mb: -1.2,
+                        lineHeight: 1,
+                        color: 'primary.main',
+                        fontSize: '1rem !important',
+                        ml: 0.5
+                      }}
+                    >
+                      USDT
+                    </Typography>
                   </Box>
                   <Button
                     color='error'

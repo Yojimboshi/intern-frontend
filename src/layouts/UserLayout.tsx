@@ -32,9 +32,9 @@ interface Props {
 const AppBrand = () => {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <img src='/images/dragon_logo.png' alt='logo' width='30' height='30' />
+      <img src='/images/logo.png' alt='logo' width='30' height='30' />
       <Typography variant='h6' sx={{ ml: 2 }}>
-        <Translations text="Dragon Coil" />
+        <Translations text="LuckyPanda" />
       </Typography>
     </Box>
   )

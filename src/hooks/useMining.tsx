@@ -53,6 +53,25 @@ export const useMining = () => {
     }
   };
 
+  const claimMiningRewards = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(`${USER_URL}/claim-rewards`);
+      if (response.data.success) {
+        console.log(response.data.message);
+        return response.data;
+      } else {
+        console.error("Claiming rewards was not successful:", response.data.message);
+        return null;
+      }
+    } catch (error) {
+      handleError("claim mining rewards", error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const getUserMiningStats = useCallback(async () => {
     setLoading(true);
@@ -139,6 +158,7 @@ export const useMining = () => {
     loading,
     toggleMining,
     speedUpMining,
+    claimMiningRewards,
     getUserMiningStats,
     getMiningTransactions,
     getAllUserMiningStats,

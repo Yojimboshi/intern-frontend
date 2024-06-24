@@ -18,15 +18,10 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import axios from 'src/configs/axiosConfig';
 import { CryptoBalance, EwalletBalance, walletBalanceType } from 'src/types/apps/walletTypes';
 
-const getCryptoIcon = (name: string): string => {
-  const iconMapping: { [key: string]: string } = {
-    'BTC': 'mdi:bitcoin',
-    'ETH': 'mdi:ethereum',
-
-  };
-
-  return iconMapping[name] as string || 'mdi:currency-usd-circle'; // default general crypto icon
+const getCryptoIcon = (tokenSymbol: string) => {
+  return `/images/icons/${tokenSymbol.toUpperCase()}.png`;
 };
+
 
 const walletIcon = 'mdi:wallet';
 
@@ -59,17 +54,21 @@ const WalletBalanceListTable = ({ cryptoBalances, eWalletProfiles }: WalletListT
     {
       flex: 0.15,
       minWidth: 80,
-      field: 'type', // Use the new 'type' field
-      headerName: t('Type') as string,
+      field: 'type',
+      headerName: 'Type',
       sortable: true,
       filterable: true,
       renderCell: ({ row }) => {
-        const icon = row.isCrypto ? getCryptoIcon(row.name) : walletIcon;
+        const iconPath = row.isCrypto ? getCryptoIcon(row.name) : '/images/icons/default-icon.png'; // Adjust the default icon path as needed
 
         return (
-          <Tooltip title={<>{<Translations text="Type" />}: {row.type}</>}>
+          <Tooltip title={`Type: ${row.type}`}>
             <CustomAvatar skin='light' color='primary' sx={{ width: '1.875rem', height: '1.875rem' }}>
-              <Icon icon={icon} fontSize='1rem' />
+              <img
+                src={iconPath}
+                alt={row.name}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </CustomAvatar>
           </Tooltip>
         );

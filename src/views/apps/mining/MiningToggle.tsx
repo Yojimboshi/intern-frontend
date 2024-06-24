@@ -46,7 +46,7 @@ const MiningToggle: React.FC = () => {
     icon = "mdi:speedometer";
   }
 
-  const buttonColor: ThemeColor = isPenaltyApplicable ? 'warning' : 'primary';
+  const buttonColor: ThemeColor = !isMining ? 'primary' : isPenaltyApplicable ? 'error' : 'warning';
 
   if (loading) {
     return (
@@ -72,9 +72,13 @@ const MiningToggle: React.FC = () => {
       </Button>
       <Box my={2}>
         {isMining ? (
-          <img src="/images/mining/mining2.gif" alt="Mining Animation" style={{ height: '100px' }} />
+          isPenaltyApplicable ? (
+            <img src="/images/mining/harvest1.gif" alt="Mining with Penalty" style={{ height: '100px' }} />
+          ) : (
+            <img src="/images/mining/harvest2.gif" alt="Mining Animation" style={{ height: '100px' }} />
+          )
         ) : (
-          <img src="/images/mining/mining_stop.png" alt="Mining Paused" style={{ height: '100px' }} />
+          <img src="/images/mining/harvest0.gif" alt="Mining Paused" style={{ height: '100px' }} />
         )}
       </Box>
     </Box>

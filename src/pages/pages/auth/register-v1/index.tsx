@@ -149,7 +149,7 @@ const RegisterV1 = () => {
           </Box>
           <Box sx={{ mb: 6 }}>
             <Typography variant='h5' sx={{ mb: 1.5, letterSpacing: '0.18px', fontWeight: 600 }}>
-              Adventure starts here 🚀
+              Adventure starts here 🎋
             </Typography>
             <Typography variant='body2'>Make your app management easy and fun!</Typography>
           </Box>
