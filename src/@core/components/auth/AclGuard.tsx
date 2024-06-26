@@ -25,14 +25,35 @@ const AclGuard = (props: AclGuardProps) => {
   let ability: AppAbility
 
   useEffect(() => {
-    console.log("auth.user", auth.user);
-    console.log("guestGuard", guestGuard);
-    console.log("router.route", router.route);
-    console.log("ability", ability);
-    if (auth.user && auth.user.role && !guestGuard && router.route === '/') {
-      const homeRoute = getHomeRoute(auth.user.role)
-      router.replace(homeRoute)
-      console.debug('Redirecting to home route:', homeRoute)
+    if (auth.user) {
+      const currentPath = router.pathname
+
+      // Perform additional checks for email verification, registration completion, and package activation if user is not an admin
+      if (auth.user.role !== 'admin') {
+        if (!auth.user.emailVerified && currentPath !== '/pages/auth/verify-email-v1') {
+          router.replace('/pages/auth/verify-email-v1')
+          return
+        } else if (!auth.user.registrationComplete && currentPath !== '/register/complete-registration') {
+          router.replace('/register/complete-registration')
+          return
+        } else if (!auth.user.packageActivated && currentPath !== '/register/complete-registration/activatePackage') {
+          router.replace('/register/complete-registration/activatePackage')
+          return
+        }
+      }
+
+      // Check role and redirect to home route if on root path
+      if (auth.user.role && !guestGuard && router.route === '/') {
+        const homeRoute = getHomeRoute(auth.user.role)
+        router.replace(homeRoute)
+        console.debug('Redirecting to home route:', homeRoute)
+      }
+
+      // Build ability for the user
+      if (!ability) {
+        ability = buildAbilityFor(auth.user.role, aclAbilities.subject)
+        console.debug('Ability built for user:', ability)
+      }
     }
   }, [auth.user, guestGuard, router, ability])
 

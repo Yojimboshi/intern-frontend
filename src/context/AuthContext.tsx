@@ -28,48 +28,59 @@ const AuthProvider = ({ children }: Props) => {
   const router = useRouter()
 
   useEffect(() => {
-    const initAuth = async (): Promise<void> => {
-      const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
-      const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
-      const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
-
-      if (storedToken) {
-        setLoading(true);
-        try {
-          const response = await axios.get(userEndpoint, {
-            headers: {
-              Authorization: storedToken
-            }
-          });
-          setLoading(false);
-          setUser({ ...response.data });
-
-          // Redirect to registration completion if registration is not complete
-          if (response.data.registrationComplete === false) {
-            router.replace('/register/complete-registration');
-          } else if (response.data.packageActivated === false) {
-            router.replace('/register/complete-registration/activatePackage');
-          }
-        } catch (error) {
-          setLoading(false);
-          setUser(null);
-          localStorage.removeItem('userData');
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('isAdmin');
-          router.replace(isAdmin ? '/login/admin' : '/login');
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
     initAuth();
   }, []);
 
-  const handleLogin = (params: LoginParams, errorCallback?: ErrCallbackType) => {
+
+  const initAuth = async (): Promise<void> => {
+    const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+    const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
+    const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
+
+    if (storedToken) {
+      setLoading(true);
+      try {
+        const response = await axios.get(userEndpoint, {
+          headers: { Authorization: storedToken }
+        });
+        const userData = response.data;
+        setUser(userData);
+        handleRedirects(userData);
+      } catch (error) {
+        handleAuthError();
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const handleRedirects = (userData: UserDataType) => {
+    const currentPath = router.pathname;
+    const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
+    if (userData.isAdmin || isAdmin) {
+      return; // Admin bypasses other checks
+    }
+    if (!userData.emailVerified && currentPath !== '/pages/auth/verify-email-v1') {
+      router.replace('/pages/auth/verify-email-v1');
+    } else if (!userData.registrationComplete && currentPath !== '/register/complete-registration') {
+      router.replace('/register/complete-registration');
+    } else if (!userData.packageActivated && currentPath !== '/register/complete-registration/activatePackage') {
+      router.replace('/register/complete-registration/activatePackage');
+    }
+  };
+
+  const handleAuthError = () => {
+    setUser(null);
+    window.localStorage.removeItem('userData');
+    window.localStorage.removeItem(authConfig.storageTokenKeyName);
+    router.replace('/login');
+  };
+
+  const handleLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
     const isOnAdminRoute = router.pathname.includes('/admin');
     const loginEndpoint = isOnAdminRoute ? authConfig.adminLoginEndpoint : authConfig.loginEndpoint;
-    const userEndpoint = isOnAdminRoute ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
 
     if (isOnAdminRoute) {
       window.localStorage.setItem('isAdmin', 'true');
@@ -77,58 +88,44 @@ const AuthProvider = ({ children }: Props) => {
       window.localStorage.removeItem('isAdmin');
     }
 
-    axios.post(loginEndpoint, params, {
-      withCredentials: true  // Ensure that cookies are included with the request
-    }).then(response => {
+    try {
+      const response = await axios.post(loginEndpoint, params, { withCredentials: true });
       if (!response.data.accessToken) {
-        router.replace(isOnAdminRoute ? '/login/admin' : '/login');
-
-        return; // End the promise chain here as there is no need to continue
+        if (router.pathname !== (isOnAdminRoute ? '/login/admin' : '/login')) {
+          router.replace(isOnAdminRoute ? '/login/admin' : '/login');
+        }
+        return;
       }
 
       if (params.rememberMe) {
         window.localStorage.setItem(authConfig.storageTokenKeyName, response.data.accessToken);
       }
 
-      // Making the axios call to meEndpoint after successful login
-      return axios.get(userEndpoint, {
-        headers: {
-          Authorization: response.data.accessToken
-        }
+      const userResponse = await axios.get(authConfig.meEndpoint, {
+        headers: { Authorization: response.data.accessToken }
       });
+      const userData = userResponse.data;
+      setUser(userData);
 
-    }).then(response => {
-      if (response) {
-        const returnUrl = router.query.returnUrl;
-        setUser({ ...response.data });
-
-        if (params.rememberMe) {
-          window.localStorage.setItem('userData', JSON.stringify(response.data));
-        }
-
-        if (response.data.emailVerified === 0) {
-          router.replace('/verify-email');
-        } else if (response.data.registrationComplete === false) {
-          router.replace('/register/complete-registration');
-        } else if (response.data.packageActivated === false) {
-          router.replace('/register/complete-registration/activatePackage');
-        } else {
-          const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
-          router.replace(redirectURL as string);
-        }
+      if (params.rememberMe) {
+        window.localStorage.setItem('userData', JSON.stringify(userData));
       }
-    }).catch(err => {
+
+      handleRedirects(userData);
+      const returnUrl = router.query.returnUrl;
+      router.replace(returnUrl && returnUrl !== '/' ? (returnUrl as string) : '/');
+    } catch (err: any) {
       if (errorCallback) errorCallback(err);
-    });
+    }
   };
 
   const handleLogout = () => {
-    setUser(null)
-    window.localStorage.removeItem('userData')
-    window.localStorage.removeItem('isAdmin')
-    window.localStorage.removeItem(authConfig.storageTokenKeyName)
-    router.push('/login')
-  }
+    setUser(null);
+    window.localStorage.removeItem('userData');
+    window.localStorage.removeItem(authConfig.storageTokenKeyName);
+    router.push('/login');
+  };
+
 
   const values = {
     user,
