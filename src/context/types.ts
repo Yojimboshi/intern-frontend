@@ -7,14 +7,19 @@ export type LoginParams = {
 }
 
 export type UserDataType = {
-  id: number
-  role: string
-  email: string
-  fullName: string
-  username: string
-  password: string
-  avatar?: string | null
-}
+  id: number;
+  role: string;
+  email: string;
+  fullName: string;
+  username: string;
+  password: string;
+  avatar?: string | null;
+  emailVerified: boolean;
+  registrationComplete: boolean;
+  packageActivated: boolean;
+  isAdmin: boolean;
+};
+
 
 export type AuthValuesType = {
   loading: boolean
