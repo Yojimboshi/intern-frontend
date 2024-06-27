@@ -11,6 +11,7 @@ import Icon from 'src/@core/components/icon'
 import { useCrypto } from 'src/hooks/useCrypto';
 import axios from 'axios';
 import axiosInstance from 'src/configs/axiosConfig';
+import { useAuth } from 'src/hooks/useAuth'
 import { useEWallet } from 'src/hooks/useEWallet';
 import { PackageType } from 'src/types/apps/userTypes'
 import { CryptoBalance } from 'src/types/apps/walletTypes';
@@ -21,6 +22,7 @@ const TOKEN_ICON = 'LUCKYP';
 
 const ActivatePackage = () => {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const { generateNewAddress, fetchDepositData } = useCrypto();
   const [addresses, setAddresses] = useState({
     erc20Address: '',
@@ -135,6 +137,7 @@ const ActivatePackage = () => {
     setLoading(true);
     try {
       await axiosInstance.post('/crypto/activate-account', { depositAmount: selectedPackage?.price, packageId: selectedPackage?.id });
+      await refreshUser();
       setSnackbarMessage('Account activated successfully!');
       setSnackbarOpen(true);
       router.push('/');

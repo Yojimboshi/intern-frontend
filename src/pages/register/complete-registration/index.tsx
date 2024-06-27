@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Button, Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
 import axiosInstance from 'src/configs/axiosConfig';
 import { PackageType } from 'src/types/apps/userTypes'
+import { useAuth } from 'src/hooks/useAuth'
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -24,6 +25,7 @@ const schema = yup.object().shape({
 
 const CompleteRegistration = () => {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const [packages, setPackages] = useState<PackageType[]>([]);
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema)
@@ -47,6 +49,7 @@ const CompleteRegistration = () => {
     try {
       // Send data to your backend to update user information
       await axiosInstance.post('/users/complete-registration', data);
+      await refreshUser();
       router.push('/register/complete-registration/activatePackage');
     } catch (error) {
       console.error('Failed to complete registration:', error);
