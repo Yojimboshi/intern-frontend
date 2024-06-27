@@ -11,6 +11,7 @@ const defaultProvider: AuthValuesType = {
   loading: true,
   setUser: () => null,
   setLoading: () => Boolean,
+  refreshUser: () => Promise.resolve(),
   login: () => Promise.resolve(),
   logout: () => Promise.resolve()
 }
@@ -53,6 +54,24 @@ const AuthProvider = ({ children }: Props) => {
       }
     } else {
       setLoading(false);
+    }
+  };
+
+  const refreshUser = async (): Promise<void> => {
+    const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+    const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
+    const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
+
+    if (storedToken) {
+      try {
+        const response = await axios.get(userEndpoint, {
+          headers: { Authorization: storedToken },
+        });
+        const userData = response.data;
+        setUser(userData);
+      } catch (error) {
+        handleAuthError();
+      }
     }
   };
 
@@ -113,6 +132,7 @@ const AuthProvider = ({ children }: Props) => {
     loading,
     setUser,
     setLoading,
+    refreshUser,
     login: handleLogin,
     logout: handleLogout
   }
