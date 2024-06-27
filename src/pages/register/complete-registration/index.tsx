@@ -31,25 +31,6 @@ const CompleteRegistration = () => {
 
 
   useEffect(() => {
-    const fetchUserState = async () => {
-      try {
-        const response = await axiosInstance.get('/users/current'); // Assuming this endpoint returns the current user's state
-        const user = response.data;
-
-        if (user.registrationComplete === false) {
-          // Stay on this page
-        } else if (user.packageActivated === false) {
-          router.replace('/register/complete-registration/activatePackage');
-        } else {
-          const returnUrl = router.query.returnUrl;
-          const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/';
-          router.replace(redirectURL as string);
-        }
-      } catch (error) {
-        console.error('Failed to fetch user state:', error);
-      }
-    };
-
     const fetchPackages = async () => {
       try {
         const response = await axiosInstance.get('/users/packages');
@@ -59,7 +40,6 @@ const CompleteRegistration = () => {
       }
     };
 
-    fetchUserState();
     fetchPackages();
   }, []);
 
@@ -67,7 +47,7 @@ const CompleteRegistration = () => {
     try {
       // Send data to your backend to update user information
       await axiosInstance.post('/users/complete-registration', data);
-      router.push('/register/complete-registration/activatePackage'); // Redirect to activation page
+      router.push('/register/complete-registration/activatePackage');
     } catch (error) {
       console.error('Failed to complete registration:', error);
     }

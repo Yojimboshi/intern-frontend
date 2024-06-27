@@ -28,6 +28,7 @@ const AuthProvider = ({ children }: Props) => {
   const router = useRouter()
 
   useEffect(() => {
+    console.log("AuthProvider");
     initAuth();
   }, []);
 
@@ -45,7 +46,6 @@ const AuthProvider = ({ children }: Props) => {
         });
         const userData = response.data;
         setUser(userData);
-        handleRedirects(userData);
       } catch (error) {
         handleAuthError();
       } finally {
@@ -53,21 +53,6 @@ const AuthProvider = ({ children }: Props) => {
       }
     } else {
       setLoading(false);
-    }
-  };
-
-  const handleRedirects = (userData: UserDataType) => {
-    const currentPath = router.pathname;
-    const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
-    if (userData.isAdmin || isAdmin) {
-      return; // Admin bypasses other checks
-    }
-    if (!userData.emailVerified && currentPath !== '/pages/auth/verify-email-v1') {
-      router.replace('/pages/auth/verify-email-v1');
-    } else if (!userData.registrationComplete && currentPath !== '/register/complete-registration') {
-      router.replace('/register/complete-registration');
-    } else if (!userData.packageActivated && currentPath !== '/register/complete-registration/activatePackage') {
-      router.replace('/register/complete-registration/activatePackage');
     }
   };
 
@@ -106,14 +91,10 @@ const AuthProvider = ({ children }: Props) => {
       });
       const userData = userResponse.data;
       setUser(userData);
-
+      router.push('/');
       if (params.rememberMe) {
         window.localStorage.setItem('userData', JSON.stringify(userData));
       }
-
-      handleRedirects(userData);
-      const returnUrl = router.query.returnUrl;
-      router.replace(returnUrl && returnUrl !== '/' ? (returnUrl as string) : '/');
     } catch (err: any) {
       if (errorCallback) errorCallback(err);
     }
