@@ -7,14 +7,10 @@ import type { AppProps } from 'next/app'
 import { CacheProvider } from '@emotion/react'
 import type { EmotionCache } from '@emotion/cache'
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
-
-// ** Redux & Context Imports
 import { Provider } from 'react-redux'
 import { store } from 'src/store'
 import { AuthProvider } from 'src/context/AuthContext'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
-
-// ** Component & Style Imports
 import NProgress from 'nprogress'
 import { Toaster } from 'react-hot-toast'
 import UserLayout from 'src/layouts/UserLayout'

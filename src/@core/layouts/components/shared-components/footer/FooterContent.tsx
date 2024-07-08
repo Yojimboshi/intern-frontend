@@ -1,8 +1,6 @@
 // src\@core\layouts\components\shared-components\footer\FooterContent.tsx
 import { useState } from 'react'
 import Link from 'next/link'
-
-// MUI Material components and styles
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
@@ -59,9 +57,7 @@ const FooterContent = () => {
         <Box component='span' sx={{ color: 'error.main' }}>
           <Icon icon="game-icons:swan" />
         </Box>
-        <LinkStyled target='_blank' href='https://pixinvent.com/'>
-          {` OhShi`}
-        </LinkStyled>
+
       </Typography>
       {hidden ? null : (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>

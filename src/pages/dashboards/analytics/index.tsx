@@ -1,33 +1,27 @@
-// ** MUI Imports
+// src\pages\dashboards\analytics\index.tsx
 import Grid from '@mui/material/Grid'
-
 import Icon from 'src/@core/components/icon'
-
 import CardStatisticsVertical from 'src/@core/components/card-statistics/card-stats-vertical'
-
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import AnalyticsSessions from 'src/views/dashboards/analytics/AnalyticsSessions'
 import AnalyticsPerformance from 'src/views/dashboards/analytics/AnalyticsPerformance'
-
 // import AnalyticsWeeklySales from 'src/views/dashboards/analytics/AnalyticsWeeklySales'
 import AnalyticsVisitsByDay from 'src/views/dashboards/analytics/AnalyticsVisitsByDay'
-
 // import AnalyticsSalesCountry from 'src/views/dashboards/analytics/AnalyticsSalesCountry'
 import AnalyticsCongratulations from 'src/views/dashboards/analytics/AnalyticsCongratulations'
 import AnalyticsActivityTimeline from 'src/views/dashboards/analytics/AnalyticsActivityTimeline'
 import AnalyticsTotalTransactions from 'src/views/dashboards/analytics/AnalyticsTotalTransactions'
-
 // import AnalyticsProjectStatistics from 'src/views/dashboards/analytics/AnalyticsProjectStatistics'
 // import AnalyticsTopReferralSources from 'src/views/dashboards/analytics/AnalyticsTopReferralSources'
-import UserWalletData from 'src/views/dashboards/analytics/UserWalletData';
+// import UserWalletData from 'src/views/dashboards/analytics/UserWalletData';
 
 const AnalyticsDashboard = () => {
   return (
     <ApexChartWrapper>
       <Grid container spacing={6} className='match-height'>
-        <Grid item xs={12} md={12}>
+        {/* <Grid item xs={12} md={12}>
           <UserWalletData />
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} md={8}>
           <AnalyticsCongratulations />
         </Grid>
