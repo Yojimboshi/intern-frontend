@@ -1,32 +1,39 @@
 // ** MUI Imports
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import { useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
 
 // ** Third Party Imports
-import { ApexOptions } from 'apexcharts'
+import { ApexOptions } from 'apexcharts';
 
 // ** Custom Components Imports
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import ReactApexcharts from 'src/@core/components/react-apexcharts';
 
 // ** Util Import
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import { hexToRGBA } from 'src/@core/utils/hex-to-rgba';
 
-import { useMarketCapChange } from 'src/hooks/crypoPriceFetch'
-
-const series = [{ data: [0, 20, 5, 30, 15, 45] }]
+import { useMarketCapChange, useDailyChanges } from 'src/hooks/crypoPriceFetch';
 
 const AnalyticsSessions = () => {
   // ** Hook
-  const theme = useTheme()
+  const theme = useTheme();
 
   // NOTE: custom functions
-  const { marketCapChange, loading } = useMarketCapChange();
-  if (loading) {
+  const { marketCapChange, loading: loadingMarketCap } = useMarketCapChange();
+  const { dailyChanges, loading: dailyChangeLoading } = useDailyChanges();
+
+  if (loadingMarketCap || dailyChangeLoading) {
     return <p>Loading...</p>;
   }
+
+  // Ensure dailyChanges is defined and not null
+  const changesData = dailyChanges || [];
+  console.log('Market Cap Change:', marketCapChange); // Log market cap change
+  console.log('Daily Changes:', changesData); // Log daily changes
+
+  const series = [{ data: changesData }];
 
   const options: ApexOptions = {
     chart: {
@@ -59,15 +66,15 @@ const AnalyticsSessions = () => {
       strokeWidth: 3,
       colors: ['transparent'],
       strokeColors: 'transparent',
-      discrete: [
+      discrete: changesData.length ? [
         {
           size: 6,
           seriesIndex: 0,
           strokeColor: theme.palette.info.main,
           fillColor: theme.palette.background.paper,
-          dataPointIndex: series[0].data.length - 1
+          dataPointIndex: changesData.length - 1
         }
-      ],
+      ] : [],
       hover: { size: 7 }
     },
     xaxis: {
@@ -78,8 +85,7 @@ const AnalyticsSessions = () => {
     yaxis: {
       labels: { show: false }
     }
-  }
-
+  };
 
   return (
     <Card>
@@ -89,15 +95,14 @@ const AnalyticsSessions = () => {
             $$$
           </Typography>
           <Typography variant='subtitle2' sx={{ color: 'success.main' }}>
-            ${marketCapChange}%
+            {marketCapChange !== null ? `${marketCapChange.toFixed(2)}%` : 'N/A'}
           </Typography>
         </Box>
         <Typography variant='body2'>Sessions</Typography>
         <ReactApexcharts type='line' height={108} options={options} series={series} />
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-
-export default AnalyticsSessions
+export default AnalyticsSessions;
