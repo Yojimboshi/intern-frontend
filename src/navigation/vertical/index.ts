@@ -22,6 +22,24 @@ const userNavItems: VerticalNavItemsType = [
     badgeColor: 'error',
     path: '/dashboards/analytics'
   },
+  {
+    title: 'v2Pools',
+    badgeContent: 'new',
+    badgeColor: 'error',
+    icon: 'icon-park-twotone:curve-adjustment',
+    children: [
+      {
+        title: 'Pool List',
+        icon: 'material-symbols:list',
+        path: '/apps/v2Pools/PoolList'
+      },
+      {
+        title: 'Swap',
+        icon: 'ri:exchange-line',
+        path: '/apps/v2Pools'
+      },
+    ]
+  },
 
 ];
 

@@ -5,20 +5,21 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import CardContent from '@mui/material/CardContent'
 
-// ** Third Party Imports
 import { ApexOptions } from 'apexcharts'
 
-// ** Custom Components Imports
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
-// ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
 const series = [{ data: [0, 20, 5, 30, 15, 45] }]
 
+// NOTE: custom functions
+
 const AnalyticsSessions = () => {
   // ** Hook
   const theme = useTheme()
+
+  // NOTE: custom functions
 
   const options: ApexOptions = {
     chart: {
