@@ -62,3 +62,29 @@ export const useDailyCryptoChanges = () => {
   return { dailyChanges, loading };
 };
 
+export const useChartChange = () => {//I am planning to use this as a function to get the chart from the api
+  const [chartChange, setChartChange] = useState(null);
+  const [loading2, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/global');
+        const data = await response.json();
+
+        const marketChartChange = data.data.sparkline;
+
+        setChartChange(marketChartChange);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return { chartChange, loading2 };
+};
+

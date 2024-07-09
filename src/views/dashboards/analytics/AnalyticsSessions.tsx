@@ -14,11 +14,19 @@ import ReactApexcharts from 'src/@core/components/react-apexcharts'
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
+import { useMarketCapChange } from 'src/hooks/crypoPriceFetch'
+
 const series = [{ data: [0, 20, 5, 30, 15, 45] }]
 
 const AnalyticsSessions = () => {
   // ** Hook
   const theme = useTheme()
+
+  // NOTE: custom functions
+  const { marketCapChange, loading } = useMarketCapChange();
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   const options: ApexOptions = {
     chart: {
@@ -72,6 +80,7 @@ const AnalyticsSessions = () => {
     }
   }
 
+
   return (
     <Card>
       <CardContent>
@@ -80,7 +89,7 @@ const AnalyticsSessions = () => {
             $$$
           </Typography>
           <Typography variant='subtitle2' sx={{ color: 'success.main' }}>
-            +15%
+            ${marketCapChange}%
           </Typography>
         </Box>
         <Typography variant='body2'>Sessions</Typography>
@@ -89,5 +98,6 @@ const AnalyticsSessions = () => {
     </Card>
   )
 }
+
 
 export default AnalyticsSessions
