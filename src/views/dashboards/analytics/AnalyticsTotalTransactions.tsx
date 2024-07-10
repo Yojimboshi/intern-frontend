@@ -14,16 +14,9 @@ import OptionsMenu from 'src/@core/components/option-menu'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
-const series = [
-  {
-    name: 'Last Week',
-    data: [53, 153, 213, 279, 213, 153, 83]
-  },
-  {
-    name: 'This Week',
-    data: [-84, -156, -216, -252, -216, -156, -84]
-  }
-]
+import { usePriceChange } from 'src/hooks/crypoPriceFetch';
+
+
 
 // Styled Grid component
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
@@ -39,6 +32,25 @@ const AnalyticsTotalTransactions = () => {
   // ** Hook
   const theme = useTheme()
 
+  const { priceChange, loading: dailyChangeLoading } = usePriceChange();
+
+  if (dailyChangeLoading) {
+    return <p>Loading...</p>;
+  }
+
+
+  const series = [
+    {
+      name: 'Todays price change',
+      data: priceChange ? [priceChange[0].priceChangeToday, priceChange[1].priceChangeToday,
+      priceChange[2].priceChangeToday, priceChange[3].priceChangeToday, priceChange[4].priceChangeToday] : []
+    },
+    {
+      name: 'Last week price change',
+      data: priceChange ? [priceChange[0].priceChangeBefore, priceChange[1].priceChangeBefore,
+      priceChange[2].priceChangeBefore, priceChange[3].priceChangeBefore, priceChange[4].priceChangeBefore] : []
+    }
+  ]
   const options: ApexOptions = {
     chart: {
       stacked: true,
@@ -63,7 +75,7 @@ const AnalyticsTotalTransactions = () => {
       position: 'top',
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      categories: priceChange ? [priceChange[0].id, priceChange[1].id, priceChange[2].id, priceChange[3].id, priceChange[4].id] : [],
       labels: {
         formatter: val => `${Math.abs(Number(val))}`,
         style: { colors: theme.palette.text.disabled }
@@ -102,7 +114,7 @@ const AnalyticsTotalTransactions = () => {
     <Card>
       <Grid container>
         <StyledGrid item xs={12} sm={7}>
-          <CardHeader title='Total Transactions' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
+          <CardHeader title='Price Change' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
           <CardContent
             sx={{
               '& .apexcharts-series[rel="2"]': {

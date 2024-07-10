@@ -86,7 +86,7 @@ const AnalyticsSessions = () => {
       labels: { show: false }
     }
   };
-  // NOTE: change the label texts.
+
   return (
     <Card>
       <CardContent>
