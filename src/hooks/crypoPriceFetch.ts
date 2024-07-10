@@ -93,7 +93,7 @@ export const useDailyChanges = () => {
           const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/history?date=${date}`);
           const data = await response.json();
           console.log('Fetched data for date:', date, data); // Log the fetched data
-          const dailyChange: number = data.market_data.market_cap_change_percentage_usd_last_24_hours;
+          const dailyChange = data.market_cap.usd;
           changes.push(dailyChange);
         });
 
