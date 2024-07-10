@@ -38,7 +38,9 @@ const AnalyticsTotalTransactions = () => {
     return <p>Loading...</p>;
   }
 
-
+  // NOTE: remove USDT/tether from the series, as it is stable coin.
+  // make the display more informative, % symbol, Y-axis labelling etc...
+  // make negative changes red color, currently it shows same color.
   const series = [
     {
       name: 'Todays price change',
