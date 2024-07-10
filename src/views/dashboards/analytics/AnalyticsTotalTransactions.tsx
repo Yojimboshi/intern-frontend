@@ -45,11 +45,13 @@ const AnalyticsTotalTransactions = () => {
       data: priceChange ? [priceChange[0].priceChangeToday, priceChange[1].priceChangeToday,
       priceChange[2].priceChangeToday, priceChange[3].priceChangeToday, priceChange[4].priceChangeToday] : []
     },
-    {
-      name: 'Last week price change',
-      data: priceChange ? [priceChange[0].priceChangeBefore, priceChange[1].priceChangeBefore,
-      priceChange[2].priceChangeBefore, priceChange[3].priceChangeBefore, priceChange[4].priceChangeBefore] : []
-    }
+
+    // {
+    //   name: 'Last week price change',
+    //   data: priceChange ? [priceChange[0].priceChangeBefore, priceChange[1].priceChangeBefore,
+    //   priceChange[2].priceChangeBefore, priceChange[3].priceChangeBefore, priceChange[4].priceChangeBefore] : []
+    // }
+
   ]
   const options: ApexOptions = {
     chart: {
