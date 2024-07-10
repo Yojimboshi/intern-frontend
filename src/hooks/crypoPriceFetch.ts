@@ -1,6 +1,8 @@
 // src\hooks\crypoPriceFetch.ts
 import { useState, useEffect } from 'react';
 
+// NOTE : change .push to .map 
+
 type CryptoChange = {
   name: string;
   dailyChange: number; // Adjust the type if necessary
