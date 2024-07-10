@@ -10,16 +10,15 @@ import { ApexOptions } from 'apexcharts'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
 
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-
-const series = [{ data: [0, 20, 5, 30, 15, 45] }]
-
-// NOTE: custom functions
+import { useMarketCapChange } from 'src/hooks/crypoPriceFetch';
 
 const AnalyticsSessions = () => {
   // ** Hook
-  const theme = useTheme()
+  const theme = useTheme();
+  const { marketCapChanges, loading } = useMarketCapChange();
 
-  // NOTE: custom functions
+  // Prepare series data
+  const series = marketCapChanges ? [{ data: marketCapChanges.map(change => change.marketCap) }] : [{ data: [0, 20, 5, 30, 15, 45] }];
 
   const options: ApexOptions = {
     chart: {
