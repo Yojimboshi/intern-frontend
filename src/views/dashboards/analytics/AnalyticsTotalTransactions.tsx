@@ -1,4 +1,4 @@
-// src\views\dashboards\analytics\AnalyticsTotalTransactions.tsx
+// ** MUI Imports
 import Card from '@mui/material/Card'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -12,11 +12,8 @@ import { ApexOptions } from 'apexcharts'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import OptionsMenu from 'src/@core/components/option-menu'
 import ReactApexcharts from 'src/@core/components/react-apexcharts'
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
 
-import { usePriceChange } from 'src/hooks/crypoPriceFetch';
-
-
+import { usePriceChange } from 'src/hooks/crypoPriceFetch'
 
 // Styled Grid component
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
@@ -29,32 +26,28 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
 }))
 
 const AnalyticsTotalTransactions = () => {
-  // ** Hook
   const theme = useTheme()
 
-  const { priceChange, loading: dailyChangeLoading } = usePriceChange();
+  const { priceChange, loading: dailyChangeLoading } = usePriceChange()
 
   if (dailyChangeLoading) {
-    return <p>Loading...</p>;
+    return <p>Loading...</p>
   }
 
-  // NOTE: remove USDT/tether from the series, as it is stable coin.
-  // make the display more informative, % symbol, Y-axis labelling etc...
-  // make negative changes red color, currently it shows same color.
+  if (!priceChange || priceChange.length === 0) {
+    return <p>No data available</p>
+  }
+
   const series = [
     {
       name: 'Todays price change',
-      data: priceChange ? [priceChange[0].priceChangeToday, priceChange[1].priceChangeToday,
-      priceChange[2].priceChangeToday, priceChange[3].priceChangeToday, priceChange[4].priceChangeToday] : []
-    },
-
-    // {
-    //   name: 'Last week price change',
-    //   data: priceChange ? [priceChange[0].priceChangeBefore, priceChange[1].priceChangeBefore,
-    //   priceChange[2].priceChangeBefore, priceChange[3].priceChangeBefore, priceChange[4].priceChangeBefore] : []
-    // }
-
+      data: priceChange.map((item) => item.priceChangeToday)
+    }
   ]
+
+  // Modify the colors array to conditionally set colors based on the value
+  const colors = priceChange.map((item) => item.priceChangeToday >= 0 ? theme.palette.success.main : theme.palette.error.main)
+
   const options: ApexOptions = {
     chart: {
       stacked: true,
@@ -64,31 +57,49 @@ const AnalyticsTotalTransactions = () => {
     plotOptions: {
       bar: {
         borderRadius: 5,
-        barHeight: '30%',
+        barHeight: '20%',
         horizontal: true,
         endingShape: 'flat',
-        startingShape: 'rounded'
+        startingShape: 'rounded',
+        colors: {
+          ranges: [
+            {
+              from: -100,
+              to: 0,
+              color: theme.palette.error.main
+            },
+            {
+              from: 0,
+              to: 100,
+              color: theme.palette.success.main
+            }
+          ]
+        }
       }
     },
     tooltip: {
       y: {
-        formatter: val => `${Math.abs(val)}`
+        formatter: val => `${Math.abs(val)}%`
       }
     },
     xaxis: {
       position: 'top',
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: priceChange ? [priceChange[0].id, priceChange[1].id, priceChange[2].id, priceChange[3].id, priceChange[4].id] : [],
+      categories: priceChange.map((item) => item.id),
       labels: {
-        formatter: val => `${Math.abs(Number(val))}`,
+        formatter: val => `${Math.abs(Number(val))}%`,
         style: { colors: theme.palette.text.disabled }
       }
     },
     yaxis: {
-      labels: { show: false }
+      labels: {
+        show: true,
+        formatter: (val, index) => priceChange[index] ? priceChange[index].id : '',
+        style: { colors: theme.palette.text.primary }
+      }
     },
-    colors: [hexToRGBA(theme.palette.primary.main, 1), hexToRGBA(theme.palette.success.main, 1)],
+    colors: colors,
     grid: {
       borderColor: theme.palette.divider,
       xaxis: {
@@ -103,7 +114,18 @@ const AnalyticsTotalTransactions = () => {
       }
     },
     legend: { show: false },
-    dataLabels: { enabled: false },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val, opts) {
+        const id = priceChange[opts.dataPointIndex].id;
+
+        return id.charAt(0).toUpperCase() + id.slice(1);
+      },
+      style: {
+        colors: [theme.palette.text.primary],
+        fontSize: '14px'
+      }
+    },
     states: {
       hover: {
         filter: { type: 'none' }
@@ -118,7 +140,7 @@ const AnalyticsTotalTransactions = () => {
     <Card>
       <Grid container>
         <StyledGrid item xs={12} sm={7}>
-          <CardHeader title='Price Change' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
+          <CardHeader title='Daily Price Change ' subheader='Top 5 Cryptocurrencies daily price % change' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
           <CardContent
             sx={{
               '& .apexcharts-series[rel="2"]': {
@@ -137,7 +159,7 @@ const AnalyticsTotalTransactions = () => {
             titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
             action={
               <OptionsMenu
-                options={priceChange ? [priceChange[0].id, priceChange[1].id, priceChange[2].id, priceChange[3].id, priceChange[4].id] : []}
+                options={priceChange.map(item => item.id)}
                 iconButtonProps={{ size: 'small', className: 'card-more-options' }}
               />
             }
@@ -160,8 +182,8 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   High
                 </Typography>
-                {priceChange && priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].high_24h}</Typography>
+                {priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>${priceChange[0].high_24h}</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}
@@ -173,8 +195,8 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   Low
                 </Typography>
-                {priceChange && priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].low_24h}</Typography>
+                {priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>${priceChange[0].low_24h}</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}
@@ -192,8 +214,8 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   Todays price change %
                 </Typography>
-                {priceChange && priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].priceChangeToday} %</Typography>
+                {priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].priceChangeToday}%</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}

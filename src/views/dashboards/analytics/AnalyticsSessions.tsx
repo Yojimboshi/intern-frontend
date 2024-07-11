@@ -33,7 +33,7 @@ const AnalyticsSessions = () => {
   console.log('Market Cap Change:', marketCapChange); // Log market cap change
   console.log('Daily Changes:', changesData); // Log daily changes
 
-  const series = [{ data: changesData }];
+  const series = [{ data: changesData.reverse() }]; // Reverse to show oldest to newest
 
   const options: ApexOptions = {
     chart: {
@@ -92,13 +92,13 @@ const AnalyticsSessions = () => {
       <CardContent>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
           <Typography variant='h6' sx={{ mr: 1.5 }}>
-            $$$
+            Market Cap
           </Typography>
           <Typography variant='subtitle2' sx={{ color: 'success.main' }}>
             {marketCapChange !== null ? `${marketCapChange.toFixed(2)}%` : 'N/A'}
           </Typography>
         </Box>
-        <Typography variant='body2'>Sessions</Typography>
+        <Typography variant='body2'>Daily % Change</Typography>
         <ReactApexcharts type='line' height={108} options={options} series={series} />
       </CardContent>
     </Card>
