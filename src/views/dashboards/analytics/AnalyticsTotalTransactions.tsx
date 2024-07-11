@@ -131,13 +131,13 @@ const AnalyticsTotalTransactions = () => {
         </StyledGrid>
         <Grid item xs={12} sm={5}>
           <CardHeader
-            title='Market Cap'
-            subheader='Weekly % Changes'
+            title='Market Price'
+            subheader='Bitcoin market price changes%'
             subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
             titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
             action={
               <OptionsMenu
-                options={['Last 28 Days', 'Last Month', 'Last Year']}
+                options={priceChange ? [priceChange[0].id, priceChange[1].id, priceChange[2].id, priceChange[3].id, priceChange[4].id] : []}
                 iconButtonProps={{ size: 'small', className: 'card-more-options' }}
               />
             }
@@ -158,18 +158,26 @@ const AnalyticsTotalTransactions = () => {
                   <Icon icon='mdi:trending-up' />
                 </CustomAvatar>
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  This Week
+                  High
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>+82.45%</Typography>
+                {priceChange && priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].high_24h}</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
               <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                 <CustomAvatar skin='light' sx={{ mb: 3 }} variant='rounded'>
                   <Icon icon='mdi:trending-down' />
                 </CustomAvatar>
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  Last Week
+                  Low
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>-24.86%</Typography>
+                {priceChange && priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].low_24h}</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
             </Grid>
             <Divider
@@ -182,9 +190,13 @@ const AnalyticsTotalTransactions = () => {
                 sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}
               >
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  Performance
+                  Todays price change %
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>+94.15%</Typography>
+                {priceChange && priceChange[0] ? (
+                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].priceChangeToday} %</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
               <Grid item xs={6}>
                 <Button fullWidth variant='contained'>

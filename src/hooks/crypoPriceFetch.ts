@@ -5,13 +5,15 @@ import { useState, useEffect } from 'react';
 
 type CryptoChange = {
   name: string;
-  dailyChange: number; // Adjust the type if necessary
+  dailyChange: number;
 };
 
 type PriceChange = {
   id: string;
   priceChangeToday: number;
-  priceChangeBefore: number; // Adjust the type if necessary
+  priceChangeBefore: number;
+  high_24h: number;
+  low_24h: number;
 };
 
 export const useMarketCapChange = () => {
@@ -193,7 +195,9 @@ export const usePriceChange = () => {
         const price: PriceChange[] = data.map((coin: any) => ({
           id: coin.id,
           priceChangeToday: coin.price_change_percentage_24h.toFixed(2),
-          priceChangeBefore: coin.price_change_percentage_7d_in_currency.toFixed(2), // Assuming 7 days change as "before"
+          priceChangeBefore: coin.price_change_percentage_7d_in_currency.toFixed(2),
+          high_24h: coin.high_24h,
+          low_24h: coin.low_24h, // Assuming 7 days change as "before"
         }));
 
         console.log('Price Changes:', price); // Log the daily changes
