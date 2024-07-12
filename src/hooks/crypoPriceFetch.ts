@@ -41,7 +41,7 @@ export const useMarketCapChange = () => {
 
 
 export const useDailyChanges = () => {
-  const [dailyChanges, setDailyChanges] = useState<number[] | null>(null);
+  const [dailyChanges, setDailyChanges] = useState<{ date: string; change: number }[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -49,9 +49,7 @@ export const useDailyChanges = () => {
       setLoading(true);
       try {
         const today = new Date();
-        const dates: string[] = [];
-        const changes: number[] = [];
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+        const changes: { date: string; change: number }[] = [];
 
         // Generate dates from today to 6 days before
         for (let i = 0; i <= 6; i++) {
@@ -61,23 +59,14 @@ export const useDailyChanges = () => {
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const year = date.getFullYear();
           const formattedDate = `${year}-${month}-${day}`; // Format as yyyy-mm-dd
-          dates[i] = formattedDate;
-        }
 
-        console.log('Dates:', dates); // Log the dates
-
-        // Fetch data for each date with delay
-        for (let i = 0; i < dates.length; i++) {
-          const date = dates[i];
-          const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${new Date(date).getTime()}&endTime=${new Date(date).getTime() + 86400000}`);
+          const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${new Date(formattedDate).getTime()}&endTime=${new Date(formattedDate).getTime() + 86400000}`);
           const data = await response.json();
-          console.log('Fetched data for date:', date, data); // Log the fetched data
           const marketCapChange = data[0] ? (data[0][4] - data[0][1]) / data[0][1] * 100 : 0; // Calculate percentage change
-          changes[i] = marketCapChange;
-          await delay(1000); // Delay for 1 second between requests
+
+          changes[i] = { date: formattedDate, change: marketCapChange };
         }
 
-        console.log('Daily Changes:', changes); // Log the daily changes
         setDailyChanges(changes);
         setLoading(false);
       } catch (err) {

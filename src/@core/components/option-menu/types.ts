@@ -39,4 +39,5 @@ export type OptionsMenuType = {
   iconButtonProps?: IconButtonProps
   iconProps?: Omit<IconProps, 'icon'>
   menuProps?: Omit<MenuProps, 'open'>
+  onOptionSelect?: (option: string) => void
 }

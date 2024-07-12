@@ -1,21 +1,22 @@
-// ** MUI Imports
-import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import CardHeader from '@mui/material/CardHeader'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import Grid, { GridProps } from '@mui/material/Grid'
-import { styled, useTheme } from '@mui/material/styles'
-import Icon from 'src/@core/components/icon'
-import { ApexOptions } from 'apexcharts'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import OptionsMenu from 'src/@core/components/option-menu'
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+import React, { useState, useEffect } from 'react';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import CardHeader from '@mui/material/CardHeader';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import Grid, { GridProps } from '@mui/material/Grid';
+import { styled, useTheme } from '@mui/material/styles';
+import Icon from 'src/@core/components/icon';
+import CustomAvatar from 'src/@core/components/mui/avatar';
+import OptionsMenu from 'src/@core/components/option-menu';
+import ReactApexcharts from 'src/@core/components/react-apexcharts';
+import { ApexOptions } from 'apexcharts';
 
-import { usePriceChange } from 'src/hooks/crypoPriceFetch'
+import { usePriceChange } from 'src/hooks/crypoPriceFetch';
 
-// Styled Grid component
+type OptionType = string;
+
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     borderBottom: `1px solid ${theme.palette.divider}`
@@ -23,30 +24,43 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     borderRight: `1px solid ${theme.palette.divider}`
   }
-}))
+}));
 
 const AnalyticsTotalTransactions = () => {
-  const theme = useTheme()
+  const theme = useTheme();
 
-  const { priceChange, loading: dailyChangeLoading } = usePriceChange()
+  const { priceChange, loading: dailyChangeLoading } = usePriceChange();
+  const [selectedCrypto, setSelectedCrypto] = useState<string>('');
+
+  useEffect(() => {
+    if (priceChange && priceChange.length > 0) {
+      const defaultCrypto = priceChange.find(item => item.id.toLowerCase() === 'bitcoin')?.id || priceChange[0].id;
+      setSelectedCrypto(defaultCrypto);
+    }
+  }, [priceChange]);
 
   if (dailyChangeLoading) {
-    return <p>Loading...</p>
+    return <p>Loading...</p>;
   }
 
   if (!priceChange || priceChange.length === 0) {
-    return <p>No data available</p>
+    return <p>No data available</p>;
   }
+
+  const handleOptionSelect = (option: OptionType) => {
+    setSelectedCrypto(option);
+  };
+
+  const selectedCryptoData = priceChange.find(item => item.id === selectedCrypto);
 
   const series = [
     {
       name: 'Todays price change',
-      data: priceChange.map((item) => item.priceChangeToday)
+      data: priceChange.map(item => item.priceChangeToday)
     }
-  ]
+  ];
 
-  // Modify the colors array to conditionally set colors based on the value
-  const colors = priceChange.map((item) => item.priceChangeToday >= 0 ? theme.palette.success.main : theme.palette.error.main)
+  const colors = priceChange.map(item => item.priceChangeToday >= 0 ? theme.palette.success.main : theme.palette.error.main);
 
   const options: ApexOptions = {
     chart: {
@@ -86,7 +100,7 @@ const AnalyticsTotalTransactions = () => {
       position: 'top',
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: priceChange.map((item) => item.id),
+      categories: priceChange.map(item => item.id),
       labels: {
         formatter: val => `${Math.abs(Number(val))}%`,
         style: { colors: theme.palette.text.disabled }
@@ -134,13 +148,22 @@ const AnalyticsTotalTransactions = () => {
         filter: { type: 'none' }
       }
     }
-  }
+  };
+
+  // Function to capitalize the first letter of a string
+  const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <Card>
       <Grid container>
         <StyledGrid item xs={12} sm={7}>
-          <CardHeader title='Daily Price Change ' subheader='Top 5 Cryptocurrencies daily price % change' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
+          <CardHeader
+            title='Daily Price Change'
+            subheader='Top 5 Cryptocurrencies daily price % change'
+            titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
+          />
           <CardContent
             sx={{
               '& .apexcharts-series[rel="2"]': {
@@ -153,14 +176,15 @@ const AnalyticsTotalTransactions = () => {
         </StyledGrid>
         <Grid item xs={12} sm={5}>
           <CardHeader
-            title='Market Price'
-            subheader='Bitcoin market price changes%'
+            title={selectedCryptoData ? `${capitalizeFirstLetter(selectedCryptoData.id)} Market Price` : ''}
+            subheader={selectedCryptoData ? `${capitalizeFirstLetter(selectedCryptoData.id)} market price changes%` : ''}
             subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
             titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
             action={
               <OptionsMenu
                 options={priceChange.map(item => item.id)}
                 iconButtonProps={{ size: 'small', className: 'card-more-options' }}
+                onOptionSelect={handleOptionSelect}
               />
             }
           />
@@ -182,8 +206,8 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   High
                 </Typography>
-                {priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>${priceChange[0].high_24h}</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>${selectedCryptoData.high_24h}</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}
@@ -195,16 +219,14 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   Low
                 </Typography>
-                {priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>${priceChange[0].low_24h}</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>${selectedCryptoData.low_24h}</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}
               </Grid>
             </Grid>
-            <Divider
-              sx={{ mt: theme => `${theme.spacing(10)} !important`, mb: theme => `${theme.spacing(7.5)} !important` }}
-            />
+            <Divider sx={{ mt: theme => `${theme.spacing(10)} !important`, mb: theme => `${theme.spacing(7.5)} !important` }} />
             <Grid container>
               <Grid
                 item
@@ -214,8 +236,8 @@ const AnalyticsTotalTransactions = () => {
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
                   Todays price change %
                 </Typography>
-                {priceChange[0] ? (
-                  <Typography sx={{ fontWeight: 600 }}>{priceChange[0].priceChangeToday}%</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>{selectedCryptoData.priceChangeToday}%</Typography>
                 ) : (
                   <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
                 )}
@@ -230,7 +252,7 @@ const AnalyticsTotalTransactions = () => {
         </Grid>
       </Grid>
     </Card>
-  )
-}
+  );
+};
 
-export default AnalyticsTotalTransactions
+export default AnalyticsTotalTransactions;

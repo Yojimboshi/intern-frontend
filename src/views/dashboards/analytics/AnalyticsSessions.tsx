@@ -33,19 +33,33 @@ const AnalyticsSessions = () => {
   console.log('Market Cap Change:', marketCapChange); // Log market cap change
   console.log('Daily Changes:', changesData); // Log daily changes
 
-  const series = [{ data: changesData.reverse() }]; // Reverse to show oldest to newest
+  const series = [{ data: changesData.map(item => item.change).reverse() }]; // Reverse to show oldest to newest
 
   const options: ApexOptions = {
     chart: {
       parentHeightOffset: 0,
       toolbar: { show: false }
     },
-    tooltip: { enabled: false },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: function (value) {
+          return `${value.toFixed(2)}%`;
+        }
+      },
+      x: {
+        formatter: function (value, { dataPointIndex }) {
+          return changesData[changesData.length - 1 - dataPointIndex].date; // Reverse the index to match the reversed data
+        }
+      }
+    },
     grid: {
       strokeDashArray: 6,
       borderColor: theme.palette.divider,
       xaxis: {
-        lines: { show: true }
+        lines: { show: true },
+
+
       },
       yaxis: {
         lines: { show: false }
@@ -80,10 +94,19 @@ const AnalyticsSessions = () => {
     xaxis: {
       labels: { show: false },
       axisTicks: { show: false },
-      axisBorder: { show: false }
+      axisBorder: { show: false },
+      tooltip: { enabled: false }
     },
     yaxis: {
       labels: { show: false }
+    },
+    states: {
+      hover: {
+        filter: { type: 'none' }
+      },
+      active: {
+        filter: { type: 'none' }
+      }
     }
   };
 
