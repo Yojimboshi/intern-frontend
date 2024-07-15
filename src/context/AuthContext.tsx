@@ -29,53 +29,62 @@ const AuthProvider = ({ children }: Props) => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log("AuthProvider");
+    console.log("AuthProvider mounted");
     initAuth();
   }, []);
 
-
   const initAuth = async (): Promise<void> => {
+    console.log("initAuth called");
     const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
     const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
     const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
 
     if (storedToken) {
+      console.log("Stored token found, fetching user data...");
       setLoading(true);
       try {
         const response = await axios.get(userEndpoint, {
           headers: { Authorization: storedToken }
         });
         const userData = response.data;
+        console.log("User data fetched successfully", userData);
         setUser(userData);
       } catch (error) {
+        console.error("Error fetching user data", error);
         handleAuthError();
       } finally {
         setLoading(false);
       }
     } else {
+      console.log("No stored token found");
       setLoading(false);
     }
   };
 
   const refreshUser = async (): Promise<void> => {
+    console.log("refreshUser called");
     const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
     const isAdmin = window.localStorage.getItem('isAdmin') === 'true';
     const userEndpoint = isAdmin ? authConfig.adminMeEndpoint : authConfig.meEndpoint;
 
     if (storedToken) {
+      console.log("Stored token found, refreshing user data...");
       try {
         const response = await axios.get(userEndpoint, {
           headers: { Authorization: storedToken },
         });
         const userData = response.data;
+        console.log("User data refreshed successfully", userData);
         setUser(userData);
       } catch (error) {
+        console.error("Error refreshing user data", error);
         handleAuthError();
       }
     }
   };
 
   const handleAuthError = () => {
+    console.log("Handling authentication error, redirecting to login...");
     setUser(null);
     window.localStorage.removeItem('userData');
     window.localStorage.removeItem(authConfig.storageTokenKeyName);
@@ -83,6 +92,7 @@ const AuthProvider = ({ children }: Props) => {
   };
 
   const handleLogin = async (params: LoginParams, errorCallback?: ErrCallbackType) => {
+    console.log("handleLogin called with params", params);
     const isOnAdminRoute = router.pathname.includes('/admin');
     const loginEndpoint = isOnAdminRoute ? authConfig.adminLoginEndpoint : authConfig.loginEndpoint;
 
@@ -94,10 +104,14 @@ const AuthProvider = ({ children }: Props) => {
 
     try {
       const response = await axios.post(loginEndpoint, params, { withCredentials: true });
+      console.log("Login response", response);
+
       if (!response.data.accessToken) {
+        console.warn("No access token received");
         if (router.pathname !== (isOnAdminRoute ? '/login/admin' : '/login')) {
           router.replace(isOnAdminRoute ? '/login/admin' : '/login');
         }
+
         return;
       }
 
@@ -109,23 +123,25 @@ const AuthProvider = ({ children }: Props) => {
         headers: { Authorization: response.data.accessToken }
       });
       const userData = userResponse.data;
+      console.log("User data after login", userData);
       setUser(userData);
       router.push('/');
       if (params.rememberMe) {
         window.localStorage.setItem('userData', JSON.stringify(userData));
       }
     } catch (err: any) {
+      console.error("Login error", err);
       if (errorCallback) errorCallback(err);
     }
   };
 
   const handleLogout = () => {
+    console.log("handleLogout called");
     setUser(null);
     window.localStorage.removeItem('userData');
     window.localStorage.removeItem(authConfig.storageTokenKeyName);
     router.push('/login');
   };
-
 
   const values = {
     user,
