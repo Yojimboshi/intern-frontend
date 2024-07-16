@@ -1,3 +1,4 @@
+// src\@core\layouts\components\shared-components\NotificationDropdown.tsx
 // ** React Imports
 import { useState, SyntheticEvent, Fragment, ReactNode } from 'react'
 
@@ -34,23 +35,31 @@ export type NotificationsType = {
   meta: string
   title: string
   subtitle: string
+  rewards?: string
 } & (
-  | { avatarAlt: string; avatarImg: string; avatarText?: never; avatarColor?: never; avatarIcon?: never }
-  | {
+    | {
+      avatarAlt: string;
+      avatarImg: string;
+      avatarText?: never;
+      avatarColor?: never;
+      avatarIcon?: never
+    }
+    | {
       avatarAlt?: never
       avatarImg?: never
       avatarText: string
       avatarIcon?: never
       avatarColor?: ThemeColor
     }
-  | {
+    | {
       avatarAlt?: never
       avatarImg?: never
       avatarText?: never
       avatarIcon: ReactNode
       avatarColor?: ThemeColor
     }
-)
+  )
+
 interface Props {
   settings: Settings
   notifications: NotificationsType[]
@@ -118,6 +127,9 @@ const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: bool
     return <PerfectScrollbar options={{ wheelPropagation: false, suppressScrollX: true }}>{children}</PerfectScrollbar>
   }
 }
+
+
+
 
 const NotificationDropdown = (props: Props) => {
   // ** Props
@@ -205,6 +217,7 @@ const NotificationDropdown = (props: Props) => {
                 <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
                   <MenuItemTitle>{notification.title}</MenuItemTitle>
                   <MenuItemSubtitle variant='body2'>{notification.subtitle}</MenuItemSubtitle>
+                  {notification.rewards && <MenuItemSubtitle variant='body2'>Rewards: {notification.rewards}</MenuItemSubtitle>}
                 </Box>
                 <Typography variant='caption' sx={{ color: 'text.disabled' }}>
                   {notification.meta}

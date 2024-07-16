@@ -44,7 +44,7 @@ const AuthProvider = ({ children }: Props) => {
       setLoading(true);
       try {
         const response = await axios.get(userEndpoint, {
-          headers: { Authorization: storedToken }
+          headers: { Authorization: `Bearer ${storedToken}` }
         });
         const userData = response.data;
         console.log("User data fetched successfully", userData);
@@ -71,7 +71,7 @@ const AuthProvider = ({ children }: Props) => {
       console.log("Stored token found, refreshing user data...");
       try {
         const response = await axios.get(userEndpoint, {
-          headers: { Authorization: storedToken },
+          headers: { Authorization: `Bearer ${storedToken}` },
         });
         const userData = response.data;
         console.log("User data refreshed successfully", userData);
@@ -105,6 +105,7 @@ const AuthProvider = ({ children }: Props) => {
     try {
       const response = await axios.post(loginEndpoint, params, { withCredentials: true });
       console.log("Login response", response);
+      console.log(`Bearer ${response.data.accessToken}`);
 
       if (!response.data.accessToken) {
         console.warn("No access token received");
@@ -120,7 +121,8 @@ const AuthProvider = ({ children }: Props) => {
       }
 
       const userResponse = await axios.get(authConfig.meEndpoint, {
-        headers: { Authorization: response.data.accessToken }
+        method: 'GET',
+        headers: { Authorization: `Bearer ${response.data.accessToken}` }
       });
       const userData = userResponse.data;
       console.log("User data after login", userData);
