@@ -16,7 +16,7 @@ import ShortcutsDropdown, { ShortcutsType } from 'src/@core/layouts/components/s
 
 // ** Hook Imports
 import { useAuth } from 'src/hooks/useAuth'
-import useAnnounce from 'src/hooks/useAnnounce'
+import { useAnnounce } from 'src/hooks/useAnnounce'
 
 interface Props {
   hidden: boolean

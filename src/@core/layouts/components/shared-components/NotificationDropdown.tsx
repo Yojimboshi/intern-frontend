@@ -1,8 +1,4 @@
-// src\@core\layouts\components\shared-components\NotificationDropdown.tsx
-// ** React Imports
 import { useState, SyntheticEvent, Fragment, ReactNode } from 'react'
-
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Badge from '@mui/material/Badge'
 import Button from '@mui/material/Button'
@@ -12,26 +8,25 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import MuiMenu, { MenuProps } from '@mui/material/Menu'
 import MuiMenuItem, { MenuItemProps } from '@mui/material/MenuItem'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-
-// ** Icon Imports
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import Icon from 'src/@core/components/icon'
-
-// ** Third Party Components
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-
-// ** Type Imports
 import { ThemeColor } from 'src/@core/layouts/types'
 import { Settings } from 'src/@core/context/settingsContext'
 import { CustomAvatarProps } from 'src/@core/components/mui/avatar/types'
-
-// ** Custom Components Imports
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
-
-// ** Util Import
 import { getInitials } from 'src/@core/utils/get-initials'
+import axios from 'axios'
+import authConfig from 'src/configs/auth'
+
 
 export type NotificationsType = {
+  id: number
   meta: string
   title: string
   subtitle: string
@@ -60,12 +55,12 @@ export type NotificationsType = {
     }
   )
 
+
 interface Props {
   settings: Settings
   notifications: NotificationsType[]
 }
 
-// ** Styled Menu component
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
   '& .MuiMenu-paper': {
     width: 380,
@@ -80,7 +75,6 @@ const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
   }
 }))
 
-// ** Styled MenuItem component
 const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   paddingTop: theme.spacing(3),
   paddingBottom: theme.spacing(3),
@@ -89,19 +83,16 @@ const MenuItem = styled(MuiMenuItem)<MenuItemProps>(({ theme }) => ({
   }
 }))
 
-// ** Styled PerfectScrollbar component
 const PerfectScrollbar = styled(PerfectScrollbarComponent)({
   maxHeight: 344
 })
 
-// ** Styled Avatar component
 const Avatar = styled(CustomAvatar)<CustomAvatarProps>({
   width: 38,
   height: 38,
   fontSize: '1.125rem'
 })
 
-// ** Styled component for the title in MenuItems
 const MenuItemTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
   fontWeight: 600,
   flex: '1 1 100%',
@@ -112,7 +103,6 @@ const MenuItemTitle = styled(Typography)<TypographyProps>(({ theme }) => ({
   marginBottom: theme.spacing(0.75)
 }))
 
-// ** Styled component for the subtitle in MenuItems
 const MenuItemSubtitle = styled(Typography)<TypographyProps>({
   flex: '1 1 100%',
   overflow: 'hidden',
@@ -128,21 +118,15 @@ const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: bool
   }
 }
 
-
-
-
 const NotificationDropdown = (props: Props) => {
-  // ** Props
   const { settings, notifications } = props
-
-  // ** States
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
-
-  // ** Hook
+  const [openDialog, setOpenDialog] = useState(false)
+  const [selectedNotification, setSelectedNotification] = useState<NotificationsType | null>(null)
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
-
-  // ** Vars
   const { direction } = settings
+  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+  const userEndpoint = authConfig.meEndpoint;
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -152,6 +136,104 @@ const NotificationDropdown = (props: Props) => {
     setAnchorEl(null)
   }
 
+  const handleDialogOpen = (notification: NotificationsType) => {
+    setSelectedNotification(notification)
+    setOpenDialog(true)
+  }
+
+  const handleDialogClose = () => {
+    setOpenDialog(false)
+    setSelectedNotification(null)
+  }
+
+  const handleLike = async () => {
+
+    if (selectedNotification) {
+      try {
+        const user = await axios.get(userEndpoint, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        const userData = user.data;
+        console.log("User data fetched successfully: ", userData.id);
+        console.log("User data fetched successfully: ", selectedNotification.id);
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
+        })
+
+        if (response.ok) {
+          console.log('Liked the notification')
+        } else {
+          console.error('Failed to like the notification')
+        }
+      } catch (error) {
+        console.error('Error liking the notification', error)
+      }
+    }
+    setOpenDialog(false)
+  }
+
+  const handleDelete = async () => {
+    if (selectedNotification) {
+      try {
+        const user = await axios.get(userEndpoint, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        const userData = user.data;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/user/deleteNotification`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
+        })
+
+        if (response.ok) {
+          console.log('Deleted the notification')
+        } else {
+          console.error('Failed to delete the notification')
+        }
+      } catch (error) {
+        console.error('Error deleting the notification', error)
+      }
+    }
+    setOpenDialog(false)
+  }
+
+  const handleClaimRewards = async () => {
+    if (selectedNotification) {
+      try {
+        const user = await axios.get(userEndpoint, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        const userData = user.data;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/claim-rewards`, {
+          method: 'POST',
+          headers: {
+
+            'Content-Type': 'application/json'
+          }
+          ,
+          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
+        })
+
+        console.log("suc")
+
+        if (response.ok) {
+          console.log('Rewards claimed')
+        } else {
+          console.error('Failed to claim rewards')
+        }
+      } catch (error) {
+        console.error('Error claiming rewards', error)
+      }
+    }
+    setOpenDialog(false)
+  }
   const RenderAvatar = ({ notification }: { notification: NotificationsType }) => {
     const { avatarAlt, avatarImg, avatarIcon, avatarText, avatarColor } = notification
 
@@ -211,7 +293,7 @@ const NotificationDropdown = (props: Props) => {
         </MenuItem>
         <ScrollWrapper hidden={hidden}>
           {notifications.map((notification: NotificationsType, index: number) => (
-            <MenuItem key={index} onClick={handleDropdownClose}>
+            <MenuItem key={index} onClick={() => handleDialogOpen(notification)}>
               <Box sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
                 <RenderAvatar notification={notification} />
                 <Box sx={{ mx: 4, flex: '1 1', display: 'flex', overflow: 'hidden', flexDirection: 'column' }}>
@@ -243,6 +325,30 @@ const NotificationDropdown = (props: Props) => {
           </Button>
         </MenuItem>
       </Menu>
+      {selectedNotification && (
+        <Dialog open={openDialog} onClose={handleDialogClose} aria-labelledby="notification-dialog-title">
+          <DialogTitle id="notification-dialog-title">{selectedNotification.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{selectedNotification.subtitle}</DialogContentText>
+            {selectedNotification.rewards && (
+              <DialogContentText>Rewards: {selectedNotification.rewards}</DialogContentText>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleLike} color="primary">
+              Like
+            </Button>
+            <Button onClick={handleDelete} color="secondary">
+              Delete
+            </Button>
+            {selectedNotification.rewards && (
+              <Button onClick={handleClaimRewards} color="primary">
+                Claim Rewards
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+      )}
     </Fragment>
   )
 }
