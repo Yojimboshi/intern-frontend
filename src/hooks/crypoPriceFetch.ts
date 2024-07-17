@@ -3,76 +3,30 @@ import { useState, useEffect } from 'react';
 
 // NOTE : change .push to .map
 
-type CryptoChange = {
-  name: string;
-  dailyChange: number; // Adjust the type if necessary
-};
 
-type MarketCapChange = {
-  timestamp: number;
-  marketCap: number;
-};
 
+type PriceChange = {
+  id: string;
+  priceChangeToday: number;
+  priceChangeBefore: number;
+  high_24h: number;
+  low_24h: number;
+};
 
 export const useMarketCapChange = () => {
-  const [marketCapChanges, setMarketCapChanges] = useState<MarketCapChange[] | null>(null);
+  const [marketCapChange, setMarketCapChange] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://pro-api.coingecko.com/api/v3/global/market_cap_chart?vs_currency=usd&days=7', {
-          headers: {
-            'accept': 'application/json',
-            'Authorization': 'Bearer YOUR_API_KEY' // Replace 'YOUR_API_KEY' with your actual API key
-          }
-        });
+        const response = await fetch('https://api.coingecko.com/api/v3/global');
         const data = await response.json();
 
-        if (data && data.market_cap_chart && data.market_cap_chart.market_cap) {
-          const marketCapChangesData = data.market_cap_chart.market_cap.map((entry: [number, number]) => {
-            return {
-              timestamp: entry[0],
-              marketCap: entry[1]
-            };
-          });
-          setMarketCapChanges(marketCapChangesData);
-        } else {
-          throw new Error('Invalid response format');
-        }
-      } catch (err) {
-        console.error('Error fetching market cap changes:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+        const marketCapChangePercentage = data.data.market_cap_change_percentage_24h_usd;
 
-    fetchData();
-  }, []);
-  console.log("marketCapChanges", marketCapChanges)
-
-  return { marketCapChanges, loading };
-};
-
-
-export const useDailyCryptoChanges = () => {
-  const [dailyChanges, setDailyChanges] = useState<CryptoChange[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=6&page=1`);
-        const data = await response.json();
-
-        const changes: CryptoChange[] = data.map((coin: any) => ({
-          name: coin.name,
-          dailyChange: coin.price_change_percentage_24h
-        }));
-
-        setDailyChanges(changes);
+        setMarketCapChange(marketCapChangePercentage);
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -82,12 +36,12 @@ export const useDailyCryptoChanges = () => {
     fetchData();
   }, []);
 
-  return { dailyChanges, loading };
+  return { marketCapChange, loading };
 };
 
 
 export const useDailyChanges = () => {
-  const [dailyChanges, setDailyChanges] = useState<number[] | null>(null);
+  const [dailyChanges, setDailyChanges] = useState<{ date: string; change: number }[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -95,89 +49,25 @@ export const useDailyChanges = () => {
       setLoading(true);
       try {
         const today = new Date();
-        const dates: string[] = [];
-        const changes: number[] = [];
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+        const changes: { date: string; change: number }[] = [];
 
-        // Generate dates from today to 6 days before //i try 4 first
-        for (let i = 0; i <= 2; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() - i);
-          const day = String(date.getDate()).padStart(2, '0');
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const year = date.getFullYear();
-          const formattedDate = `${day}-${month}-${year}`; // Format as dd-mm-yyyy
-          dates[i] = formattedDate;
-        }
-
-        console.log('Dates:', dates); // Log the dates
-
-        // Fetch data for each date with delay
-        for (let i = 0; i < dates.length; i++) {
-          const date = dates[i];
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/bitcoin/history?date=${date}`);
-          const data = await response.json();
-          console.log('Fetched data for date:', date, data); // Log the fetched data
-          const dailyChange = data.market_data?.market_cap?.usd ?? 0;
-          changes[i] = dailyChange;
-          await delay(1500); // Delay for 1.5 second between requests i will adjust later
-        }
-
-        console.log('Daily Changes:', changes); // Log the daily changes
-        setDailyChanges(changes);
-        setLoading(false);
-      } catch (err) {
-        setLoading(false);
-        console.error('Error fetching daily changes:', err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return { dailyChanges, loading };
-};
-
-
-export const useTotalTransaction = () => {
-  const [totalTransaction, setTotalTransaction] = useState<number[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const today = new Date();
-        const dates: string[] = [];
-        const changes: number[] = [];
-        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-        // Generate dates from today to 4 days before
-        for (let i = 0; i <= 4; i++) {
+        // Generate dates from today to 6 days before
+        for (let i = 0; i <= 6; i++) {
           const date = new Date(today);
           date.setDate(today.getDate() - i);
           const day = String(date.getDate()).padStart(2, '0');
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const year = date.getFullYear();
           const formattedDate = `${year}-${month}-${day}`; // Format as yyyy-mm-dd
-          dates[i] = formattedDate;
-        }
 
-        console.log('Dates:', dates); // Log the dates
-
-        // Fetch data for each date with delay
-        for (let i = 0; i < dates.length; i++) {
-          const date = dates[i];
-          const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=7d%2C14d&locale=en`);
+          const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&startTime=${new Date(formattedDate).getTime()}&endTime=${new Date(formattedDate).getTime() + 86400000}`);
           const data = await response.json();
-          console.log('Fetched data for date:', date, data); // Log the fetched data
-          const dailyChange = data.volume ?? 0; // Example field, adjust as necessary
-          changes[i] = dailyChange;
-          await delay(1500); // Delay for 1.5 seconds between requests
+          const marketCapChange = data[0] ? (data[0][4] - data[0][1]) / data[0][1] * 100 : 0; // Calculate percentage change
+
+          changes[i] = { date: formattedDate, change: marketCapChange };
         }
 
-        console.log('Daily Changes:', changes); // Log the daily changes
-        setTotalTransaction(changes);
+        setDailyChanges(changes);
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -188,9 +78,8 @@ export const useTotalTransaction = () => {
     fetchData();
   }, []);
 
-  return { totalTransaction, loading };
+  return { dailyChanges, loading };
 };
-
 
 export const usePriceChange = () => {
   const [priceChange, setPriceChange] = useState<PriceChange[] | null>(null);
@@ -201,14 +90,14 @@ export const usePriceChange = () => {
       setLoading(true);
       try {
 
-
-
-        const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=7d%2C14d&locale=en`);
+        const response = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin%2Cethereum%2Cbinancecoin%2Csolana%2Cripple&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=7d&locale=en`);
         const data = await response.json();// Log the fetched data
         const price: PriceChange[] = data.map((coin: any) => ({
           id: coin.id,
           priceChangeToday: coin.price_change_percentage_24h.toFixed(2),
-          priceChangeBefore: coin.price_change_percentage_7d_in_currency.toFixed(2), // Assuming 7 days change as "before"
+          priceChangeBefore: coin.price_change_percentage_7d_in_currency.toFixed(2),
+          high_24h: coin.high_24h,
+          low_24h: coin.low_24h,
         }));
 
         console.log('Price Changes:', price); // Log the daily changes

@@ -1,24 +1,39 @@
 // ** MUI Imports
-import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import { useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
 
-import { ApexOptions } from 'apexcharts'
+// ** Third Party Imports
+import { ApexOptions } from 'apexcharts';
 
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
+// ** Custom Components Imports
+import ReactApexcharts from 'src/@core/components/react-apexcharts';
 
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
-import { useMarketCapChange } from 'src/hooks/crypoPriceFetch';
+// ** Util Import
+import { hexToRGBA } from 'src/@core/utils/hex-to-rgba';
+
+import { useMarketCapChange, useDailyChanges } from 'src/hooks/crypoPriceFetch';
 
 const AnalyticsSessions = () => {
   // ** Hook
   const theme = useTheme();
-  const { marketCapChanges, loading } = useMarketCapChange();
 
-  // Prepare series data
-  const series = marketCapChanges ? [{ data: marketCapChanges.map(change => change.marketCap) }] : [{ data: [0, 20, 5, 30, 15, 45] }];
+  // NOTE: custom functions
+  const { marketCapChange, loading: loadingMarketCap } = useMarketCapChange();
+  const { dailyChanges, loading: dailyChangeLoading } = useDailyChanges();
+
+  if (loadingMarketCap || dailyChangeLoading) {
+    return <p>Loading...</p>;
+  }
+
+  // Ensure dailyChanges is defined and not null
+  const changesData = dailyChanges || [];
+  console.log('Market Cap Change:', marketCapChange); // Log market cap change
+  console.log('Daily Changes:', changesData); // Log daily changes
+
+  const series = [{ data: changesData.map(item => item.change).reverse() }]; // Reverse to show oldest to newest
 
   const options: ApexOptions = {
     chart: {
