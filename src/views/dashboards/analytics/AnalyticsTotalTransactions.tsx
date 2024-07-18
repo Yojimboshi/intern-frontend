@@ -1,24 +1,22 @@
-// src\views\dashboards\analytics\AnalyticsTotalTransactions.tsx
-import Card from '@mui/material/Card'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import CardHeader from '@mui/material/CardHeader'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import Grid, { GridProps } from '@mui/material/Grid'
-import { styled, useTheme } from '@mui/material/styles'
-import Icon from 'src/@core/components/icon'
-import { ApexOptions } from 'apexcharts'
-import CustomAvatar from 'src/@core/components/mui/avatar'
-import OptionsMenu from 'src/@core/components/option-menu'
-import ReactApexcharts from 'src/@core/components/react-apexcharts'
-import { hexToRGBA } from 'src/@core/utils/hex-to-rgba'
+import React, { useState, useEffect } from 'react';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import CardHeader from '@mui/material/CardHeader';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
+import Grid, { GridProps } from '@mui/material/Grid';
+import { styled, useTheme } from '@mui/material/styles';
+import Icon from 'src/@core/components/icon';
+import CustomAvatar from 'src/@core/components/mui/avatar';
+import OptionsMenu from 'src/@core/components/option-menu';
+import ReactApexcharts from 'src/@core/components/react-apexcharts';
+import { ApexOptions } from 'apexcharts';
 
 import { usePriceChange } from 'src/hooks/crypoPriceFetch';
 
+type OptionType = string;
 
-
-// Styled Grid component
 const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.down('sm')]: {
     borderBottom: `1px solid ${theme.palette.divider}`
@@ -26,35 +24,44 @@ const StyledGrid = styled(Grid)<GridProps>(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     borderRight: `1px solid ${theme.palette.divider}`
   }
-}))
+}));
 
 const AnalyticsTotalTransactions = () => {
-  // ** Hook
-  const theme = useTheme()
+  const theme = useTheme();
 
   const { priceChange, loading: dailyChangeLoading } = usePriceChange();
+  const [selectedCrypto, setSelectedCrypto] = useState<string>('');
+
+  useEffect(() => {
+    if (priceChange && priceChange.length > 0) {
+      const defaultCrypto = priceChange.find(item => item.id.toLowerCase() === 'bitcoin')?.id || priceChange[0].id;
+      setSelectedCrypto(defaultCrypto);
+    }
+  }, [priceChange]);
 
   if (dailyChangeLoading) {
     return <p>Loading...</p>;
   }
 
-  // NOTE: remove USDT/tether from the series, as it is stable coin.
-  // make the display more informative, % symbol, Y-axis labelling etc...
-  // make negative changes red color, currently it shows same color.
+  if (!priceChange || priceChange.length === 0) {
+    return <p>No data available</p>;
+  }
+
+  const handleOptionSelect = (option: OptionType) => {
+    setSelectedCrypto(option);
+  };
+
+  const selectedCryptoData = priceChange.find(item => item.id === selectedCrypto);
+
   const series = [
     {
       name: 'Todays price change',
-      data: priceChange ? [priceChange[0].priceChangeToday, priceChange[1].priceChangeToday,
-      priceChange[2].priceChangeToday, priceChange[3].priceChangeToday, priceChange[4].priceChangeToday] : []
-    },
+      data: priceChange.map(item => item.priceChangeToday)
+    }
+  ];
 
-    // {
-    //   name: 'Last week price change',
-    //   data: priceChange ? [priceChange[0].priceChangeBefore, priceChange[1].priceChangeBefore,
-    //   priceChange[2].priceChangeBefore, priceChange[3].priceChangeBefore, priceChange[4].priceChangeBefore] : []
-    // }
+  const colors = priceChange.map(item => item.priceChangeToday >= 0 ? theme.palette.success.main : theme.palette.error.main);
 
-  ]
   const options: ApexOptions = {
     chart: {
       stacked: true,
@@ -64,31 +71,49 @@ const AnalyticsTotalTransactions = () => {
     plotOptions: {
       bar: {
         borderRadius: 5,
-        barHeight: '30%',
+        barHeight: '20%',
         horizontal: true,
         endingShape: 'flat',
-        startingShape: 'rounded'
+        startingShape: 'rounded',
+        colors: {
+          ranges: [
+            {
+              from: -100,
+              to: 0,
+              color: theme.palette.error.main
+            },
+            {
+              from: 0,
+              to: 100,
+              color: theme.palette.success.main
+            }
+          ]
+        }
       }
     },
     tooltip: {
       y: {
-        formatter: val => `${Math.abs(val)}`
+        formatter: val => `${Math.abs(val)}%`
       }
     },
     xaxis: {
       position: 'top',
       axisTicks: { show: false },
       axisBorder: { show: false },
-      categories: priceChange ? [priceChange[0].id, priceChange[1].id, priceChange[2].id, priceChange[3].id, priceChange[4].id] : [],
+      categories: priceChange.map(item => item.id),
       labels: {
-        formatter: val => `${Math.abs(Number(val))}`,
+        formatter: val => `${Math.abs(Number(val))}%`,
         style: { colors: theme.palette.text.disabled }
       }
     },
     yaxis: {
-      labels: { show: false }
+      labels: {
+        show: true,
+        formatter: (val, index) => priceChange[index] ? priceChange[index].id : '',
+        style: { colors: theme.palette.text.primary }
+      }
     },
-    colors: [hexToRGBA(theme.palette.primary.main, 1), hexToRGBA(theme.palette.success.main, 1)],
+    colors: colors,
     grid: {
       borderColor: theme.palette.divider,
       xaxis: {
@@ -103,7 +128,18 @@ const AnalyticsTotalTransactions = () => {
       }
     },
     legend: { show: false },
-    dataLabels: { enabled: false },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val, opts) {
+        const id = priceChange[opts.dataPointIndex].id;
+
+        return id.charAt(0).toUpperCase() + id.slice(1);
+      },
+      style: {
+        colors: [theme.palette.text.primary],
+        fontSize: '14px'
+      }
+    },
     states: {
       hover: {
         filter: { type: 'none' }
@@ -112,13 +148,22 @@ const AnalyticsTotalTransactions = () => {
         filter: { type: 'none' }
       }
     }
-  }
+  };
+
+  // Function to capitalize the first letter of a string
+  const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <Card>
       <Grid container>
         <StyledGrid item xs={12} sm={7}>
-          <CardHeader title='Price Change' titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }} />
+          <CardHeader
+            title='Daily Price Change'
+            subheader='Top 5 Cryptocurrencies daily price % change'
+            titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
+          />
           <CardContent
             sx={{
               '& .apexcharts-series[rel="2"]': {
@@ -131,14 +176,15 @@ const AnalyticsTotalTransactions = () => {
         </StyledGrid>
         <Grid item xs={12} sm={5}>
           <CardHeader
-            title='Market Cap'
-            subheader='Weekly % Changes'
+            title={selectedCryptoData ? `${capitalizeFirstLetter(selectedCryptoData.id)} Market Price` : ''}
+            subheader={selectedCryptoData ? `${capitalizeFirstLetter(selectedCryptoData.id)} market price changes%` : ''}
             subheaderTypographyProps={{ sx: { lineHeight: 1.429 } }}
             titleTypographyProps={{ sx: { letterSpacing: '0.15px' } }}
             action={
               <OptionsMenu
-                options={['Last 28 Days', 'Last Month', 'Last Year']}
+                options={priceChange.map(item => item.id)}
                 iconButtonProps={{ size: 'small', className: 'card-more-options' }}
+                onOptionSelect={handleOptionSelect}
               />
             }
           />
@@ -158,23 +204,29 @@ const AnalyticsTotalTransactions = () => {
                   <Icon icon='mdi:trending-up' />
                 </CustomAvatar>
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  This Week
+                  High
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>+82.45%</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>${selectedCryptoData.high_24h}</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
               <Grid item xs={6} sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                 <CustomAvatar skin='light' sx={{ mb: 3 }} variant='rounded'>
                   <Icon icon='mdi:trending-down' />
                 </CustomAvatar>
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  Last Week
+                  Low
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>-24.86%</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>${selectedCryptoData.low_24h}</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
             </Grid>
-            <Divider
-              sx={{ mt: theme => `${theme.spacing(10)} !important`, mb: theme => `${theme.spacing(7.5)} !important` }}
-            />
+            <Divider sx={{ mt: theme => `${theme.spacing(10)} !important`, mb: theme => `${theme.spacing(7.5)} !important` }} />
             <Grid container>
               <Grid
                 item
@@ -182,9 +234,13 @@ const AnalyticsTotalTransactions = () => {
                 sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}
               >
                 <Typography sx={{ mb: 0.5 }} variant='body2'>
-                  Performance
+                  Todays price change %
                 </Typography>
-                <Typography sx={{ fontWeight: 600 }}>+94.15%</Typography>
+                {selectedCryptoData ? (
+                  <Typography sx={{ fontWeight: 600 }}>{selectedCryptoData.priceChangeToday}%</Typography>
+                ) : (
+                  <Typography sx={{ fontWeight: 600 }}>N/A</Typography>
+                )}
               </Grid>
               <Grid item xs={6}>
                 <Button fullWidth variant='contained'>
@@ -196,7 +252,7 @@ const AnalyticsTotalTransactions = () => {
         </Grid>
       </Grid>
     </Card>
-  )
-}
+  );
+};
 
-export default AnalyticsTotalTransactions
+export default AnalyticsTotalTransactions;

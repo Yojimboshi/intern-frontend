@@ -27,24 +27,25 @@ const AclGuard = (props: AclGuardProps) => {
   useEffect(() => {
     console.log("AclGuard");
     if (auth.user) {
-      let redirectPath = ''
+      const redirectPath = ''
 
       // Perform additional checks for email verification, registration completion, and package activation if user is not an admin
-      if (auth.user.role !== 'admin') {
-        if (!auth.user.emailVerified) {
-          console.log("emailVerified");
-          redirectPath = '/pages/auth/verify-email-v1'
-        } else if (!auth.user.registrationComplete) {
-          console.log("registrationComplete");
-          redirectPath = '/register/complete-registration'
-        } else if (!auth.user.packageActivated) {
-          console.log("packageActivated");
-          redirectPath = '/register/complete-registration/activatePackage'
-        }
-      }
+      // if (auth.user.role !== 'admin') {
+      //   if (!auth.user.emailVerified) {
+      //     console.log("emailVerified");
+      //     redirectPath = '/pages/auth/verify-email-v1'
+      //   } else if (!auth.user.registrationComplete) {
+      //     console.log("registrationComplete");
+      //     redirectPath = '/register/complete-registration'
+      //   } else if (!auth.user.packageActivated) {
+      //     console.log("packageActivated");
+      //     redirectPath = '/register/complete-registration/activatePackage'
+      //   }
+      // }
 
       if (redirectPath && router.pathname !== redirectPath) {
         router.replace(redirectPath)
+
         return
       }
 
@@ -52,6 +53,7 @@ const AclGuard = (props: AclGuardProps) => {
       if (auth.user.role && !guestGuard && router.route === '/') {
         const homeRoute = getHomeRoute(auth.user.role)
         router.replace(homeRoute)
+
         return
       }
 
