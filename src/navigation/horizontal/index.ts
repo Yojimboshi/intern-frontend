@@ -11,7 +11,29 @@ const adminNavItems: HorizontalNavItemsType = [
     badgeColor: 'info',
     path: '/dashboards/analytics'
   },
-
+  {
+    title: 'v2Pools',
+    badgeContent: 'new',
+    badgeColor: 'error',
+    icon: 'icon-park-twotone:curve-adjustment',
+    children: [
+      {
+        title: 'Pool List',
+        icon: 'material-symbols:list',
+        path: '/apps/v2Pools/PoolList'
+      },
+      {
+        title: 'Swap',
+        icon: 'ri:exchange-line',
+        path: '/apps/v2Pools'
+      },
+    ]
+  },
+  {
+    title: 'Announcements',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/announcement/admin'
+  }
 ];
 
 const userNavItems: HorizontalNavItemsType = [
@@ -38,6 +60,11 @@ const userNavItems: HorizontalNavItemsType = [
       },
     ]
   },
+  {
+    title: 'Announcements',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/announcement'
+  }
 
 ];
 

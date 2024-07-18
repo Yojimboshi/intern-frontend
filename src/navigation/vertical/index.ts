@@ -12,6 +12,30 @@ const adminNavItems: VerticalNavItemsType = [
     path: '/dashboards/analytics'
   },
 
+  {
+    title: 'V2Pools',
+    badgeContent: 'new',
+    badgeColor: 'error',
+    icon: 'icon-park-twotone:curve-adjustment',
+    children: [
+      {
+        title: 'Pool List',
+        icon: 'material-symbols:list',
+        path: '/apps/v2Pools/PoolList'
+      },
+      {
+        title: 'Swap',
+        icon: 'ri:exchange-line',
+        path: '/apps/v2Pools'
+      },
+    ]
+  },
+  {
+    title: 'Announcements',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/announcement/admin'
+  }
+
 ];
 
 const userNavItems: VerticalNavItemsType = [
@@ -40,6 +64,11 @@ const userNavItems: VerticalNavItemsType = [
       },
     ]
   },
+  {
+    title: 'Announcements',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/announcement'
+  }
 
 ];
 
