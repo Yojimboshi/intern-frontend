@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Button, TextField, Grid } from '@mui/material';
+import authConfig from 'src/configs/auth'
 
 const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(announcement || { title: '', content: '' });
+  const [formData, setFormData] = useState(announcement || { title: '', subtitle: '', content: '', rewards: '' });
+  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
 
   const handleChange = (e) => {
     setFormData({
@@ -11,7 +14,7 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     onSave(formData);
   };
@@ -30,6 +33,15 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            label="Subtitle"
+            name="subtitle"
+            value={formData.subtitle}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
             label="Content"
             name="content"
             value={formData.content}
@@ -40,8 +52,17 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
           />
         </Grid>
         <Grid item xs={12}>
+          <TextField
+            label="Rewards"
+            name="rewards"
+            value={formData.rewards}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">
-            Save
+            Create
           </Button>
           <Button onClick={onCancel} variant="contained" color="secondary" style={{ marginLeft: 8 }}>
             Cancel

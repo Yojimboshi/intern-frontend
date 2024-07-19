@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button, Grid, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import AnnouncementForm from 'src/views/apps/announcement/admin/AnnouncementForm';
-import AnnouncementList from 'src/views/apps/announcement/admin/AnnouncementList';
+import AnnouncementForm from 'src/views/apps/announcement/admin/announcementForm';
+import AnnouncementList from 'src/views/apps/announcement/admin/announcementList';
+import authConfig from 'src/configs/auth';
 
 const AnnouncementAdminPage = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
 
   useEffect(() => {
     fetchAnnouncements();
@@ -16,8 +18,12 @@ const AnnouncementAdminPage = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get('/api/announcements');
+      console.log("Fetching announcement");
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements`, {
+        headers: { Authorization: `Bearer ${storedToken}` }
+      });
       setAnnouncements(response.data);
+      console.log("List of announcement:", response.data);
     } catch (error) {
       console.error('Error fetching announcements:', error);
     }
@@ -26,9 +32,37 @@ const AnnouncementAdminPage = () => {
   const handleSaveAnnouncement = async (announcement) => {
     try {
       if (announcement.id) {
-        await axios.put(`/api/announcements/${announcement.id}`, announcement);
+        console.log("Updating announcement:", announcement);
+        await axios.put(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/${announcement.id}`,
+          {
+            message: announcement.content,
+            title: announcement.title,
+            subtitle: announcement.subtitle,
+            rewards: announcement.rewards,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${storedToken}`
+            }
+          }
+        );
       } else {
-        await axios.post('/api/announcements', announcement);
+        console.log("Creating new announcement");
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements`,
+          {
+            message: announcement.content,
+            title: announcement.title,
+            subtitle: announcement.subtitle,
+            rewards: announcement.rewards,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${storedToken}`
+            }
+          }
+        );
       }
       fetchAnnouncements();
       setShowForm(false);
@@ -40,7 +74,11 @@ const AnnouncementAdminPage = () => {
 
   const handleDeleteAnnouncement = async (id) => {
     try {
-      await axios.delete(`/api/announcements/${id}`);
+      console.log("Deleting announcement:", id);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/${id}`, {
+        headers: { Authorization: `Bearer ${storedToken}` }
+      });
+      console.log("Deleted successfully");
       fetchAnnouncements();
     } catch (error) {
       console.error('Error deleting announcement:', error);

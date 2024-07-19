@@ -177,32 +177,6 @@ const NotificationDropdown = (props: Props) => {
     setOpenDialog(false)
   }
 
-  const handleDelete = async () => {
-    if (selectedNotification) {
-      try {
-        const user = await axios.get(userEndpoint, {
-          headers: { Authorization: `Bearer ${storedToken}` }
-        });
-        const userData = user.data;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/user/deleteNotification`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
-        })
-
-        if (response.ok) {
-          console.log('Deleted the notification')
-        } else {
-          console.error('Failed to delete the notification')
-        }
-      } catch (error) {
-        console.error('Error deleting the notification', error)
-      }
-    }
-    setOpenDialog(false)
-  }
 
   const handleClaimRewards = async () => {
     if (selectedNotification) {
@@ -338,9 +312,7 @@ const NotificationDropdown = (props: Props) => {
             <Button onClick={handleLike} color="primary">
               Like
             </Button>
-            <Button onClick={handleDelete} color="secondary">
-              Delete
-            </Button>
+
             {selectedNotification.rewards && (
               <Button onClick={handleClaimRewards} color="primary">
                 Claim Rewards

@@ -41,7 +41,7 @@ export const useAnnounce = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       const userId = await getUserId();
-
+      console.log(userId)
       if (userId === null) {
         console.error('User is not logged in');
 
@@ -51,6 +51,7 @@ export const useAnnounce = () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/user/${userId}`);
         setAnnouncements(response.data);
+
         console.log("Announcement data", response.data);
       } catch (error) {
         console.error('Error fetching announcements:', error);
@@ -71,7 +72,7 @@ export const useTodayAnnounce = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const response = await fetch(process.env.NEXT_PUBLIC_API_BASE_URL + '/announcements')
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements`)
         const data: AnnouncementType[] = await response.json()
 
         const today = new Date().toISOString().split('T')[0]
