@@ -15,7 +15,7 @@ const AnnouncementAdminPage = () => {
   useEffect(() => {
     fetchAnnouncements();
   }, []);
-
+  // NOTE:cleanup,  use import hooks, from useAnnounce
   const fetchAnnouncements = async () => {
     try {
       console.log("Fetching announcement");
@@ -28,7 +28,7 @@ const AnnouncementAdminPage = () => {
       console.error('Error fetching announcements:', error);
     }
   };
-
+  // NOTE: type fix too
   const handleSaveAnnouncement = async (announcement) => {
     try {
       if (announcement.id) {

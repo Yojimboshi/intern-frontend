@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, TextField, Grid } from '@mui/material';
 import authConfig from 'src/configs/auth'
-
+// NOTE : add type fix for these args into src\types\apps and import
 const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
   const [formData, setFormData] = useState(announcement || { title: '', subtitle: '', content: '', rewards: '' });
   const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);

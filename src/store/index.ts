@@ -10,6 +10,9 @@ import pools from 'src/store/apps/v2Pools';
 import transaction from 'src/store/apps/transaction';
 import downlines from 'src/store/apps/downlines';
 
+// NOTE: add announcement store import entry here
+// also add store/apps/announcement, refer to vpool 
+
 export const store = configureStore({
   reducer: {
     user,

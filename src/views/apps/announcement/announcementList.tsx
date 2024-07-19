@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, ListItem, ListItemText } from '@mui/material';
-
+// NOTE : add type fix for these args into src\types\apps and import
 const AnnouncementList = ({ announcements }) => {
   return (
     <List>
