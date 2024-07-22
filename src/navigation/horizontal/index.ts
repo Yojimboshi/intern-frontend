@@ -30,6 +30,41 @@ const adminNavItems: HorizontalNavItemsType = [
     ]
   },
   {
+    title: 'User',
+    icon: 'mdi:account-outline',
+    children: [
+      {
+        title: 'List',
+        path: '/apps/user/list'
+      },
+      {
+        title: 'View',
+        children: [
+          {
+            title: 'Overview',
+            path: '/apps/user/view/overview'
+          },
+          {
+            title: 'Security',
+            path: '/apps/user/view/security'
+          },
+          {
+            title: 'Payment Setting',
+            path: '/apps/user/view/payment-setting'
+          },
+          {
+            title: 'Notifications',
+            path: '/apps/user/view/notification'
+          },
+          {
+            title: 'Connection',
+            path: '/apps/user/view/connection'
+          }
+        ]
+      }
+    ]
+  },
+  {
     title: 'Announcements',
     icon: 'mdi:announcement-outline',
     path: '/apps/announcement/admin'
@@ -58,6 +93,32 @@ const userNavItems: HorizontalNavItemsType = [
         icon: 'ri:exchange-line',
         path: '/apps/v2Pools'
       },
+    ]
+  },
+  {
+    title: 'User',
+    icon: 'mdi:account-outline',
+    children: [
+      {
+        title: 'Overview',
+        path: '/apps/user/view/overview'
+      },
+      {
+        title: 'Security',
+        path: '/apps/user/view/security'
+      },
+      {
+        title: 'Payment Setting',
+        path: '/apps/user/view/payment-setting'
+      },
+      {
+        title: 'Notifications',
+        path: '/apps/user/view/notification'
+      },
+      {
+        title: 'Connection',
+        path: '/apps/user/view/connection'
+      }
     ]
   },
   {
