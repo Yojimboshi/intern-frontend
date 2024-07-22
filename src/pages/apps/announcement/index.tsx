@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AnnouncementList from 'src/views/apps/announcement/announcementList';
 import authConfig from 'src/configs/auth';
+import Translations from 'src/layouts/components/Translations';
+import {
+  Container, Typography, CircularProgress, Card, CardContent, Box,
+} from '@mui/material';
+
 
 const AnnouncementListPage = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -109,18 +114,26 @@ const AnnouncementListPage = () => {
   };
 
   return (
-    <div>
-      <h1>Announcements</h1>
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
+        <Translations text="Announcements" />
+      </Typography>
       {loading ? (
-        <p>Loading...</p>
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
       ) : (
-        <AnnouncementList
-          announcements={announcements}
-          onLike={handleLike}
-          onClaimRewards={handleClaimRewards}
-        />
+        <Card>
+          <CardContent>
+            <AnnouncementList
+              announcements={announcements}
+              onLike={handleLike}
+              onClaimRewards={handleClaimRewards}
+            />
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </Container>
   );
 };
 

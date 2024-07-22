@@ -23,7 +23,7 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import axios from 'axios'
 import authConfig from 'src/configs/auth'
 import { NotificationsType } from 'src/types/apps/announcementTypes'
-
+import { useRouter } from 'next/router'
 
 
 interface Props {
@@ -98,12 +98,23 @@ const NotificationDropdown = (props: Props) => {
   const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
   const userEndpoint = authConfig.meEndpoint;
 
+  const router = useRouter()
+
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
   }
 
   const handleDropdownClose = () => {
     setAnchorEl(null)
+  }
+
+  const readAllNotif = () => {
+    router
+      .push({
+        pathname: `/apps/user/view/notification`
+      })
+    setAnchorEl(null)
+
   }
 
   const handleDialogOpen = (notification: NotificationsType) => {
@@ -289,7 +300,7 @@ const NotificationDropdown = (props: Props) => {
             borderTop: theme => `1px solid ${theme.palette.divider}`
           }}
         >
-          <Button fullWidth variant='contained' onClick={handleDropdownClose}>
+          <Button fullWidth variant='contained' onClick={readAllNotif}>
             Read All Notifications
           </Button>
         </MenuItem>

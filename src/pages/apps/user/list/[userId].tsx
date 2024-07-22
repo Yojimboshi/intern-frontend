@@ -52,6 +52,7 @@ const SelectedUserOverview = () => {
   useEffect(() => {
     if (userId) {
       // Replace with your API endpoint and fetching logic
+      console.log("HERE")
       axiosInstance.get(`/admin/users/id/${userId}`).then(response => {
         console.log('Fetched User Data:', response.data);
         setUserData(response.data);

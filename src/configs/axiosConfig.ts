@@ -11,7 +11,7 @@ axiosInstance.interceptors.request.use(
     // Retrieve the token using the key from your authConfig
     const token = localStorage.getItem(authConfig.storageTokenKeyName);
     if (token) {
-      config.headers['Authorization'] = `${token}`;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     console.log(`Request sent to ${config.url}`);
 

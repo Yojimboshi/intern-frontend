@@ -78,6 +78,7 @@ const initialData: UsersType = {
   },
   isEmpty: false,
   packageId: "4",
+  name: ''
 }
 
 const roleColors: ColorsType = {
@@ -134,6 +135,7 @@ const UserViewLeft = () => {
     try {
       const response = await axios.get('users/current');
       const currentUserData = response.data;
+      console.log(currentUserData)
 
       localStorage.setItem('userData', JSON.stringify(currentUserData));
 
@@ -259,7 +261,7 @@ const UserViewLeft = () => {
                   <Typography variant="subtitle2" sx={{ mr: 2, color: 'text.primary' }}>
                     Full Name:
                   </Typography>
-                  <Typography variant="body2">{data.firstName} {data.lastName}</Typography>
+                  <Typography variant="body2">{data.name}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', mb: 2.7 }}>
                   <Typography variant="subtitle2" sx={{ mr: 2, color: 'text.primary' }}>

@@ -1,111 +1,140 @@
-// ** MUI Imports
-import Card from '@mui/material/Card'
-import Table from '@mui/material/Table'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import TableRow from '@mui/material/TableRow'
-import Checkbox from '@mui/material/Checkbox'
-import TableHead from '@mui/material/TableHead'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import CardHeader from '@mui/material/CardHeader'
-import Typography from '@mui/material/Typography'
-import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
-import TableContainer from '@mui/material/TableContainer'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import AnnouncementList from 'src/views/apps/announcement/announcementList';
+import authConfig from 'src/configs/auth';
 import Translations from 'src/layouts/components/Translations';
+import {
+  Container, Typography, CircularProgress, Card, CardContent, Box,
+} from '@mui/material';
 
-const UserViewNotification = () => {
+
+const AnnouncementListPage = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Function to fetch user ID
+  const getUserId = async (): Promise<number | null> => {
+    const userEndpoint = authConfig.meEndpoint;
+    const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+
+    try {
+      const response = await axios.get(userEndpoint, {
+        headers: { Authorization: `Bearer ${storedToken}` }
+      });
+
+      const userData = response.data;
+
+      return userData.id;
+    } catch (error) {
+      console.error('Error fetching user ID:', error);
+
+      return null;
+    }
+  };
+
+  // Function to fetch announcements
+  const fetchAnnouncements = async () => {
+    const userId = await getUserId();
+
+    if (userId === null) {
+      console.error('User is not logged in');
+      setLoading(false);
+
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/user/${userId}`);
+      setAnnouncements(response.data);
+      console.log("Announcement data", response.data);
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch announcements on component mount
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  // Handle like action
+  const handleLike = async (announcementId: number) => {
+    const userId = await getUserId();
+    if (userId) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+          },
+          body: JSON.stringify({ userId, announcementId })
+        });
+
+        if (response.ok) {
+          console.log('Liked the notification');
+
+          fetchAnnouncements();
+        } else {
+          console.error('Failed to like the notification');
+        }
+      } catch (error) {
+        console.error('Error liking the notification', error);
+      }
+    }
+  };
+
+  // Handle claim rewards action
+  const handleClaimRewards = async (announcementId: number) => {
+    const userId = await getUserId();
+    if (userId) {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/claim-rewards`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${window.localStorage.getItem(authConfig.storageTokenKeyName)}`
+          },
+          body: JSON.stringify({ userId, announcementId })
+        });
+
+        if (response.ok) {
+          console.log('Rewards claimed');
+
+          fetchAnnouncements();
+        } else {
+          console.error('Failed to claim rewards');
+        }
+      } catch (error) {
+        console.error('Error claiming rewards', error);
+      }
+    }
+  };
+
   return (
-    <Card>
-      <CardHeader title={<Translations text='Notifications' />} />
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
+        <Translations text="Announcements" />
+      </Typography>
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Card>
+          <CardContent>
+            <AnnouncementList
+              announcements={announcements}
+              onLike={handleLike}
+              onClaimRewards={handleClaimRewards}
+            />
+          </CardContent>
+        </Card>
+      )}
+    </Container>
+  );
+};
 
-      <Divider sx={{ m: '0 !important' }} />
-
-      <CardContent>
-        <Typography variant='body2' sx={{ fontWeight: 600, color: 'text.primary' }}>
-          You will receive notification for the below selected items.
-        </Typography>
-      </CardContent>
-
-      <Divider sx={{ m: '0 !important' }} />
-
-      <TableContainer>
-        <Table sx={{ minWidth: 500 }}>
-          <TableHead
-            sx={{ backgroundColor: theme => (theme.palette.mode === 'light' ? 'grey.50' : 'background.default') }}
-          >
-            <TableRow>
-              <TableCell sx={{ py: 3 }}><Translations text='Type' /></TableCell>
-              <TableCell sx={{ py: 3 }} align='center'><Translations text='Email' /></TableCell>
-              <TableCell sx={{ py: 3 }} align='center'><Translations text='Browser' /></TableCell>
-              <TableCell sx={{ py: 3 }} align='center'><Translations text='App' /></TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            <TableRow hover>
-              <TableCell><Translations text='new_for_you' /></TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox />
-              </TableCell>
-            </TableRow>
-            <TableRow hover>
-              <TableCell>Account activity</TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-            </TableRow>
-            <TableRow hover>
-              <TableCell>A new browser used to sign in</TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-            </TableRow>
-            <TableRow hover>
-              <TableCell>A new device is linked</TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox defaultChecked />
-              </TableCell>
-              <TableCell align='center' sx={{ pt: '0 !important', pb: '0 !important' }}>
-                <Checkbox />
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <CardActions>
-        <Button variant='contained' sx={{ mr: 2 }}>
-          <Translations text='save_changes' />
-        </Button>
-        <Button color='secondary' variant='outlined'>
-          <Translations text='discard' />
-        </Button>
-      </CardActions>
-    </Card>
-  )
-}
-
-export default UserViewNotification
+export default AnnouncementListPage;
