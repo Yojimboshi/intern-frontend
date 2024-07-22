@@ -111,6 +111,7 @@ export const registerUser = createAsyncThunk(
   async (data: RegisterUserPayload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post('/users/register', data);
+
       return response.data;
     } catch (error: any) {
       if (error.response) {

@@ -15,7 +15,7 @@ const AnnouncementAdminPage = () => {
   useEffect(() => {
     fetchAnnouncements();
   }, []);
-  // NOTE:cleanup,  use import hooks, from useAnnounce
+
   const fetchAnnouncements = async () => {
     try {
       console.log("Fetching announcement");
@@ -28,8 +28,8 @@ const AnnouncementAdminPage = () => {
       console.error('Error fetching announcements:', error);
     }
   };
-  // NOTE: type fix too
-  const handleSaveAnnouncement = async (announcement) => {
+
+  const handleSaveAnnouncement = async (announcement: { id: any; content: any; title: any; subtitle: any; rewards: any; }) => {
     try {
       if (announcement.id) {
         console.log("Updating announcement:", announcement);
@@ -72,7 +72,7 @@ const AnnouncementAdminPage = () => {
     }
   };
 
-  const handleDeleteAnnouncement = async (id) => {
+  const handleDeleteAnnouncement = async (id: number) => {
     try {
       console.log("Deleting announcement:", id);
       await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/${id}`, {
@@ -106,7 +106,7 @@ const AnnouncementAdminPage = () => {
       <Grid item xs={12}>
         <AnnouncementList
           announcements={announcements}
-          onEdit={(announcement) => {
+          onEdit={(announcement: React.SetStateAction<null>) => {
             setEditingAnnouncement(announcement);
             setShowForm(true);
           }}

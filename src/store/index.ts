@@ -9,6 +9,7 @@ import permissions from 'src/store/apps/permissions'
 import pools from 'src/store/apps/v2Pools';
 import transaction from 'src/store/apps/transaction';
 import downlines from 'src/store/apps/downlines';
+import cryptoSlice from 'src/store/apps/crypto'
 
 // NOTE: add announcement store import entry here
 // also add store/apps/announcement, refer to vpool 
@@ -23,7 +24,8 @@ export const store = configureStore({
     permissions,
     pools,
     transaction,
-    downlines
+    downlines,
+    cryptoSlice
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

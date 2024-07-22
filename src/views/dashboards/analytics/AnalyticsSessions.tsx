@@ -1,9 +1,12 @@
+// src/components/AnalyticsSessions.tsx
+
 // ** MUI Imports
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
+import React, { useEffect } from 'react'
 
 // ** Third Party Imports
 import { ApexOptions } from 'apexcharts';
@@ -14,18 +17,30 @@ import ReactApexcharts from 'src/@core/components/react-apexcharts';
 // ** Util Import
 import { hexToRGBA } from 'src/@core/utils/hex-to-rgba';
 
-import { useMarketCapChange, useDailyChanges } from 'src/hooks/crypoPriceFetch';
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchDailyChanges, fetchMarketCapChange } from 'src/store/apps/crypto' // Adjust the path as necessary
+
+// Import the RootState and AppDispatch types
+import { RootState, AppDispatch } from 'src/store'
 
 const AnalyticsSessions = () => {
   // ** Hook
   const theme = useTheme();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // NOTE: custom functions
-  const { marketCapChange, loading: loadingMarketCap } = useMarketCapChange();
-  const { dailyChanges, loading: dailyChangeLoading } = useDailyChanges();
+  const { dailyChanges, loading, marketCapChange, error } = useSelector((state: RootState) => state.cryptoSlice);
 
-  if (loadingMarketCap || dailyChangeLoading) {
+  useEffect(() => {
+    dispatch(fetchDailyChanges());
+    dispatch(fetchMarketCapChange());
+  }, [dispatch]);
+
+  if (loading) {
     return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
   }
 
   // Ensure dailyChanges is defined and not null
@@ -58,8 +73,6 @@ const AnalyticsSessions = () => {
       borderColor: theme.palette.divider,
       xaxis: {
         lines: { show: true },
-
-
       },
       yaxis: {
         lines: { show: false }

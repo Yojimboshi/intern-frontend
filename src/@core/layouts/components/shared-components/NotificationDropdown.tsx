@@ -15,7 +15,6 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Icon from 'src/@core/components/icon'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-import { ThemeColor } from 'src/@core/layouts/types'
 import { Settings } from 'src/@core/context/settingsContext'
 import { CustomAvatarProps } from 'src/@core/components/mui/avatar/types'
 import CustomChip from 'src/@core/components/mui/chip'
@@ -23,37 +22,8 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
 import axios from 'axios'
 import authConfig from 'src/configs/auth'
+import { NotificationsType } from 'src/types/apps/announcementTypes'
 
-
-export type NotificationsType = {
-  id: number
-  meta: string
-  title: string
-  subtitle: string
-  rewards?: string
-} & (
-    | {
-      avatarAlt: string;
-      avatarImg: string;
-      avatarText?: never;
-      avatarColor?: never;
-      avatarIcon?: never
-    }
-    | {
-      avatarAlt?: never
-      avatarImg?: never
-      avatarText: string
-      avatarIcon?: never
-      avatarColor?: ThemeColor
-    }
-    | {
-      avatarAlt?: never
-      avatarImg?: never
-      avatarText?: never
-      avatarIcon: ReactNode
-      avatarColor?: ThemeColor
-    }
-  )
 
 
 interface Props {
@@ -139,6 +109,7 @@ const NotificationDropdown = (props: Props) => {
   const handleDialogOpen = (notification: NotificationsType) => {
     setSelectedNotification(notification)
     setOpenDialog(true)
+    handleSeen(notification)
   }
 
   const handleDialogClose = () => {
@@ -154,8 +125,6 @@ const NotificationDropdown = (props: Props) => {
           headers: { Authorization: `Bearer ${storedToken}` }
         });
         const userData = user.data;
-        console.log("User data fetched successfully: ", userData.id);
-        console.log("User data fetched successfully: ", selectedNotification.id);
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/like`, {
           method: 'POST',
@@ -177,6 +146,32 @@ const NotificationDropdown = (props: Props) => {
     setOpenDialog(false)
   }
 
+  const handleSeen = async (notification: NotificationsType) => {
+
+    if (notification) {
+      try {
+        const user = await axios.get(userEndpoint, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        const userData = user.data;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/seen`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId: userData.id, announcementId: notification.id })
+        })
+
+        if (response.ok) {
+          console.log('Seeing the Notification')
+        } else {
+          console.error('Failed to see the notification')
+        }
+      } catch (error) {
+        console.error('Error seeing the notification', error)
+      }
+    }
+  }
 
   const handleClaimRewards = async () => {
     if (selectedNotification) {
