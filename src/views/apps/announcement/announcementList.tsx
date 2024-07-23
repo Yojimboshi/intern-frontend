@@ -3,13 +3,41 @@ import { List, ListItem, ListItemText, IconButton, Typography } from '@mui/mater
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import axios from 'axios';
+import authConfig from 'src/configs/auth';
 
 const AnnouncementList = ({ announcements, onLike, onClaimRewards }) => {
   const [seenAnnouncements, setSeenAnnouncements] = useState([]);
+  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
 
-  const handleMarkAsSeen = (announcementId) => {
+  const handleMarkAsSeen = async (announcementId) => {
     if (!seenAnnouncements.includes(announcementId)) {
       setSeenAnnouncements([...seenAnnouncements, announcementId]);
+
+      const userEndpoint = authConfig.meEndpoint;
+
+      try {
+        const user = await axios.get(userEndpoint, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+        const userData = user.data;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/seen`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${storedToken}`
+          },
+          body: JSON.stringify({ userId: userData.id, announcementId })
+        });
+
+        if (response.ok) {
+          console.log('Marked the notification as seen');
+        } else {
+          console.error('Failed to mark the notification as seen');
+        }
+      } catch (error) {
+        console.error('Error marking the notification as seen', error);
+      }
     }
   };
 

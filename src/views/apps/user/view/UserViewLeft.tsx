@@ -78,8 +78,11 @@ const initialData: UsersType = {
   },
   isEmpty: false,
   packageId: "4",
-  name: ''
+  name: '',
+  level: 1,
 }
+
+
 
 const roleColors: ColorsType = {
   admin: 'error',
@@ -119,10 +122,20 @@ const UserViewLeft = () => {
   const [subscriptionDialogOpen, setSubscriptionDialogOpen] = useState<boolean>(false)
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null)
+  const [formData, setFormData] = useState({
+    name: data.name,
+    username: data.username,
+    email: data.email,
+    accountStatus: data.accountStatus,
+    contact: data.contact,
+    country: data.country,
+  });
 
   // Handle Edit dialog
   const handleEditClickOpen = () => setOpenEdit(true)
   const handleEditClose = () => setOpenEdit(false)
+
 
   // Handle Upgrade Plan dialog
   const handlePlansClickOpen = () => {
@@ -139,7 +152,22 @@ const UserViewLeft = () => {
 
       localStorage.setItem('userData', JSON.stringify(currentUserData));
 
+      const response2 = await axios.get('/avatars');
+      const imageData = response2.data;
+      console.log(imageData)
+      console.log("form data:", formData)
+      setAvatarImage(imageData.image)
       setData(currentUserData);
+
+      setFormData({
+        name: currentUserData.name,
+        username: currentUserData.username,
+        email: currentUserData.email,
+        accountStatus: currentUserData.accountStatus,
+        contact: currentUserData.contact,
+        country: currentUserData.country,
+      });
+
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -180,6 +208,24 @@ const UserViewLeft = () => {
     }
   };
 
+  const handleInputChange = (e: { target: { name: any; value: any; }; }) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const response = await axios.put(`users/update`, formData);
+
+      console.log('User updated:', response.data);
+
+      handleEditClose(); // Close the dialog on successful update
+
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
   useEffect(() => {
     fetchAndUpdateUserData();
   }, []);
@@ -190,12 +236,11 @@ const UserViewLeft = () => {
         <Grid item xs={12}>
           <Card>
             <CardContent sx={{ pt: 15, display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              {data.avatar ? (
-                <CustomAvatar
-                  src={data.avatar}
-                  variant='rounded'
+              {avatarImage ? (
+                <img
+                  src={`data:image/png;base64,${avatarImage}`} // Display base64 image
                   alt={data.username}
-                  sx={{ width: 120, height: 120, fontWeight: 600, mb: 4 }}
+                  style={{ width: 120, height: 120, borderRadius: '50%', marginBottom: '16px' }}
                 />
               ) : (
                 <CustomAvatar
@@ -347,16 +392,16 @@ const UserViewLeft = () => {
                 sx={{
                   textAlign: 'center',
                   fontSize: '1.5rem !important',
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                  pt: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+                  px: (theme) => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                  pt: (theme) => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`],
                 }}
               >
                 Edit User Information
               </DialogTitle>
               <DialogContent
                 sx={{
-                  pb: theme => `${theme.spacing(8)} !important`,
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`]
+                  pb: (theme) => `${theme.spacing(8)} !important`,
+                  px: (theme) => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
                 }}
               >
                 <DialogContentText variant='body2' id='user-view-edit-description' sx={{ textAlign: 'center', mb: 7 }}>
@@ -365,28 +410,46 @@ const UserViewLeft = () => {
                 <form>
                   <Grid container spacing={6}>
                     <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='First Name' defaultValue={data.firstName} />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='Last Name' defaultValue={data.lastName} />
+                      <TextField
+                        fullWidth
+                        label='Full name'
+                        name='name'
+                        value={formData.name}
+                        defaultValue={data.name}
+                        onChange={handleInputChange}
+                      />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label='Username'
+                        name='username'
+                        value={formData.username}
+                        onChange={handleInputChange}
                         defaultValue={data.username}
                         InputProps={{ startAdornment: <InputAdornment position='start'>@</InputAdornment> }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                      <TextField fullWidth type='email' label='Billing Email' defaultValue={data.email} />
+                      <TextField
+                        fullWidth
+                        type='email'
+                        label='Billing Email'
+                        name='email'
+                        value={formData.email}
+                        defaultValue={data.email}
+                        onChange={handleInputChange}
+                      />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel id='user-view-status-label'>Status</InputLabel>
                         <Select
                           label='Status'
+                          name='accountStatus'
+                          value={formData.accountStatus}
                           defaultValue={data.accountStatus}
+                          onChange={handleInputChange}
                           id='user-view-status'
                           labelId='user-view-status-label'
                         >
@@ -400,30 +463,24 @@ const UserViewLeft = () => {
                       <TextField fullWidth label='TAX ID' defaultValue='Tax-8894' />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                      <TextField fullWidth label='Contact' defaultValue={`+1 ${data.contact}`} />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel id='user-view-language-label'>Language</InputLabel>
-                        <Select
-                          label='Language'
-                          defaultValue='English'
-                          id='user-view-language'
-                          labelId='user-view-language-label'
-                        >
-                          <MenuItem value='English'>English</MenuItem>
-                          <MenuItem value='Spanish'>Spanish</MenuItem>
-                          <MenuItem value='Portuguese'>Portuguese</MenuItem>
-                          <MenuItem value='Russian'>Russian</MenuItem>
-                        </Select>
-                      </FormControl>
+                      <TextField
+                        fullWidth
+                        label='Contact'
+                        name='contact'
+                        value={formData.contact}
+                        defaultValue={data.contact}
+                        onChange={handleInputChange}
+                      />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <FormControl fullWidth>
                         <InputLabel id='user-view-country-label'>Country</InputLabel>
                         <Select
                           label='Country'
-                          defaultValue='USA'
+                          name='country'
+                          value={formData.country}
+                          defaultValue={data.country}
+                          onChange={handleInputChange}
                           id='user-view-country'
                           labelId='user-view-country-label'
                         >
@@ -447,11 +504,11 @@ const UserViewLeft = () => {
               <DialogActions
                 sx={{
                   justifyContent: 'center',
-                  px: theme => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
-                  pb: theme => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`]
+                  px: (theme) => [`${theme.spacing(5)} !important`, `${theme.spacing(15)} !important`],
+                  pb: (theme) => [`${theme.spacing(8)} !important`, `${theme.spacing(12.5)} !important`],
                 }}
               >
-                <Button variant='contained' sx={{ mr: 2 }} onClick={handleEditClose}>
+                <Button variant='contained' sx={{ mr: 2 }} onClick={handleUpdate}>
                   Submit
                 </Button>
                 <Button variant='outlined' color='secondary' onClick={handleEditClose}>

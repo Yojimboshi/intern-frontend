@@ -17,6 +17,7 @@ export type UsersType = {
   role: string;
   status: string;
   username: string;
+  level: number;
   avatarColor: string;
   country: string;
   company: string;
