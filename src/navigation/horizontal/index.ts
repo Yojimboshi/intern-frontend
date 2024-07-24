@@ -68,6 +68,20 @@ const adminNavItems: HorizontalNavItemsType = [
     title: 'Announcements',
     icon: 'mdi:announcement-outline',
     path: '/apps/announcement/admin'
+  },
+  {
+    title: 'Avatars',
+    icon: 'mdi:account-edit-outline',
+    children: [
+      {
+        title: 'CRUD Avatar',
+        path: '/apps/avatars/CRUD'
+      },
+      {
+        title: 'List Avatars',
+        path: '/apps/avatars/list'
+      },
+    ]
   }
 ];
 
