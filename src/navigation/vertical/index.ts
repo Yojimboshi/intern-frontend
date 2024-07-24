@@ -76,11 +76,11 @@ const adminNavItems: VerticalNavItemsType = [
     children: [
       {
         title: 'CRUD Avatar',
-        path: '/apps/admin/avatars/CRUD'
+        path: '/apps/avatars'
       },
       {
         title: 'List Avatars',
-        path: '/apps/admin/avatars/list'
+        path: '/apps/avatars/list'
       },
     ]
   }
