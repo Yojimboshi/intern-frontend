@@ -53,6 +53,7 @@ const AvatarListPage = () => {
 
   const handleSaveAvatar = async (avatar: Avatar) => {
     try {
+      console.log(avatar.image)
       if (avatar.id) {
         console.log("Updating avatar:", avatar);
         await axios.put(

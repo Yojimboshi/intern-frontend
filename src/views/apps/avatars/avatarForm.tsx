@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, Grid } from '@mui/material';
 
-
 const AvatarForm = ({ avatar, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     image: avatar?.image || null,
@@ -20,27 +19,39 @@ const AvatarForm = ({ avatar, onSave, onCancel }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        // Convert ArrayBuffer to Base64 string
+        const base64String = arrayBufferToBase64(reader.result);
         setFormData({
           ...formData,
-          image: reader.result,
+          image: base64String,  // Storing Base64 encoded string
         });
       };
-      reader.readAsArrayBuffer(file);
+      reader.readAsArrayBuffer(file); // Read the file as ArrayBuffer
     }
+  };
+
+  // Helper function to convert ArrayBuffer to Base64
+  const arrayBufferToBase64 = (buffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+
+    return window.btoa(binary);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Convert image ArrayBuffer to a buffer that can be sent to the backend
-    const imageBuffer = formData.image ? new Uint8Array(formData.image) : null;
-
+    // No need to convert image to Base64, send raw binary data directly
     const payload = {
       level: formData.level,
-      image: imageBuffer,
+      image: formData.image, // Raw binary data
     };
 
-    onSave(payload);
+    onSave(payload); // Send the payload to the parent component
   };
 
   return (
@@ -61,7 +72,7 @@ const AvatarForm = ({ avatar, onSave, onCancel }) => {
           </label>
           {formData.image && (
             <img
-              src={URL.createObjectURL(new Blob([formData.image]))}
+              src={`data:image/jpeg;base64,${formData.image}`} // Displaying the image preview as a Base64 encoded string
               alt="Avatar Preview"
               style={{ marginTop: 10, maxWidth: '100%', height: 'auto' }}
             />
