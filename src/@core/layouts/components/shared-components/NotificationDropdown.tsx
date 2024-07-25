@@ -15,20 +15,17 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import Icon from 'src/@core/components/icon'
 import PerfectScrollbarComponent from 'react-perfect-scrollbar'
-import { Settings } from 'src/@core/context/settingsContext'
-import { CustomAvatarProps } from 'src/@core/components/mui/avatar/types'
 import CustomChip from 'src/@core/components/mui/chip'
 import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
-import axios from 'axios'
-import authConfig from 'src/configs/auth'
-import { NotificationsType } from 'src/types/apps/announcementTypes'
 import { useRouter } from 'next/router'
 
+import { useAnnounce, useMarkAsSeen, useLikeAnnouncement, useClaimAnnouncement } from 'src/hooks/useAnnounce'
+import { Settings } from 'src/@core/context/settingsContext'
+import { NotificationsType } from 'src/types/apps/announcementTypes'
 
 interface Props {
   settings: Settings
-  notifications: NotificationsType[]
 }
 
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
@@ -57,7 +54,7 @@ const PerfectScrollbar = styled(PerfectScrollbarComponent)({
   maxHeight: 344
 })
 
-const Avatar = styled(CustomAvatar)<CustomAvatarProps>({
+const Avatar = styled(CustomAvatar)({
   width: 38,
   height: 38,
   fontSize: '1.125rem'
@@ -89,15 +86,16 @@ const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: bool
 }
 
 const NotificationDropdown = (props: Props) => {
-  const { settings, notifications } = props
+  const { settings } = props
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [selectedNotification, setSelectedNotification] = useState<NotificationsType | null>(null)
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
   const { direction } = settings
-  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
-  const userEndpoint = authConfig.meEndpoint;
-
+  const notifications = useAnnounce()
+  const { markAsSeen } = useMarkAsSeen()
+  const likeAnnouncement = useLikeAnnouncement()
+  const claimAnnouncement = useClaimAnnouncement()
   const router = useRouter()
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
@@ -109,18 +107,16 @@ const NotificationDropdown = (props: Props) => {
   }
 
   const readAllNotif = () => {
-    router
-      .push({
-        pathname: `/apps/user/view/notification`
-      })
+    router.push({
+      pathname: `/apps/user/view/notification`
+    })
     setAnchorEl(null)
-
   }
 
   const handleDialogOpen = (notification: NotificationsType) => {
     setSelectedNotification(notification)
     setOpenDialog(true)
-    handleSeen(notification)
+    markAsSeen(notification.id)
   }
 
   const handleDialogClose = () => {
@@ -129,91 +125,19 @@ const NotificationDropdown = (props: Props) => {
   }
 
   const handleLike = async () => {
-
     if (selectedNotification) {
-      try {
-        const user = await axios.get(userEndpoint, {
-          headers: { Authorization: `Bearer ${storedToken}` }
-        });
-        const userData = user.data;
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/like`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
-        })
-
-        if (response.ok) {
-          console.log('Liked the notification')
-        } else {
-          console.error('Failed to like the notification')
-        }
-      } catch (error) {
-        console.error('Error liking the notification', error)
-      }
-    }
-    setOpenDialog(false)
-  }
-
-  const handleSeen = async (notification: NotificationsType) => {
-
-    if (notification) {
-      try {
-        const user = await axios.get(userEndpoint, {
-          headers: { Authorization: `Bearer ${storedToken}` }
-        });
-        const userData = user.data;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/seen`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId: userData.id, announcementId: notification.id })
-        })
-
-        if (response.ok) {
-          console.log('Seeing the Notification')
-        } else {
-          console.error('Failed to see the notification')
-        }
-      } catch (error) {
-        console.error('Error seeing the notification', error)
-      }
+      await likeAnnouncement(selectedNotification.id)
+      setOpenDialog(false)
     }
   }
 
   const handleClaimRewards = async () => {
     if (selectedNotification) {
-      try {
-        const user = await axios.get(userEndpoint, {
-          headers: { Authorization: `Bearer ${storedToken}` }
-        });
-        const userData = user.data;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements/claim-rewards`, {
-          method: 'POST',
-          headers: {
-
-            'Content-Type': 'application/json'
-          }
-          ,
-          body: JSON.stringify({ userId: userData.id, announcementId: selectedNotification.id })
-        })
-
-        console.log("suc")
-
-        if (response.ok) {
-          console.log('Rewards claimed')
-        } else {
-          console.error('Failed to claim rewards')
-        }
-      } catch (error) {
-        console.error('Error claiming rewards', error)
-      }
+      await claimAnnouncement(selectedNotification.id)
+      setOpenDialog(false)
     }
-    setOpenDialog(false)
   }
+
   const RenderAvatar = ({ notification }: { notification: NotificationsType }) => {
     const { avatarAlt, avatarImg, avatarIcon, avatarText, avatarColor } = notification
 
@@ -324,6 +248,9 @@ const NotificationDropdown = (props: Props) => {
                 Claim Rewards
               </Button>
             )}
+            <Button onClick={handleDialogClose} color="primary" autoFocus>
+              Close
+            </Button>
           </DialogActions>
         </Dialog>
       )}

@@ -1,37 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+// src/views/apps/avatars/AvatarListPage.tsx
+import React, { useState } from 'react';
 import {
   Container, Typography, Card, CardContent,
 } from '@mui/material';
-import authConfig from 'src/configs/auth';
-import { Avatar } from 'src/types/apps/avatarsType';
 import Translations from 'src/layouts/components/Translations';
 import AvatarList from 'src/views/apps/avatars/avatarList';
+import { Avatar } from 'src/types/apps/avatarsType';
+import { useFetchAvatars } from 'src/hooks/useAvatar';
 
 const AvatarListPage = () => {
   const [avatarData, setAvatarData] = useState<Avatar[]>([]);
-  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
+  const { loading, error } = useFetchAvatars(setAvatarData);
 
-  useEffect(() => {
-    fetchAvatars();
-  }, []);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const fetchAvatars = async () => {
-    console.log("Fetching avatars");
-
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/avatars/all`, {
-        headers: { Authorization: `Bearer ${storedToken}` },
-      });
-
-      const imageData = response.data;
-      console.log("Fetched avatars:", imageData);
-      setAvatarData(imageData.data || []); // Ensure data is an array
-
-    } catch (error) {
-      console.error("Error fetching avatars:", error);
-    }
-  };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <Container>
