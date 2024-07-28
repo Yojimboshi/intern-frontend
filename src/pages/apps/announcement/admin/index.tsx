@@ -1,43 +1,31 @@
+// src/pages/apps/announcement/admin/index.tsx
 import React, { useEffect, useState } from 'react';
 import { Button, Grid, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import axios from 'axios'
 import AnnouncementForm from 'src/views/apps/announcement/admin/announcementForm';
 import AnnouncementList from 'src/views/apps/announcement/admin/announcementList';
-import { useDeleteAnnouncement, useSaveAnnouncement } from 'src/hooks/useAnnounce';
-import authConfig from 'src/configs/auth';
+import useAnnouncements from 'src/hooks/useAnnounce';
+import { NotificationsType } from 'src/types/apps/announcementTypes';
 
 const AnnouncementAdminPage = () => {
-  const [announcements, setAnnouncements] = useState([]);
-  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const {
+    announcements,
+    fetchAnnouncements,
+    deleteAnnouncement,
+    saveAnnouncement,
+  } = useAnnouncements();
+  const [editingAnnouncement, setEditingAnnouncement] = useState<NotificationsType | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
-  const storedToken = window.localStorage.getItem(authConfig.storageTokenKeyName);
-
-  const deleteAnnouncement = useDeleteAnnouncement();
-  const saveAnnouncement = useSaveAnnouncement();
 
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
-  const fetchAnnouncements = async () => {
-    try {
-      console.log('Fetching announcement');
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/announcements`, {
-        headers: { Authorization: `Bearer ${storedToken}` }
-      });
-      setAnnouncements(response.data);
-      console.log('List of announcement:', response.data);
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-    }
-  };
-
-  const handleSaveAnnouncement = async (announcement: { id: any; content: any; title: any; subtitle: any; rewards: any; }) => {
+  const handleSaveAnnouncement = async (announcement: NotificationsType) => {
     await saveAnnouncement(announcement);
     fetchAnnouncements();
     setShowForm(false);
-    setEditingAnnouncement(null);
+    setEditingAnnouncement(undefined);
   };
 
   const handleDeleteAnnouncement = async (id: number) => {
@@ -58,7 +46,7 @@ const AnnouncementAdminPage = () => {
             onSave={handleSaveAnnouncement}
             onCancel={() => {
               setShowForm(false);
-              setEditingAnnouncement(null);
+              setEditingAnnouncement(undefined);
             }}
           />
         )}
@@ -66,7 +54,7 @@ const AnnouncementAdminPage = () => {
       <Grid item xs={12}>
         <AnnouncementList
           announcements={announcements}
-          onEdit={(announcement: React.SetStateAction<null>) => {
+          onEdit={(announcement: NotificationsType) => {
             setEditingAnnouncement(announcement);
             setShowForm(true);
           }}

@@ -1,24 +1,18 @@
-// src/views/apps/avatars/AvatarListPage.tsx
-import React, { useState } from 'react';
+// src/views/apps/avatars/list.tsx
+import React, { useEffect } from 'react';
 import {
-  Container, Typography, Card, CardContent,
+  Container, Typography, Card, CardContent, Alert
 } from '@mui/material';
 import Translations from 'src/layouts/components/Translations';
 import AvatarList from 'src/views/apps/avatars/avatarList';
-import { Avatar } from 'src/types/apps/avatarsType';
-import { useFetchAvatars } from 'src/hooks/useAvatar';
+import useAvatar from 'src/hooks/useAvatar';
 
 const AvatarListPage = () => {
-  const [avatarData, setAvatarData] = useState<Avatar[]>([]);
-  const { loading, error } = useFetchAvatars(setAvatarData);
+  const { avatars, loading, error, fetchAvatars } = useAvatar();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  useEffect(() => {
+    fetchAvatars();
+  }, []);
 
   return (
     <Container>
@@ -26,11 +20,17 @@ const AvatarListPage = () => {
         <Translations text="Avatars" />
       </Typography>
 
-      <Card>
-        <CardContent>
-          <AvatarList avatars={avatarData} />
-        </CardContent>
-      </Card>
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <Card>
+          <CardContent>
+            <AvatarList avatars={avatars} />
+          </CardContent>
+        </Card>
+      )}
     </Container>
   );
 };

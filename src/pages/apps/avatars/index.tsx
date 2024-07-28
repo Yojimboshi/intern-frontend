@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
+// src\pages\apps\avatars\index.tsx
+import React, { useState, useEffect } from 'react';
 import {
-  Container, Typography, Card, CardContent, Button
+  Container, Typography, Card, CardContent, Button, Alert
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Translations from 'src/layouts/components/Translations';
 import AvatarEditList from 'src/views/apps/avatars/avatarEditList';
 import AvatarForm from 'src/views/apps/avatars/avatarForm';
 import { Avatar } from 'src/types/apps/avatarsType';
-import { useFetchAvatars, useAvatarActions } from 'src/hooks/useAvatar';
+import useAvatar from 'src/hooks/useAvatar';
 
 const AvatarListPage = () => {
-  const [avatarData, setAvatarData] = useState<Avatar[]>([]);
-  const { loading, error } = useFetchAvatars(setAvatarData);
-  const { handleDeleteAvatar, handleSaveAvatar } = useAvatarActions(setAvatarData);
+  const {
+    avatars,
+    loading,
+    error,
+    fetchAvatars,
+    deleteAvatar,
+    saveAvatar,
+  } = useAvatar();
+
   const [editingAvatar, setEditingAvatar] = useState<Avatar | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  useEffect(() => {
+    fetchAvatars();
+  }, []);
 
   return (
     <Container>
@@ -35,24 +38,35 @@ const AvatarListPage = () => {
       {showForm && (
         <AvatarForm
           avatar={editingAvatar}
-          onSave={handleSaveAvatar}
+          onSave={async (avatar) => {
+            await saveAvatar(avatar);
+            setShowForm(false);
+            setEditingAvatar(null);
+          }}
           onCancel={() => {
             setShowForm(false);
             setEditingAvatar(null);
           }}
         />
       )}
-      <Card>
-        <CardContent>
-          <AvatarEditList
-            avatars={avatarData}
-            onEdit={(avatar: Avatar) => {
-              setEditingAvatar(avatar);
-              setShowForm(true);
-            }}
-            onDelete={handleDeleteAvatar} />
-        </CardContent>
-      </Card>
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : (
+        <Card>
+          <CardContent>
+            <AvatarEditList
+              avatars={avatars}
+              onEdit={(avatar: Avatar) => {
+                setEditingAvatar(avatar);
+                setShowForm(true);
+              }}
+              onDelete={deleteAvatar}
+            />
+          </CardContent>
+        </Card>
+      )}
     </Container>
   );
 };

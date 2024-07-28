@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
+// src\views\apps\announcement\admin\announcementForm.tsx
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Button, TextField, Grid } from '@mui/material';
+import { NotificationsType } from 'src/types/apps/announcementTypes';
 
+interface AnnouncementFormProps {
+  announcement?: NotificationsType;
+  onSave: (formData: NotificationsType) => void;
+  onCancel: () => void;
+}
 
+// Define a default announcement that matches one of the NotificationsType variants
+const defaultAnnouncement: NotificationsType = {
+  id: 0,
+  meta: '',
+  title: '',
+  subtitle: '',
+  rewards: '',
+  avatarAlt: '',
+  avatarImg: '',
+};
 
-const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(announcement || { title: '', subtitle: '', content: '', rewards: '' });
+const AnnouncementForm: React.FC<AnnouncementFormProps> = ({ announcement, onSave, onCancel }) => {
+  const [formData, setFormData] = useState<NotificationsType>(announcement || defaultAnnouncement);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSave(formData);
   };
@@ -23,8 +40,8 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
-            label="Title"
             name="title"
+            label="Title"
             value={formData.title}
             onChange={handleChange}
             fullWidth
@@ -32,8 +49,8 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            label="Subtitle"
             name="subtitle"
+            label="Subtitle"
             value={formData.subtitle}
             onChange={handleChange}
             fullWidth
@@ -41,29 +58,29 @@ const AnnouncementForm = ({ announcement, onSave, onCancel }) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            label="Content"
             name="content"
-            value={formData.content}
+            label="Content"
+            value={formData.meta}
             onChange={handleChange}
+            fullWidth
             multiline
             rows={4}
-            fullWidth
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            label="Rewards"
             name="rewards"
-            value={formData.rewards}
+            label="Rewards"
+            value={formData.rewards || ''}
             onChange={handleChange}
             fullWidth
           />
         </Grid>
         <Grid item xs={12}>
           <Button type="submit" variant="contained" color="primary">
-            Create
+            Save
           </Button>
-          <Button onClick={onCancel} variant="contained" color="secondary" style={{ marginLeft: 8 }}>
+          <Button variant="outlined" color="secondary" onClick={onCancel}>
             Cancel
           </Button>
         </Grid>

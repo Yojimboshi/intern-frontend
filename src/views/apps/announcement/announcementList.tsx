@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+// src/views/apps/announcement/announcementList.tsx
+import React from 'react';
 import { List, ListItem, ListItemText, IconButton, Typography } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useMarkAsSeen } from 'src/hooks/useAnnounce';
+import useAnnouncements from 'src/hooks/useAnnounce';
+import { NotificationsType } from 'src/types/apps/announcementTypes';
 
-const AnnouncementList = ({ announcements, onLike, onClaimRewards }) => {
+interface AnnouncementListProps {
+  announcements: NotificationsType[];
+  onLike: (id: number) => void;
+  onClaimRewards: (id: number) => void;
+}
 
-
-  const { seenAnnouncements, markAsSeen } = useMarkAsSeen();
+const AnnouncementList: React.FC<AnnouncementListProps> = ({ announcements, onLike, onClaimRewards }) => {
+  const { seenAnnouncements, markAsSeen } = useAnnouncements();
 
   return (
     <List>

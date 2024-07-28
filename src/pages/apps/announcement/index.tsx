@@ -1,22 +1,29 @@
+// src/pages/apps/announcement/index.tsx
 import React, { useState, useEffect } from 'react';
 import AnnouncementList from 'src/views/apps/announcement/announcementList';
 import Translations from 'src/layouts/components/Translations';
 import {
   Container, Typography, CircularProgress, Card, CardContent, Box,
 } from '@mui/material';
-import { useAnnounce, useLikeAnnouncement, useClaimAnnouncement } from 'src/hooks/useAnnounce';
+import useAnnouncements from 'src/hooks/useAnnounce';
 
 const AnnouncementListPage = () => {
-  const announcements = useAnnounce();
-  const likeAnnouncement = useLikeAnnouncement();
-  const claimAnnouncement = useClaimAnnouncement();
+  const {
+    announcements,
+    fetchAnnouncements,
+    likeAnnouncement,
+    claimAnnouncement
+  } = useAnnouncements();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (announcements.length > 0) {
+    const fetchData = async () => {
+      await fetchAnnouncements();
       setLoading(false);
-    }
-  }, [announcements]);
+    };
+
+    fetchData();
+  }, [fetchAnnouncements]);
 
   return (
     <Container>
