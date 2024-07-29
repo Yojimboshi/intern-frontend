@@ -10,7 +10,7 @@ import useAnnouncements from 'src/hooks/useAnnounce';
 const AnnouncementListPage = () => {
   const {
     announcements,
-    fetchAnnouncements,
+    fetchAnnouncementsUser,
     likeAnnouncement,
     claimAnnouncement
   } = useAnnouncements();
@@ -18,12 +18,12 @@ const AnnouncementListPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchAnnouncements();
+      await fetchAnnouncementsUser();
       setLoading(false);
     };
 
     fetchData();
-  }, [fetchAnnouncements]);
+  }, [fetchAnnouncementsUser]);
 
   return (
     <Container>

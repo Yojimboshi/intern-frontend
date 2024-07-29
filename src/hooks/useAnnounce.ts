@@ -1,16 +1,9 @@
 // src/hooks/useAnnounce.ts
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'src/configs/axiosConfig';
+import { AnnouncementType } from 'src/types/apps/announcementTypes';
 
-interface AnnouncementType {
-  id: number;
-  meta: string;
-  avatarAlt: string;
-  avatarImg: string;
-  title: string;
-  subtitle: string;
-  rewards: string;
-}
+
 
 const useAnnouncements = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementType[]>([]);
@@ -25,6 +18,17 @@ const useAnnouncements = () => {
       console.error('Error fetching announcements:', error);
     }
   };
+
+  const fetchAnnouncementsUser = useCallback(async () => {
+    try {
+      console.log("Checking announcement")
+      const response = await axios.get('/announcements/user')
+      setAnnouncements(response.data)
+      console.log("Announcements for user:", response.data)
+    } catch (error) {
+      console.error('Error fetching announcements:', error)
+    }
+  }, [])
 
   const markAsSeen = async (announcementId: number) => {
     if (!seenAnnouncements.includes(announcementId)) {
@@ -59,14 +63,15 @@ const useAnnouncements = () => {
     try {
       if (announcement.id) {
         await axios.put(`/announcements/${announcement.id}`, {
-          message: announcement.content,
+          content: announcement.content,
           title: announcement.title,
           subtitle: announcement.subtitle,
           rewards: announcement.rewards,
         });
       } else {
+        console.log("Creating post")
         await axios.post(`/announcements`, {
-          message: announcement.content,
+          content: announcement.content,
           title: announcement.title,
           subtitle: announcement.subtitle,
           rewards: announcement.rewards,
@@ -117,6 +122,7 @@ const useAnnouncements = () => {
     seenAnnouncements,
     todayAnnouncement,
     fetchAnnouncements,
+    fetchAnnouncementsUser,
     markAsSeen,
     deleteAnnouncement,
     saveAnnouncement,

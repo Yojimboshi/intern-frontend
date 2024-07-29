@@ -1,16 +1,16 @@
 // src\views\apps\announcement\admin\announcementForm.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Button, TextField, Grid } from '@mui/material';
-import { NotificationsType } from 'src/types/apps/announcementTypes';
+import { AnnouncementType } from 'src/types/apps/announcementTypes';
 
 interface AnnouncementFormProps {
-  announcement?: NotificationsType;
-  onSave: (formData: NotificationsType) => void;
+  announcement?: AnnouncementType;
+  onSave: (formData: AnnouncementType) => void;
   onCancel: () => void;
 }
 
 // Define a default announcement that matches one of the NotificationsType variants
-const defaultAnnouncement: NotificationsType = {
+const defaultAnnouncement: AnnouncementType = {
   id: 0,
   meta: '',
   title: '',
@@ -18,10 +18,11 @@ const defaultAnnouncement: NotificationsType = {
   rewards: '',
   avatarAlt: '',
   avatarImg: '',
+  content: '',
 };
 
 const AnnouncementForm: React.FC<AnnouncementFormProps> = ({ announcement, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<NotificationsType>(announcement || defaultAnnouncement);
+  const [formData, setFormData] = useState<AnnouncementType>(announcement || defaultAnnouncement);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -60,7 +61,7 @@ const AnnouncementForm: React.FC<AnnouncementFormProps> = ({ announcement, onSav
           <TextField
             name="content"
             label="Content"
-            value={formData.meta}
+            value={formData.content}
             onChange={handleChange}
             fullWidth
             multiline

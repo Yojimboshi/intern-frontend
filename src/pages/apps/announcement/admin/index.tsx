@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import AnnouncementForm from 'src/views/apps/announcement/admin/announcementForm';
 import AnnouncementList from 'src/views/apps/announcement/admin/announcementList';
 import useAnnouncements from 'src/hooks/useAnnounce';
-import { NotificationsType } from 'src/types/apps/announcementTypes';
+import { AnnouncementType } from 'src/types/apps/announcementTypes';
 
 const AnnouncementAdminPage = () => {
   const {
@@ -14,14 +14,14 @@ const AnnouncementAdminPage = () => {
     deleteAnnouncement,
     saveAnnouncement,
   } = useAnnouncements();
-  const [editingAnnouncement, setEditingAnnouncement] = useState<NotificationsType | undefined>(undefined);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<AnnouncementType | undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
-  const handleSaveAnnouncement = async (announcement: NotificationsType) => {
+  const handleSaveAnnouncement = async (announcement: AnnouncementType) => {
     await saveAnnouncement(announcement);
     fetchAnnouncements();
     setShowForm(false);
@@ -54,7 +54,7 @@ const AnnouncementAdminPage = () => {
       <Grid item xs={12}>
         <AnnouncementList
           announcements={announcements}
-          onEdit={(announcement: NotificationsType) => {
+          onEdit={(announcement: AnnouncementType) => {
             setEditingAnnouncement(announcement);
             setShowForm(true);
           }}

@@ -1,15 +1,16 @@
-// src\types\apps\announcementTypes.ts
 import { ReactNode } from 'react';
 import { ThemeColor } from 'src/@core/layouts/types';
 
 export interface AnnouncementType {
-  id: number | null;
-  content: string;
+  id: number;
+  meta: string;
+  avatarAlt: string;
+  avatarImg: string;
   title: string;
   subtitle: string;
   rewards: string;
+  content: string; // Ensure 'content' is included
 }
-
 
 export interface BaseNotificationType {
   id: number;
@@ -18,15 +19,15 @@ export interface BaseNotificationType {
 }
 
 export interface NotificationsType extends BaseNotificationType {
-  content: string;
-  rewards: string;
+  id: number;
+  meta: string;
   avatarAlt: string;
   avatarImg: string;
-  avatarText?: string;
-  avatarColor?: string;
-  avatarIcon?: string;
-}
+  title: string;
+  subtitle: string;
+  rewards: string;
 
+}
 
 export type NotificationsAction = BaseNotificationType & (
   | {
