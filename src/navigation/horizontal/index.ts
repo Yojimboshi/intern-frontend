@@ -74,15 +74,20 @@ const adminNavItems: HorizontalNavItemsType = [
     icon: 'mdi:account-edit-outline',
     children: [
       {
-        title: 'CRUD Avatar',
-        path: '/apps/avatars/CRUD'
+        title: 'Avatar Editor',
+        path: '/apps/avatars'
       },
       {
         title: 'List Avatars',
         path: '/apps/avatars/list'
       },
     ]
-  }
+  },
+  {
+    title: 'Chat Channel Editor',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/chatChannel/admin'
+  },
 ];
 
 const userNavItems: HorizontalNavItemsType = [
@@ -139,7 +144,12 @@ const userNavItems: HorizontalNavItemsType = [
     title: 'Announcements',
     icon: 'mdi:announcement-outline',
     path: '/apps/announcement'
-  }
+  },
+  {
+    title: 'Chat Channel',
+    icon: 'mdi:announcement-outline',
+    path: '/apps/chatChannel'
+  },
 
 ];
 
