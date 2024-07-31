@@ -11,7 +11,7 @@ import AnalyticsVisitsByDay from 'src/views/dashboards/analytics/AnalyticsVisits
 import AnalyticsCongratulations from 'src/views/dashboards/analytics/AnalyticsCongratulations'
 import AnalyticsActivityTimeline from 'src/views/dashboards/analytics/AnalyticsActivityTimeline'
 import AnalyticsTotalTransactions from 'src/views/dashboards/analytics/AnalyticsTotalTransactions'
-import { useTodayAnnounce } from 'src/hooks/useAnnounce'
+import useAnnouncements from 'src/hooks/useAnnounce'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -31,8 +31,8 @@ interface AnnouncementDetails {
 }
 
 const AnalyticsDashboard = () => {
-  const { todayAnnouncement } = useTodayAnnounce()
-  const [openSnackbar, setOpenSnackbar] = useState(!!todayAnnouncement)
+  const { todayAnnouncement, likeAnnouncement, claimAnnouncement } = useAnnouncements()
+  const [openSnackbar, setOpenSnackbar] = useState(false)
   const [openDialog, setOpenDialog] = useState(false)
   const [announcementDetails, setAnnouncementDetails] = useState<AnnouncementDetails>({
     title: '',
@@ -66,18 +66,18 @@ const AnalyticsDashboard = () => {
     setOpenDialog(false)
   }
 
-  const handleLike = () => {
-    // Implement the logic to like the announcement
-    // This can include updating the state and/or sending a request to the server
-    console.log('Liked the announcement')
-    setOpenDialog(false)
+  const handleLike = async () => {
+    if (todayAnnouncement) {
+      await likeAnnouncement(todayAnnouncement.id)
+      setOpenDialog(false)
+    }
   }
 
-  const handleClaimRewards = () => {
-    // Implement the logic to claim rewards
-    // This can include updating the state and/or sending a request to the server
-    console.log('Rewards claimed')
-    setOpenDialog(false)
+  const handleClaimRewards = async () => {
+    if (todayAnnouncement) {
+      await claimAnnouncement(todayAnnouncement.id)
+      setOpenDialog(false)
+    }
   }
 
   return (

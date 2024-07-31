@@ -3,7 +3,6 @@ import { useState } from 'react';
 import axios from 'src/configs/axiosConfig';
 import { Avatar } from 'src/types/apps/avatarsType';
 
-const USER_URL = '/avatars';
 
 const useAvatar = () => {
   const [avatars, setAvatars] = useState<Avatar[]>([]);

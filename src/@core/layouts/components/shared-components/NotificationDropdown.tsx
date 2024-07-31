@@ -20,12 +20,13 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import { getInitials } from 'src/@core/utils/get-initials'
 import { useRouter } from 'next/router'
 
-import { useAnnounce, useMarkAsSeen, useLikeAnnouncement, useClaimAnnouncement } from 'src/hooks/useAnnounce'
+import useAnnouncements from 'src/hooks/useAnnounce'
 import { Settings } from 'src/@core/context/settingsContext'
-import { NotificationsType } from 'src/types/apps/announcementTypes'
+import { NotificationsAction, NotificationsType } from 'src/types/apps/announcementTypes'
 
 interface Props {
   settings: Settings
+  notifications: NotificationsType[] // Added this line
 }
 
 const Menu = styled(MuiMenu)<MenuProps>(({ theme }) => ({
@@ -86,17 +87,15 @@ const ScrollWrapper = ({ children, hidden }: { children: ReactNode; hidden: bool
 }
 
 const NotificationDropdown = (props: Props) => {
-  const { settings } = props
+  const { settings, notifications } = props // Destructure notifications here
   const [anchorEl, setAnchorEl] = useState<(EventTarget & Element) | null>(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [selectedNotification, setSelectedNotification] = useState<NotificationsType | null>(null)
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
   const { direction } = settings
-  const notifications = useAnnounce()
-  const { markAsSeen } = useMarkAsSeen()
-  const likeAnnouncement = useLikeAnnouncement()
-  const claimAnnouncement = useClaimAnnouncement()
   const router = useRouter()
+  const { markAsSeen, likeAnnouncement, claimAnnouncement } = useAnnouncements();
+
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -138,7 +137,7 @@ const NotificationDropdown = (props: Props) => {
     }
   }
 
-  const RenderAvatar = ({ notification }: { notification: NotificationsType }) => {
+  const RenderAvatar = ({ notification }: { notification: NotificationsAction }) => {
     const { avatarAlt, avatarImg, avatarIcon, avatarText, avatarColor } = notification
 
     if (avatarImg) {

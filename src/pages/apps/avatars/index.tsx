@@ -38,7 +38,7 @@ const AvatarListPage = () => {
       {showForm && (
         <AvatarForm
           avatar={editingAvatar}
-          onSave={async (avatar) => {
+          onSave={async (avatar: Avatar) => {
             await saveAvatar(avatar);
             setShowForm(false);
             setEditingAvatar(null);

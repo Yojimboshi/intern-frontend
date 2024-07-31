@@ -3,11 +3,11 @@ import React from 'react';
 import { List, ListItem, ListItemText, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { NotificationsType } from 'src/types/apps/announcementTypes';
+import { AnnouncementType } from 'src/types/apps/announcementTypes';
 
 interface AnnouncementListProps {
-  announcements: NotificationsType[];
-  onEdit: (announcement: NotificationsType) => void;
+  announcements: AnnouncementType[];
+  onEdit: (announcement: AnnouncementType) => void;
   onDelete: (id: number) => void;
 }
 
