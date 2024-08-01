@@ -106,15 +106,12 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
                 <Avatar
                   sx={{ width: 84, height: 84 }}
                   src={store.userProfile.avatar}
-                  alt={store.userProfile.fullName}
+                  alt={store.userProfile.username}
                 />
               </Badge>
             </Box>
             <Typography sx={{ mb: 0.75, fontWeight: 600, textAlign: 'center' }}>
-              {store.userProfile.fullName}
-            </Typography>
-            <Typography variant='body2' sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
-              {store.userProfile.role}
+              {store.userProfile.username}
             </Typography>
           </Box>
 
@@ -124,7 +121,7 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
                 <Typography variant='body2' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                   About
                 </Typography>
-                <TextField minRows={3} multiline fullWidth sx={{ mb: 6 }} defaultValue={store.userProfile.about} />
+                <TextField minRows={3} multiline fullWidth sx={{ mb: 6 }} defaultValue={store.userProfile.status} />
                 <Typography variant='body2' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                   Status
                 </Typography>

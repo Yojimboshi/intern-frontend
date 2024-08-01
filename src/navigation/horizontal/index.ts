@@ -86,7 +86,7 @@ const adminNavItems: HorizontalNavItemsType = [
   {
     title: 'Chat Channel Editor',
     icon: 'mdi:announcement-outline',
-    path: '/apps/chatChannel/admin'
+    path: '/apps/chatChannel'
   },
 ];
 

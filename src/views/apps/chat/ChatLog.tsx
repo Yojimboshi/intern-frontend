@@ -1,4 +1,3 @@
-// ** React Imports
 import { useRef, useEffect, Ref, ReactNode } from 'react'
 
 // ** MUI Imports
@@ -23,9 +22,8 @@ import {
   ChatLogType,
   MessageType,
   MsgFeedbackType,
-  ChatLogChatType,
   MessageGroupType,
-  FormattedChatsType
+  FormattedMessagesType
 } from 'src/types/apps/chatTypes'
 
 const PerfectScrollbar = styled(PerfectScrollbarComponent)<ScrollBarProps & { ref: Ref<unknown> }>(({ theme }) => ({
@@ -55,36 +53,26 @@ const ChatLog = (props: ChatLogType) => {
   // ** Formats chat data based on sender
   const formattedChatData = () => {
     let chatLog: MessageType[] | [] = []
-    if (data.chat) {
-      chatLog = data.chat.chat
+    if (data.messages) {
+      chatLog = data.messages
     }
 
-    const formattedChatLog: FormattedChatsType[] = []
-    let chatMessageSenderId = chatLog[0] ? chatLog[0].senderId : 11
+    const formattedChatLog: FormattedMessagesType[] = []
+    let chatMessageSenderId = chatLog[0] ? chatLog[0].userId : 0
     let msgGroup: MessageGroupType = {
-      senderId: chatMessageSenderId,
+      userId: chatMessageSenderId,
       messages: []
     }
     chatLog.forEach((msg: MessageType, index: number) => {
-      if (chatMessageSenderId === msg.senderId) {
-        msgGroup.messages.push({
-          time: msg.time,
-          msg: msg.message,
-          feedback: msg.feedback
-        })
+      if (chatMessageSenderId === msg.userId) {
+        msgGroup.messages.push(msg)
       } else {
-        chatMessageSenderId = msg.senderId
+        chatMessageSenderId = msg.userId
 
         formattedChatLog.push(msgGroup)
         msgGroup = {
-          senderId: msg.senderId,
-          messages: [
-            {
-              time: msg.time,
-              msg: msg.message,
-              feedback: msg.feedback
-            }
-          ]
+          userId: msg.userId,
+          messages: [msg]
         }
       }
 
@@ -121,7 +109,7 @@ const ChatLog = (props: ChatLogType) => {
   }
 
   useEffect(() => {
-    if (data && data.chat && data.chat.chat.length) {
+    if (data && data.messages && data.messages.length) {
       scrollToBottom()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,8 +117,8 @@ const ChatLog = (props: ChatLogType) => {
 
   // ** Renders user chat
   const renderChats = () => {
-    return formattedChatData().map((item: FormattedChatsType, index: number) => {
-      const isSender = item.senderId === data.userContact.id
+    return formattedChatData().map((item: FormattedMessagesType, index: number) => {
+      const isSender = item.userId === data.channel.id
 
       return (
         <Box
@@ -144,7 +132,7 @@ const ChatLog = (props: ChatLogType) => {
           <div>
             <CustomAvatar
               skin='light'
-              color={data.contact.avatarColor ? data.contact.avatarColor : undefined}
+              color={data.channel.avatarColor ? data.channel.avatarColor : undefined}
               sx={{
                 width: '2rem',
                 height: '2rem',
@@ -152,26 +140,20 @@ const ChatLog = (props: ChatLogType) => {
                 ml: isSender ? 4 : undefined,
                 mr: !isSender ? 4 : undefined
               }}
-              {...(data.contact.avatar && !isSender
+              {...(data.channel.avatar && !isSender
                 ? {
-                    src: data.contact.avatar,
-                    alt: data.contact.fullName
-                  }
-                : {})}
-              {...(isSender
-                ? {
-                    src: data.userContact.avatar,
-                    alt: data.userContact.fullName
-                  }
+                  src: data.channel.avatar,
+                  alt: data.channel.name
+                }
                 : {})}
             >
-              {data.contact.avatarColor ? getInitials(data.contact.fullName) : null}
+              {data.channel.avatarColor ? getInitials(data.channel.name) : null}
             </CustomAvatar>
           </div>
 
           <Box className='chat-body' sx={{ maxWidth: ['calc(100% - 5.75rem)', '75%', '65%'] }}>
-            {item.messages.map((chat: ChatLogChatType, index: number, { length }: { length: number }) => {
-              const time = new Date(chat.time)
+            {item.messages.map((chat: MessageType, index: number, { length }: { length: number }) => {
+              const time = new Date(chat.createdAt)
 
               return (
                 <Box key={index} sx={{ '&:not(:last-of-type)': { mb: 3.5 } }}>
@@ -192,7 +174,7 @@ const ChatLog = (props: ChatLogType) => {
                         backgroundColor: isSender ? 'primary.main' : 'background.paper'
                       }}
                     >
-                      {chat.msg}
+                      {chat.message}
                     </Typography>
                   </div>
                   {index + 1 === length ? (

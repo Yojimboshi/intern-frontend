@@ -1,28 +1,45 @@
-// ** Types
 import { Dispatch } from 'redux'
 import { ThemeColor } from 'src/@core/layouts/types'
 
-export type StatusType = 'busy' | 'away' | 'online' | 'offline'
+export type StatusType = 'online' | 'offline' | 'away' | 'busy'
 
 export type StatusObjType = {
-  busy: ThemeColor
-  away: ThemeColor
   online: ThemeColor
   offline: ThemeColor
+  away: ThemeColor
+  busy: ThemeColor
 }
 
-export type ProfileUserType = {
+
+
+export type UserType = {
   id: number
-  role: string
-  about: string
-  avatar: string
-  fullName: string
+  username: string
+  email: string
+  avatar?: string
   status: StatusType
-  settings: {
-    isNotificationsOn: boolean
-    isTwoStepAuthVerificationEnabled: boolean
-  }
+  avatarColor?: ThemeColor
 }
+
+export type ChannelType = {
+  id: number
+  name: string
+  description: string
+  active: boolean
+  createdAt: string
+  avatarColor?: ThemeColor
+  avatar?: string
+}
+
+export type MessageType = {
+  id: number
+  channelId: number
+  userId: number
+  message: string
+  createdAt: string
+  feedback?: string
+}
+
 
 export type MsgFeedbackType = {
   isSent: boolean
@@ -30,58 +47,18 @@ export type MsgFeedbackType = {
   isDelivered: boolean
 }
 
-export type ChatType = {
-  message: string
-  senderId: number
-  time: Date | string
-  feedback: MsgFeedbackType
-}
 
-export type ChatsObj = {
-  id: number
-  userId: number
-  chat: ChatType[]
-  unseenMsgs: number
-  lastMessage?: ChatType
-}
-
-export type ContactType = {
-  id: number
-  role: string
-  about: string
-  avatar?: string
-  fullName: string
-  status: StatusType
-  avatarColor?: ThemeColor
-}
-
-export type ChatsArrType = {
-  id: number
-  role: string
-  about: string
-  chat: ChatsObj
-  avatar?: string
-  fullName: string
-  status: StatusType
-  avatarColor?: ThemeColor
-}
-
-export type SelectedChatType = null | {
-  chat: ChatsObj
-  contact: ChatsArrType
-}
 
 export type ChatStoreType = {
-  chats: ChatsArrType[] | null
-  contacts: ContactType[] | null
-  userProfile: ProfileUserType | null
-  selectedChat: SelectedChatType
+  activeChannels: ChannelType[] | null
+  userProfile: UserType | null
+  selectedChannel: ChannelType | null
+  messages: MessageType[] | null
 }
 
-export type SendMsgParamsType = {
-  chat?: ChatsObj
+export type SendMessageParamsType = {
+  channelId: number
   message: string
-  contact?: ChatsArrType
 }
 
 export type ChatContentType = {
@@ -94,7 +71,7 @@ export type ChatContentType = {
   userProfileRightOpen: boolean
   handleLeftSidebarToggle: () => void
   getInitials: (val: string) => string
-  sendMsg: (params: SendMsgParamsType) => void
+  sendMsg: (params: SendMessageParamsType) => void
   handleUserProfileRightSidebarToggle: () => void
 }
 
@@ -108,8 +85,8 @@ export type ChatSidebarLeftType = {
   leftSidebarOpen: boolean
   statusObj: StatusObjType
   userProfileLeftOpen: boolean
-  removeSelectedChat: () => void
-  selectChat: (id: number) => void
+  removeSelectedChannel: () => void
+  selectChannel: (id: number) => void
   handleLeftSidebarToggle: () => void
   getInitials: (val: string) => string
   setUserStatus: (status: StatusType) => void
@@ -141,37 +118,28 @@ export type UserProfileRightType = {
 export type SendMsgComponentType = {
   store: ChatStoreType
   dispatch: Dispatch<any>
-  sendMsg: (params: SendMsgParamsType) => void
+  sendMsg: (params: SendMessageParamsType) => void
 }
 
 export type ChatLogType = {
   hidden: boolean
   data: {
-    chat: ChatsObj
-    contact: ContactType
-    userContact: ProfileUserType
+    channel: ChannelType
+    messages: MessageType[]
   }
 }
-
-export type MessageType = {
-  time: string | Date
-  message: string
-  senderId: number
-  feedback: MsgFeedbackType
-}
-
 export type ChatLogChatType = {
   msg: string
   time: string | Date
   feedback: MsgFeedbackType
 }
 
-export type FormattedChatsType = {
-  senderId: number
-  messages: ChatLogChatType[]
+export type FormattedMessagesType = {
+  userId: number
+  messages: MessageType[]
 }
 
 export type MessageGroupType = {
-  senderId: number
-  messages: ChatLogChatType[]
+  userId: number
+  messages: MessageType[]
 }
