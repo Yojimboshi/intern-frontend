@@ -1,3 +1,4 @@
+
 // ** React Imports
 import { ChangeEvent, Fragment, ReactNode } from 'react'
 
@@ -106,12 +107,15 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
                 <Avatar
                   sx={{ width: 84, height: 84 }}
                   src={store.userProfile.avatar}
-                  alt={store.userProfile.username}
+                  alt={store.userProfile.name}
                 />
               </Badge>
             </Box>
             <Typography sx={{ mb: 0.75, fontWeight: 600, textAlign: 'center' }}>
-              {store.userProfile.username}
+              {store.userProfile.name}
+            </Typography>
+            <Typography variant='body2' sx={{ textAlign: 'center', textTransform: 'capitalize' }}>
+              {store.userProfile.role}
             </Typography>
           </Box>
 
@@ -121,7 +125,7 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
                 <Typography variant='body2' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                   About
                 </Typography>
-                <TextField minRows={3} multiline fullWidth sx={{ mb: 6 }} defaultValue={store.userProfile.status} />
+                <TextField minRows={3} multiline fullWidth sx={{ mb: 6 }} defaultValue={store.userProfile.about} />
                 <Typography variant='body2' sx={{ mb: 1.5, textTransform: 'uppercase' }}>
                   Status
                 </Typography>

@@ -1,93 +1,86 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'src/configs/axiosConfig'
-import { Dispatch } from 'redux'
-import { SendMessageParamsType, UserType, ChannelType, MessageType } from 'src/types/apps/chatTypes'
 
-// Fetch User Profile
+// ** Redux Imports
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+
+// ** Axios Imports
+import axios from 'src/configs/axiosConfig';
+
+// ** Types
+import { Dispatch } from 'redux'
+import { SendMsgParamsType } from 'src/types/apps/chatTypes'
+
+// ** Fetch User Profile
 export const fetchUserProfile = createAsyncThunk('appChat/fetchUserProfile', async () => {
   const response = await axios.get('/users/current')
 
   return response.data
 })
 
-// Fetch Active Channels
-export const fetchActiveChannels = createAsyncThunk('appChat/fetchActiveChannels', async () => {
-  const response = await axios.get('/channel')
+// ** Fetch Chats & Contacts
+export const fetchChatsContacts = createAsyncThunk('appChat/fetchChatsContacts', async () => {
+  const response = await axios.get('/channels/channelContact')
+  console.log("Channels and contact fetched : ", response.data)
 
   return response.data
 })
 
-// Select Channel
-export const selectChannel = createAsyncThunk(
-  'appChat/selectChannel',
-  async (channelId: number | string, { dispatch }: { dispatch: Dispatch<any> }) => {
-    const response = await axios.get(`/channel/${channelId}`)
-    await dispatch(fetchMessages(channelId))
-
-    return response.data
-  }
-)
-
-// Send Message
-export const sendMessage = createAsyncThunk(
-  'appChat/sendMessage',
-  async (obj: SendMessageParamsType, { dispatch }) => {
-    const response = await axios.post(`/channel/${obj.channelId}/post`, {
-      message: obj.message
+// ** Select Chat
+export const selectChat = createAsyncThunk(
+  'appChat/selectChat',
+  async (id: number | string, { dispatch }: { dispatch: Dispatch<any> }) => {
+    const response = await axios.get('/apps/chat/get-chat', {
+      params: {
+        id
+      }
     })
-    await dispatch(fetchMessages(obj.channelId))
+    await dispatch(fetchChatsContacts())
 
     return response.data
   }
 )
 
-// Fetch Messages
-export const fetchMessages = createAsyncThunk(
-  'appChat/fetchMessages',
-  async (channelId: number | string) => {
-    const response = await axios.get(`/channel/${channelId}/messages`)
-
-    return response.data
+// ** Send Msg
+export const sendMsg = createAsyncThunk('appChat/sendMsg', async (obj: SendMsgParamsType, { dispatch }) => {
+  const response = await axios.post('/apps/chat/send-msg', {
+    data: {
+      obj
+    }
+  })
+  if (obj.contact) {
+    await dispatch(selectChat(obj.contact.id))
   }
-)
+  await dispatch(fetchChatsContacts())
+
+  return response.data
+})
 
 export const appChatSlice = createSlice({
   name: 'appChat',
   initialState: {
-    activeChannels: null as ChannelType[] | null,
-    userProfile: null as UserType | null,
-    selectedChannel: null as ChannelType | null,
-    messages: null as MessageType[] | null
+    chats: null,
+    contacts: null,
+    userProfile: null,
+    selectedChat: null
   },
   reducers: {
-    removeSelectedChannel: state => {
-      state.selectedChannel = null
+    removeSelectedChat: state => {
+      state.selectedChat = null
     }
   },
   extraReducers: builder => {
-    builder
-      .addCase(fetchUserProfile.fulfilled, (state, action) => {
-        state.userProfile = action.payload
-      })
-      .addCase(fetchActiveChannels.fulfilled, (state, action) => {
-        state.activeChannels = action.payload
-      })
-      .addCase(selectChannel.fulfilled, (state, action) => {
-        state.selectedChannel = action.payload
-      })
-      .addCase(fetchMessages.fulfilled, (state, action) => {
-        state.messages = action.payload
-      })
-      .addCase(sendMessage.fulfilled, (state, action) => {
-        if (state.messages) {
-          state.messages.push(action.payload)
-        } else {
-          state.messages = [action.payload]
-        }
-      })
+    builder.addCase(fetchUserProfile.fulfilled, (state, action) => {
+      state.userProfile = action.payload
+    })
+    builder.addCase(fetchChatsContacts.fulfilled, (state, action) => {
+      state.contacts = action.payload.contacts
+      state.chats = action.payload.channels
+    })
+    builder.addCase(selectChat.fulfilled, (state, action) => {
+      state.selectedChat = action.payload
+    })
   }
 })
 
-export const { removeSelectedChannel } = appChatSlice.actions
+export const { removeSelectedChat } = appChatSlice.actions
 
 export default appChatSlice.reducer

@@ -1,3 +1,4 @@
+
 // ** React Imports
 import { useState, useEffect, ChangeEvent, ReactNode } from 'react'
 
@@ -113,132 +114,132 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
   }
 
   const renderChats = () => {
-    if (store && store.chats && store.chats.length) {
-      if (query.length && !filteredChat.length) {
-        return (
-          <ListItem>
-            <Typography sx={{ color: 'text.secondary' }}>No Chats Found</Typography>
-          </ListItem>
-        )
-      } else {
-        const arrToMap = query.length && filteredChat.length ? filteredChat : store.chats
+    //   if (store && store.chats && store.chats.length) {
+    //     if (query.length && !filteredChat.length) {
+    //       return (
+    //         <ListItem>
+    //           <Typography sx={{ color: 'text.secondary' }}>No Chats Found</Typography>
+    //         </ListItem>
+    //       )
+    //     } else {
+    //       const arrToMap = query.length && filteredChat.length ? filteredChat : store.chats
 
-        return arrToMap.map((chat: ChatsArrType, index: number) => {
-          const { lastMessage } = chat.chat
-          const activeCondition = active !== null && active.id === chat.id && active.type === 'chat'
+    //       return arrToMap.map((chat: ChatsArrType, index: number) => {
+    //         const { lastMessage } = chat.chat
+    //         const activeCondition = active !== null && active.id === chat.id && active.type === 'chat'
 
-          return (
-            <ListItem key={index} disablePadding sx={{ '&:not(:last-child)': { mb: 1.5 } }}>
-              <ListItemButton
-                disableRipple
-                onClick={() => handleChatClick('chat', chat.id)}
-                sx={{
-                  px: 2.5,
-                  py: 2.5,
-                  width: '100%',
-                  borderRadius: 1,
-                  alignItems: 'flex-start',
-                  ...(activeCondition && { backgroundColor: theme => `${theme.palette.primary.main} !important` })
-                }}
-              >
-                <ListItemAvatar sx={{ m: 0 }}>
-                  <Badge
-                    overlap='circular'
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right'
-                    }}
-                    badgeContent={
-                      <Box
-                        component='span'
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          color: `${statusObj[chat.status]}.main`,
-                          backgroundColor: `${statusObj[chat.status]}.main`,
-                          boxShadow: theme =>
-                            `0 0 0 2px ${!activeCondition ? theme.palette.background.paper : theme.palette.common.white
-                            }`
-                        }}
-                      />
-                    }
-                  >
-                    {chat.avatar ? (
-                      <MuiAvatar
-                        src={chat.avatar}
-                        alt={chat.fullName}
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          outline: theme => `2px solid ${activeCondition ? theme.palette.common.white : 'transparent'}`
-                        }}
-                      />
-                    ) : (
-                      <CustomAvatar
-                        color={chat.avatarColor}
-                        skin={activeCondition ? 'light-static' : 'light'}
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          fontSize: '1rem',
-                          outline: theme => `2px solid ${activeCondition ? theme.palette.common.white : 'transparent'}`
-                        }}
-                      >
-                        {getInitials(chat.fullName)}
-                      </CustomAvatar>
-                    )}
-                  </Badge>
-                </ListItemAvatar>
-                <ListItemText
-                  sx={{
-                    my: 0,
-                    ml: 4,
-                    mr: 1.5,
-                    '& .MuiTypography-root': { ...(activeCondition && { color: 'common.white' }) }
-                  }}
-                  primary={
-                    <Typography noWrap sx={{ ...(!activeCondition ? { color: 'text.secondary' } : {}) }}>
-                      {chat.fullName}
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography noWrap variant='body2' sx={{ ...(!activeCondition && { color: 'text.disabled' }) }}>
-                      {lastMessage ? lastMessage.message : null}
-                    </Typography>
-                  }
-                />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start'
-                  }}
-                >
-                  <Typography sx={{ whiteSpace: 'nowrap', color: activeCondition ? 'common.white' : 'text.disabled' }}>
-                    <>{lastMessage ? formatDateToMonthShort(lastMessage.time as string, true) : new Date()}</>
-                  </Typography>
-                  {chat.chat.unseenMsgs && chat.chat.unseenMsgs > 0 ? (
-                    <Chip
-                      color='error'
-                      label={chat.chat.unseenMsgs}
-                      sx={{
-                        mt: 0.5,
-                        height: 18,
-                        fontWeight: 600,
-                        fontSize: '0.75rem',
-                        '& .MuiChip-label': { pt: 0.25, px: 1.655 }
-                      }}
-                    />
-                  ) : null}
-                </Box>
-              </ListItemButton>
-            </ListItem>
-          )
-        })
-      }
-    }
+    //         return (
+    //           <ListItem key={index} disablePadding sx={{ '&:not(:last-child)': { mb: 1.5 } }}>
+    //             <ListItemButton
+    //               disableRipple
+    //               onClick={() => handleChatClick('chat', chat.id)}
+    //               sx={{
+    //                 px: 2.5,
+    //                 py: 2.5,
+    //                 width: '100%',
+    //                 borderRadius: 1,
+    //                 alignItems: 'flex-start',
+    //                 ...(activeCondition && { backgroundColor: theme => `${theme.palette.primary.main} !important` })
+    //               }}
+    //             >
+    //               <ListItemAvatar sx={{ m: 0 }}>
+    //                 <Badge
+    //                   overlap='circular'
+    //                   anchorOrigin={{
+    //                     vertical: 'bottom',
+    //                     horizontal: 'right'
+    //                   }}
+    //                   badgeContent={
+    //                     <Box
+    //                       component='span'
+    //                       sx={{
+    //                         width: 8,
+    //                         height: 8,
+    //                         borderRadius: '50%',
+    //                         color: `${statusObj[chat.status]}.main`,
+    //                         backgroundColor: `${statusObj[chat.status]}.main`,
+    //                         boxShadow: theme =>
+    //                           `0 0 0 2px ${!activeCondition ? theme.palette.background.paper : theme.palette.common.white
+    //                           }`
+    //                       }}
+    //                     />
+    //                   }
+    //                 >
+    //                   {chat.avatar ? (
+    //                     <MuiAvatar
+    //                       src={chat.avatar}
+    //                       alt={chat.fullName}
+    //                       sx={{
+    //                         width: 40,
+    //                         height: 40,
+    //                         outline: theme => `2px solid ${activeCondition ? theme.palette.common.white : 'transparent'}`
+    //                       }}
+    //                     />
+    //                   ) : (
+    //                     <CustomAvatar
+    //                       color={chat.avatarColor}
+    //                       skin={activeCondition ? 'light-static' : 'light'}
+    //                       sx={{
+    //                         width: 40,
+    //                         height: 40,
+    //                         fontSize: '1rem',
+    //                         outline: theme => `2px solid ${activeCondition ? theme.palette.common.white : 'transparent'}`
+    //                       }}
+    //                     >
+    //                       {getInitials(chat.fullName)}
+    //                     </CustomAvatar>
+    //                   )}
+    //                 </Badge>
+    //               </ListItemAvatar>
+    //               <ListItemText
+    //                 sx={{
+    //                   my: 0,
+    //                   ml: 4,
+    //                   mr: 1.5,
+    //                   '& .MuiTypography-root': { ...(activeCondition && { color: 'common.white' }) }
+    //                 }}
+    //                 primary={
+    //                   <Typography noWrap sx={{ ...(!activeCondition ? { color: 'text.secondary' } : {}) }}>
+    //                     {chat.fullName}
+    //                   </Typography>
+    //                 }
+    //                 secondary={
+    //                   <Typography noWrap variant='body2' sx={{ ...(!activeCondition && { color: 'text.disabled' }) }}>
+    //                     {lastMessage ? lastMessage.message : null}
+    //                   </Typography>
+    //                 }
+    //               />
+    //               <Box
+    //                 sx={{
+    //                   display: 'flex',
+    //                   alignItems: 'flex-end',
+    //                   flexDirection: 'column',
+    //                   justifyContent: 'flex-start'
+    //                 }}
+    //               >
+    //                 <Typography sx={{ whiteSpace: 'nowrap', color: activeCondition ? 'common.white' : 'text.disabled' }}>
+    //                   <>{lastMessage ? formatDateToMonthShort(lastMessage.time as string, true) : new Date()}</>
+    //                 </Typography>
+    //                 {chat.chat.unseenMsgs && chat.chat.unseenMsgs > 0 ? (
+    //                   <Chip
+    //                     color='error'
+    //                     label={chat.chat.unseenMsgs}
+    //                     sx={{
+    //                       mt: 0.5,
+    //                       height: 18,
+    //                       fontWeight: 600,
+    //                       fontSize: '0.75rem',
+    //                       '& .MuiChip-label': { pt: 0.25, px: 1.655 }
+    //                     }}
+    //                   />
+    //                 ) : null}
+    //               </Box>
+    //             </ListItemButton>
+    //           </ListItem>
+    //         )
+    //       })
+    //     }
+    //   }
   }
 
   const renderContacts = () => {
@@ -400,7 +401,7 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
             >
               <MuiAvatar
                 src={store.userProfile.avatar}
-                alt={store.userProfile.fullName}
+                alt={store.userProfile.name}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
               />
             </Badge>
@@ -433,7 +434,7 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
               <Typography variant='h6' sx={{ ml: 2, mb: 4, color: 'primary.main' }}>
                 Chats
               </Typography>
-              <List sx={{ mb: 7.5, p: 0 }}>{renderChats()}</List>
+              {/* <List sx={{ mb: 7.5, p: 0 }}>{renderChats()}</List> */}
               <Typography variant='h6' sx={{ ml: 2, mb: 4, color: 'primary.main' }}>
                 Contacts
               </Typography>
