@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Icon Imports
-import Icon from 'src/@core/components/icon'
+
 
 // ** Third Party Components
 import PerfectScrollbarComponent, { ScrollBarProps } from 'react-perfect-scrollbar'
@@ -23,7 +23,6 @@ import { getInitials } from 'src/@core/utils/get-initials'
 import {
   ChatLogType,
   MessageType,
-  MsgFeedbackType,
   ChatLogChatType,
   MessageGroupType,
   FormattedChatsType
@@ -71,7 +70,6 @@ const ChatLog = (props: ChatLogType) => {
         msgGroup.messages.push({
           time: msg.time,
           msg: msg.message,
-          feedback: msg.feedback
         })
       } else {
         chatMessageSenderId = msg.senderId
@@ -83,7 +81,6 @@ const ChatLog = (props: ChatLogType) => {
             {
               time: msg.time,
               msg: msg.message,
-              feedback: msg.feedback
             }
           ]
         }
@@ -95,31 +92,6 @@ const ChatLog = (props: ChatLogType) => {
     return formattedChatLog
   }
 
-  const renderMsgFeedback = (isSender: boolean, feedback: MsgFeedbackType) => {
-    if (isSender) {
-      if (feedback.isSent && !feedback.isDelivered) {
-        return (
-          <Box component='span' sx={{ display: 'inline-flex', '& svg': { mr: 2, color: 'text.secondary' } }}>
-            <Icon icon='mdi:check' fontSize='1rem' />
-          </Box>
-        )
-      } else if (feedback.isSent && feedback.isDelivered) {
-        return (
-          <Box
-            component='span'
-            sx={{
-              display: 'inline-flex',
-              '& svg': { mr: 2, color: feedback.isSeen ? 'success.main' : 'text.secondary' }
-            }}
-          >
-            <Icon icon='mdi:check-all' fontSize='1rem' />
-          </Box>
-        )
-      } else {
-        return null
-      }
-    }
-  }
 
   useEffect(() => {
     if (data && data.chat && data.chat.chat.length) {
@@ -205,7 +177,7 @@ const ChatLog = (props: ChatLogType) => {
                         justifyContent: isSender ? 'flex-end' : 'flex-start'
                       }}
                     >
-                      {renderMsgFeedback(isSender, chat.feedback)}
+
                       <Typography variant='caption' sx={{ color: 'text.disabled' }}>
                         {time
                           ? new Date(time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })

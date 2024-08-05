@@ -25,17 +25,12 @@ export type ProfileUserType = {
   }
 }
 
-export type MsgFeedbackType = {
-  isSent: boolean
-  isSeen: boolean
-  isDelivered: boolean
-}
+
 
 export type ChatType = {
   message: string
   senderId: number
   time: Date | string
-  feedback: MsgFeedbackType
 }
 
 export type ChatsObj = {
@@ -44,16 +39,6 @@ export type ChatsObj = {
   chat: ChatType[]
   unseenMsgs: number
   lastMessage?: ChatType
-}
-
-export type ContactType = {
-  id: number
-  role: string
-  about: string
-  avatar?: string
-  fullName: string
-  status: StatusType
-  avatarColor?: ThemeColor
 }
 
 export type ChatsArrType = {
@@ -66,6 +51,18 @@ export type ChatsArrType = {
   status: StatusType
   avatarColor?: ThemeColor
 }
+
+export type ContactType = {
+  id: number
+  role: string
+  about: string
+  avatar?: string
+  fullName: string
+  status: StatusType
+  avatarColor?: ThemeColor
+}
+
+
 
 export type SelectedChatType = null | {
   chat: ChatsObj
@@ -158,13 +155,11 @@ export type MessageType = {
   time: string | Date
   message: string
   senderId: number
-  feedback: MsgFeedbackType
 }
 
 export type ChatLogChatType = {
   msg: string
   time: string | Date
-  feedback: MsgFeedbackType
 }
 
 export type FormattedChatsType = {

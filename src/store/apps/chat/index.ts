@@ -1,4 +1,3 @@
-
 // ** Redux Imports
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
@@ -18,10 +17,11 @@ export const fetchUserProfile = createAsyncThunk('appChat/fetchUserProfile', asy
 
 // ** Fetch Chats & Contacts
 export const fetchChatsContacts = createAsyncThunk('appChat/fetchChatsContacts', async () => {
-  const response = await axios.get('/channels/channelContact')
-  console.log("Channels and contact fetched : ", response.data)
+  const response = await axios.get('/chats/detailed')
+  console.log(response.data)
 
   return response.data
+
 })
 
 // ** Select Chat
@@ -38,8 +38,6 @@ export const selectChat = createAsyncThunk(
     return response.data
   }
 )
-
-// ** Send Msg
 export const sendMsg = createAsyncThunk('appChat/sendMsg', async (obj: SendMsgParamsType, { dispatch }) => {
   const response = await axios.post('/apps/chat/send-msg', {
     data: {
@@ -73,7 +71,7 @@ export const appChatSlice = createSlice({
     })
     builder.addCase(fetchChatsContacts.fulfilled, (state, action) => {
       state.contacts = action.payload.contacts
-      state.chats = action.payload.channels
+      state.chats = action.payload.chatsContacts
     })
     builder.addCase(selectChat.fulfilled, (state, action) => {
       state.selectedChat = action.payload

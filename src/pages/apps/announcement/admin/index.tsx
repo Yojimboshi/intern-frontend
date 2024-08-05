@@ -26,6 +26,7 @@ const AnnouncementAdminPage = () => {
     fetchAnnouncements();
     setShowForm(false);
     setEditingAnnouncement(undefined);
+    console.log
   };
 
   const handleDeleteAnnouncement = async (id: number) => {
