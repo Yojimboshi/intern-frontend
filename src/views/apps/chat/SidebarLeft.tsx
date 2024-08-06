@@ -81,7 +81,11 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
       handleLeftSidebarToggle()
     }
   }
+  const formatDate = (dateString: string | number | Date) => {
+    const date = new Date(dateString)
 
+    return date.toLocaleString() // Adjust this to your desired format
+  }
   useEffect(() => {
     if (store && store.chats) {
       if (active !== null) {
@@ -125,7 +129,8 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
         const arrToMap = query.length && filteredChat.length ? filteredChat : store.chats
 
         return arrToMap.map((chat: ChatsArrType, index: number) => {
-          const { lastMessage } = chat.chat
+
+          const { lastMessage } = chat.chat || {};
           const activeCondition = active !== null && active.id === chat.id && active.type === 'chat'
 
           return (
@@ -218,18 +223,18 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
                   }}
                 >
                   <Typography sx={{ whiteSpace: 'nowrap', color: activeCondition ? 'common.white' : 'text.disabled' }}>
-                    <>{lastMessage ? formatDateToMonthShort(lastMessage.time as string, true) : new Date()}</>
+                    {lastMessage ? formatDate(lastMessage.time) : new Date().toLocaleString()}
                   </Typography>
-                  {chat.chat.unseenMsgs && chat.chat.unseenMsgs > 0 ? (
+                  {chat.chat?.unseenMsgs ? (
                     <Chip
-                      color='error'
+                      color="error"
                       label={chat.chat.unseenMsgs}
                       sx={{
                         mt: 0.5,
                         height: 18,
                         fontWeight: 600,
                         fontSize: '0.75rem',
-                        '& .MuiChip-label': { pt: 0.25, px: 1.655 }
+                        '& .MuiChip-label': { pt: 0.25, px: 1.655 },
                       }}
                     />
                   ) : null}

@@ -17,7 +17,7 @@ export const fetchUserProfile = createAsyncThunk('appChat/fetchUserProfile', asy
 
 // ** Fetch Chats & Contacts
 export const fetchChatsContacts = createAsyncThunk('appChat/fetchChatsContacts', async () => {
-  const response = await axios.get('/chats/detailed')
+  const response = await axios.get('/chats')
   console.log(response.data)
 
   return response.data
@@ -70,6 +70,7 @@ export const appChatSlice = createSlice({
       state.userProfile = action.payload
     })
     builder.addCase(fetchChatsContacts.fulfilled, (state, action) => {
+      console.log('Action payload for chats and contacts:', action.payload.contacts);
       state.contacts = action.payload.contacts
       state.chats = action.payload.chatsContacts
     })

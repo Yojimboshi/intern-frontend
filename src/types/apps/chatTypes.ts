@@ -37,8 +37,8 @@ export type ChatsObj = {
   id: number
   userId: number
   chat: ChatType[]
-  unseenMsgs: number
-  lastMessage?: ChatType
+  unseenMsgs: number | 1
+  lastMessage: ChatType
 }
 
 export type ChatsArrType = {
@@ -61,7 +61,6 @@ export type ContactType = {
   status: StatusType
   avatarColor?: ThemeColor
 }
-
 
 
 export type SelectedChatType = null | {
