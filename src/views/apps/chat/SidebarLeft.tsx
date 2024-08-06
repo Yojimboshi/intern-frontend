@@ -60,7 +60,6 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
     leftSidebarOpen,
     removeSelectedChat,
     userProfileLeftOpen,
-    formatDateToMonthShort,
     handleLeftSidebarToggle,
     handleUserProfileLeftSidebarToggle
   } = props
@@ -131,6 +130,7 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
         return arrToMap.map((chat: ChatsArrType, index: number) => {
 
           const { lastMessage } = chat.chat || {};
+          console.log("Last Message = ", store)
           const activeCondition = active !== null && active.id === chat.id && active.type === 'chat'
 
           return (
@@ -161,8 +161,8 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
                           width: 8,
                           height: 8,
                           borderRadius: '50%',
-                          color: `${statusObj[chat.status]}.main`,
-                          backgroundColor: `${statusObj[chat.status]}.main`,
+                          color: `online.main`,
+                          backgroundColor: `online.main`,
                           boxShadow: theme =>
                             `0 0 0 2px ${!activeCondition ? theme.palette.background.paper : theme.palette.common.white
                             }`
@@ -397,8 +397,8 @@ const SidebarLeft = (props: ChatSidebarLeftType) => {
                     width: 8,
                     height: 8,
                     borderRadius: '50%',
-                    color: `${statusObj[userStatus]}.main`,
-                    backgroundColor: `${statusObj[userStatus]}.main`,
+                    color: `online.main`,
+                    backgroundColor: `online.main`,
                     boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`
                   }}
                 />

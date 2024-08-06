@@ -97,8 +97,8 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
                       width: 10,
                       height: 10,
                       borderRadius: '50%',
-                      color: `${statusObj[userStatus]}.main`,
-                      backgroundColor: `${statusObj[userStatus]}.main`,
+                      color: `online.main`,
+                      backgroundColor: `online.main`,
                       boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`
                     }}
                   />

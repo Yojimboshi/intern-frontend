@@ -56,6 +56,9 @@ const ChatLog = (props: ChatLogType) => {
   const formattedChatData = () => {
     let chatLog: MessageType[] | [] = []
     if (data.chat) {
+      console.log(data)
+      console.log("ChatLog : ", data.chat.chat
+      )
       chatLog = data.chat.chat
     }
 
@@ -117,7 +120,7 @@ const ChatLog = (props: ChatLogType) => {
           <div>
             <CustomAvatar
               skin='light'
-              color={data.contact.avatarColor ? data.contact.avatarColor : undefined}
+              color='primary'
               sx={{
                 width: '2rem',
                 height: '2rem',

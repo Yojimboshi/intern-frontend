@@ -32,7 +32,6 @@ const UserProfileRight = (props: UserProfileRightType) => {
   const {
     store,
     hidden,
-    statusObj,
     getInitials,
     sidebarWidth,
     userProfileRightOpen,
@@ -95,9 +94,9 @@ const UserProfileRight = (props: UserProfileRightType) => {
                         width: 10,
                         height: 10,
                         borderRadius: '50%',
-                        color: `${statusObj[store.selectedChat.contact.status]}.main`,
+                        color: `online.main`,
                         boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`,
-                        backgroundColor: `${statusObj[store.selectedChat.contact.status]}.main`
+                        backgroundColor: `online.main`
                       }}
                     />
                   }
@@ -111,7 +110,7 @@ const UserProfileRight = (props: UserProfileRightType) => {
                   ) : (
                     <CustomAvatar
                       skin='light'
-                      color={store.selectedChat.contact.avatarColor}
+                      color='primary'
                       sx={{ width: '5rem', height: '5rem', fontWeight: 500, fontSize: '2rem' }}
                     >
                       {getInitials(store.selectedChat.contact.fullName)}

@@ -141,28 +141,21 @@ const ChatContent = (props: ChatContentType) => {
                           width: 8,
                           height: 8,
                           borderRadius: '50%',
-                          color: `${statusObj[selectedChat.contact.status]}.main`,
+                          color: `online.main`,
                           boxShadow: theme => `0 0 0 2px ${theme.palette.background.paper}`,
-                          backgroundColor: `${statusObj[selectedChat.contact.status]}.main`
+                          backgroundColor: `online.main`
                         }}
                       />
                     }
                   >
-                    {selectedChat.contact.avatar ? (
-                      <MuiAvatar
-                        src={selectedChat.contact.avatar}
-                        alt={selectedChat.contact.fullName}
-                        sx={{ width: 40, height: 40 }}
-                      />
-                    ) : (
-                      <CustomAvatar
-                        skin='light'
-                        color={selectedChat.contact.avatarColor}
-                        sx={{ width: 40, height: 40, fontSize: '1rem' }}
-                      >
-                        {getInitials(selectedChat.contact.fullName)}
-                      </CustomAvatar>
-                    )}
+                    <CustomAvatar
+                      skin='light'
+                      color="primary"
+                      sx={{ width: 40, height: 40, fontSize: '1rem' }}
+                    >
+                      {getInitials(selectedChat.contact.fullName)}
+                    </CustomAvatar>
+
                   </Badge>
                   <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Typography sx={{ color: 'text.secondary' }}>{selectedChat.contact.fullName}</Typography>
