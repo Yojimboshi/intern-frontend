@@ -45,7 +45,7 @@ export type ChatsArrType = {
   id: number
   role: string
   about: string
-  chat: ChatsObj
+  chat?: ChatsObj
   avatar?: string
   fullName: string
   status: StatusType
@@ -79,6 +79,7 @@ export type SendMsgParamsType = {
   chat?: ChatsObj
   message: string
   contact?: ChatsArrType
+  chatId: number
 }
 
 export type ChatContentType = {

@@ -36,7 +36,7 @@ export const selectChat = createAsyncThunk(
   }
 )
 export const sendMsg = createAsyncThunk('appChat/sendMsg', async (obj: SendMsgParamsType, { dispatch }) => {
-  const response = await axios.post('/apps/chat/send-msg', {
+  const response = await axios.post('/chats/messages', {
     data: {
       obj
     }
@@ -44,7 +44,6 @@ export const sendMsg = createAsyncThunk('appChat/sendMsg', async (obj: SendMsgPa
   if (obj.contact) {
     await dispatch(selectChat(obj.contact.id))
   }
-  await dispatch(fetchChatsContacts())
 
   return response.data
 })

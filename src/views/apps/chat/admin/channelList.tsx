@@ -3,11 +3,11 @@ import React from 'react';
 import { List, ListItem, ListItemText, IconButton, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ChannelType } from 'src/types/apps/chatType';
+import { ChatsArrType } from 'src/types/apps/chatTypes';
 
 interface ChannelListProps {
-  channels: ChannelType[];
-  onEdit: (channel: ChannelType) => void;
+  channels: ChatsArrType[];
+  onEdit: (channel: ChatsArrType) => void;
   onDelete: (id: number) => void;
   onViewMessages: (channelId: number) => void;
 }
@@ -17,7 +17,7 @@ const ChannelList: React.FC<ChannelListProps> = ({ channels, onEdit, onDelete, o
     <List>
       {channels.map((channel) => (
         <ListItem key={channel.id} divider>
-          <ListItemText primary={channel.name} secondary={channel.description} />
+          <ListItemText primary={channel.fullName} secondary={channel.about} />
           <IconButton onClick={() => onEdit(channel)}>
             <EditIcon />
           </IconButton>

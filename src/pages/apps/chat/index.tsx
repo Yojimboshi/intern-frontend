@@ -1,6 +1,5 @@
-
-// ** React Imports
 import { useEffect, useState } from 'react'
+import io from 'socket.io-client'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -56,6 +55,24 @@ const AppChat = () => {
     dispatch(fetchUserProfile())
     dispatch(fetchChatsContacts())
     console.log('Channels: ', store.chats)
+
+    // Connect to Socket.IO server
+    const socket = io('http://localhost:5001')
+
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server')
+    })
+
+    socket.on('newMessage', (data) => {
+      console.log('New message received:', data)
+      dispatch(selectChat(data.chatId))
+    })
+
+    // Clean up the socket connection on component unmount
+    return () => {
+      socket.disconnect()
+      console.log('Disconnected from socket.io server')
+    }
   }, [dispatch])
 
   const handleLeftSidebarToggle = () => setLeftSidebarOpen(!leftSidebarOpen)

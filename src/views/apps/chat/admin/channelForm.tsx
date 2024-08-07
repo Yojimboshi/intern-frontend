@@ -1,25 +1,25 @@
 // src/views/apps/chat/ChannelForm.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Button, TextField, Grid } from '@mui/material';
-import { ChannelType } from 'src/types/apps/chatType';
+import { ChatsArrType } from 'src/types/apps/chatTypes';
 
 interface ChannelFormProps {
-  channel?: ChannelType;
-  onSave: (formData: ChannelType) => void;
+  channel?: ChatsArrType;
+  onSave: (formData: ChatsArrType) => void;
   onCancel: () => void;
 }
 
 // Define a default channel that matches the ChannelType structure
-const defaultChannel: ChannelType = {
+const defaultChannel: ChatsArrType = {
   id: 0,
-  name: '',
-  description: '',
-  active: true,
-  created_at: new Date(),
+  role: '',
+  about: '',
+  fullName: '',
+  status: 'online'
 };
 
 const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<ChannelType>(channel || defaultChannel);
+  const [formData, setFormData] = useState<ChatsArrType>(channel || defaultChannel);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,7 +41,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
           <TextField
             name="name"
             label="Name"
-            value={formData.name}
+            value={formData.fullName}
             onChange={handleChange}
             fullWidth
             required
@@ -51,7 +51,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
           <TextField
             name="description"
             label="Description"
-            value={formData.description}
+            value={formData.about}
             onChange={handleChange}
             fullWidth
             required
@@ -61,7 +61,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
           <TextField
             name="active"
             label="Active"
-            value={formData.active ? 'true' : 'false'}
+            value={formData.status ? 'true' : 'false'}
             onChange={handleChange}
             fullWidth
             select

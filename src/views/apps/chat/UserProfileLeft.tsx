@@ -36,7 +36,6 @@ const UserProfileLeft = (props: UserProfileLeftType) => {
   const {
     store,
     hidden,
-    statusObj,
     userStatus,
     sidebarWidth,
     setUserStatus,
