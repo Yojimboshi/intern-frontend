@@ -13,8 +13,12 @@ import FormHelperText from '@mui/material/FormHelperText'
 const AnalyticsPerformance = () => {
   const theme = useTheme()
   const { series, categories, loading } = useMarketDominance()
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(categories.slice(0, 5))
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [error, setError] = useState<string>('')
+
+  React.useEffect(() => {
+    setSelectedCategories(categories.slice(0, 5));
+  }, [categories])
 
   const handleCategoryChange = (event: any) => {
     const {
@@ -41,9 +45,9 @@ const AnalyticsPerformance = () => {
   }
 
   // Filter the series data to include only the selected categories
-  const filteredSeries = series.map(serie => ({
-    ...serie,
-    data: serie.data.filter((_, index) => selectedCategories.includes(categories[index]))
+  const filteredSeries = series.map(series => ({
+    ...series,
+    data: series.data.filter((_, index) => selectedCategories.includes(categories[index]))
   }))
 
   // Map the selected categories to their short names

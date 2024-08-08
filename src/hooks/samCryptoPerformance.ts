@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-interface MarketDominance {
-  name: string
-  data: number[]
-}
-
 const specifiedCategories = [
   'Liquid Staking',
   'Dog-Themed',
