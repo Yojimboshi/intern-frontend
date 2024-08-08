@@ -10,7 +10,7 @@ const useChat = () => {
   // Fetch all channels
   const fetchChannelData = useCallback(async () => {
     try {
-      const response = await axios.get('/userChats');
+      const response = await axios.get('/chats/allChannel/get');
       setChannelData(response.data);
     } catch (error) {
       console.error('Error fetching channels:', error);
