@@ -1,9 +1,11 @@
 export interface ChannelType {
 
   id: number,
-  name: string,
-  description: string,
-  active: boolean,
+  fullName: string,
+  chatId: number,
+  about: string,
+  status: string,
+  active: boolean
   created_at: Date
 
 }

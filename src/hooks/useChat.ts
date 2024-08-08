@@ -1,10 +1,10 @@
 // src/hooks/useChat.ts
 import { useState, useCallback } from 'react';
 import axios from 'src/configs/axiosConfig';
-import { ChatType, ChatsArrType } from 'src/types/apps/chatTypes';
+import { ChatType, ChannelType } from 'src/types/apps/chatType';
 
 const useChat = () => {
-  const [channelData, setChannelData] = useState<ChatsArrType[]>([]);
+  const [channelData, setChannelData] = useState<ChannelType[]>([]);
   const [chatData, setChatData] = useState<ChatType[]>([]);
 
   // Fetch all channels
@@ -58,9 +58,16 @@ const useChat = () => {
   };
 
   // Create a new channel
-  const createChannel = async (channel: ChatsArrType) => {
+  const createChannel = async (channel: ChannelType) => {
     try {
-      const response = await axios.post('/channels', channel);
+      const response = await axios.post('/chats',
+        {
+          fullName: channel.fullName,
+          chatType: 'channel',
+          unseenMsgs: 0,
+          lastMessage: 0,
+          about: channel.about
+        });
       setChannelData((prevChannels) => [...prevChannels, response.data]);
     } catch (error) {
       console.error('Error creating channel:', error);
@@ -68,9 +75,14 @@ const useChat = () => {
   };
 
   // Update an existing channel
-  const updateChannel = async (channel: ChatsArrType) => {
+  const updateChannel = async (channel: ChannelType) => {
     try {
-      await axios.put('/channels', channel);
+      await axios.put('/chats', {
+        chatId: channel.chatId,
+        fullName: channel.fullName,
+        about: channel.about,
+        active: channel.active
+      });
       await fetchChannelData();
     } catch (error) {
       console.error('Error updating channel:', error);

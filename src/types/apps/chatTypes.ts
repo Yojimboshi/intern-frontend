@@ -35,7 +35,6 @@ export type ChatType = {
 
 export type ChatsObj = {
   id: number
-  userId: number
   chat: ChatType[]
   unseenMsgs: number | 1
   lastMessage: ChatType
@@ -44,8 +43,9 @@ export type ChatsObj = {
 export type ChatsArrType = {
   id: number
   role: string
+  chatId: number
   about: string
-  chat?: ChatsObj
+  chat: ChatsObj
   avatar?: string
   fullName: string
   status: StatusType

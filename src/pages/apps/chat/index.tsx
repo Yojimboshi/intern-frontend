@@ -65,7 +65,7 @@ const AppChat = () => {
 
     socket.on('newMessage', (data) => {
       console.log('New message received:', data)
-      dispatch(selectChat(data.chatId))
+      dispatch(selectChat(data.id))
     })
 
     // Clean up the socket connection on component unmount

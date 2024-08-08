@@ -30,6 +30,7 @@ export const selectChat = createAsyncThunk(
   async (id: number | string, { dispatch }: { dispatch: Dispatch<any> }) => {
     const response = await axios.get(`/chats/${id}`)
     console.log("Selected Message: ", response)
+
     await dispatch(fetchChatsContacts())
 
     return response.data

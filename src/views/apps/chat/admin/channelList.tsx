@@ -3,11 +3,11 @@ import React from 'react';
 import { List, ListItem, ListItemText, IconButton, Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ChatsArrType } from 'src/types/apps/chatTypes';
+import { ChannelType } from 'src/types/apps/chatType';
 
 interface ChannelListProps {
-  channels: ChatsArrType[];
-  onEdit: (channel: ChatsArrType) => void;
+  channels: ChannelType[];
+  onEdit: (channel: ChannelType) => void;
   onDelete: (id: number) => void;
   onViewMessages: (channelId: number) => void;
 }

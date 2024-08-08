@@ -1,25 +1,25 @@
-// src/views/apps/chat/ChannelForm.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Button, TextField, Grid } from '@mui/material';
-import { ChatsArrType } from 'src/types/apps/chatTypes';
+import { ChannelType } from 'src/types/apps/chatType';
 
 interface ChannelFormProps {
-  channel?: ChatsArrType;
-  onSave: (formData: ChatsArrType) => void;
+  channel?: ChannelType;
+  onSave: (formData: ChannelType) => void;
   onCancel: () => void;
 }
 
-// Define a default channel that matches the ChannelType structure
-const defaultChannel: ChatsArrType = {
+const defaultChannel: ChannelType = {
   id: 0,
-  role: '',
-  about: '',
   fullName: '',
-  status: 'online'
+  chatId: 1,
+  about: '',
+  status: '',
+  active: true,
+  created_at: new Date(),
 };
 
 const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) => {
-  const [formData, setFormData] = useState<ChatsArrType>(channel || defaultChannel);
+  const [formData, setFormData] = useState<ChannelType>(channel || defaultChannel);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,7 +39,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField
-            name="name"
+            name="fullName"
             label="Name"
             value={formData.fullName}
             onChange={handleChange}
@@ -49,7 +49,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
         </Grid>
         <Grid item xs={12}>
           <TextField
-            name="description"
+            name="about"
             label="Description"
             value={formData.about}
             onChange={handleChange}
@@ -61,7 +61,7 @@ const ChannelForm: React.FC<ChannelFormProps> = ({ channel, onSave, onCancel }) 
           <TextField
             name="active"
             label="Active"
-            value={formData.status ? 'true' : 'false'}
+            value={formData.active ? 'true' : 'false'}
             onChange={handleChange}
             fullWidth
             select

@@ -10,8 +10,10 @@ import { ChannelType } from 'src/types/apps/chatType';
 
 const defaultChannel: ChannelType = {
   id: 0,
-  name: '',
-  description: '',
+  fullName: '',
+  chatId: 1,
+  about: '',
+  status: '',
   active: true,
   created_at: new Date(),
 };
