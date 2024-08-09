@@ -1,14 +1,9 @@
-
-// ** React Imports
 import { useRef, useEffect, Ref, ReactNode } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-
-// ** Icon Imports
-
 
 // ** Third Party Components
 import PerfectScrollbarComponent, { ScrollBarProps } from 'react-perfect-scrollbar'
@@ -56,9 +51,6 @@ const ChatLog = (props: ChatLogType) => {
   const formattedChatData = () => {
     let chatLog: MessageType[] | [] = []
     if (data.chat) {
-      console.log(data)
-      console.log("ChatLog : ", data.chat.chat
-      )
       chatLog = data.chat.chat
     }
 
@@ -66,6 +58,7 @@ const ChatLog = (props: ChatLogType) => {
     let chatMessageSenderId = chatLog[0] ? chatLog[0].senderId : 11
     let msgGroup: MessageGroupType = {
       senderId: chatMessageSenderId,
+      senderName: chatLog[0] ? chatLog[0].senderName : '',
       messages: []
     }
     chatLog.forEach((msg: MessageType, index: number) => {
@@ -80,6 +73,7 @@ const ChatLog = (props: ChatLogType) => {
         formattedChatLog.push(msgGroup)
         msgGroup = {
           senderId: msg.senderId,
+          senderName: msg.senderName,
           messages: [
             {
               time: msg.time,
@@ -94,7 +88,6 @@ const ChatLog = (props: ChatLogType) => {
 
     return formattedChatLog
   }
-
 
   useEffect(() => {
     if (data && data.chat && data.chat.chat.length) {
@@ -151,26 +144,34 @@ const ChatLog = (props: ChatLogType) => {
 
               return (
                 <Box key={index} sx={{ '&:not(:last-of-type)': { mb: 3.5 } }}>
-                  <div>
-                    <Typography
-                      sx={{
-                        boxShadow: 1,
-                        borderRadius: 1,
-                        maxWidth: '100%',
-                        width: 'fit-content',
-                        fontSize: '0.875rem',
-                        wordWrap: 'break-word',
-                        p: theme => theme.spacing(3, 4),
-                        ml: isSender ? 'auto' : undefined,
-                        borderTopLeftRadius: !isSender ? 0 : undefined,
-                        borderTopRightRadius: isSender ? 0 : undefined,
-                        color: isSender ? 'common.white' : 'text.primary',
-                        backgroundColor: isSender ? 'primary.main' : 'background.paper'
-                      }}
-                    >
-                      {chat.msg}
-                    </Typography>
-                  </div>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      ml: isSender ? 'auto' : undefined,
+                      mr: !isSender ? 'auto' : undefined,
+                      mb: 1,
+                    }}
+                  >
+                    {item.senderName}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      boxShadow: 1,
+                      borderRadius: 1,
+                      maxWidth: '100%',
+                      width: 'fit-content',
+                      fontSize: '0.875rem',
+                      wordWrap: 'break-word',
+                      p: theme => theme.spacing(3, 4),
+                      ml: isSender ? 'auto' : undefined,
+                      borderTopLeftRadius: !isSender ? 0 : undefined,
+                      borderTopRightRadius: isSender ? 0 : undefined,
+                      color: isSender ? 'common.white' : 'text.primary',
+                      backgroundColor: isSender ? 'primary.main' : 'background.paper'
+                    }}
+                  >
+                    {chat.msg}
+                  </Typography>
                   {index + 1 === length ? (
                     <Box
                       sx={{
@@ -180,7 +181,6 @@ const ChatLog = (props: ChatLogType) => {
                         justifyContent: isSender ? 'flex-end' : 'flex-start'
                       }}
                     >
-
                       <Typography variant='caption' sx={{ color: 'text.disabled' }}>
                         {time
                           ? new Date(time).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })

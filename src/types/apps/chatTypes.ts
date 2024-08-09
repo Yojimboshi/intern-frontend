@@ -31,6 +31,7 @@ export type ChatType = {
   message: string
   senderId: number
   time: Date | string
+  senderName: string
 }
 
 export type ChatsObj = {
@@ -155,6 +156,7 @@ export type MessageType = {
   time: string | Date
   message: string
   senderId: number
+  senderName: string
 }
 
 export type ChatLogChatType = {
@@ -164,10 +166,12 @@ export type ChatLogChatType = {
 
 export type FormattedChatsType = {
   senderId: number
+  senderName: string
   messages: ChatLogChatType[]
 }
 
 export type MessageGroupType = {
   senderId: number
+  senderName: string
   messages: ChatLogChatType[]
 }
