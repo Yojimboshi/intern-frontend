@@ -149,11 +149,6 @@ const userNavItems: VerticalNavItemsType = [
     icon: 'mdi:announcement-outline',
     path: '/apps/announcement'
   },
-  {
-    title: 'Chat Channel',
-    icon: 'mdi:announcement-outline',
-    path: '/apps/chatChannel'
-  },
 
 ];
 
