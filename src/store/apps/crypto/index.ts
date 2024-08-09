@@ -24,14 +24,49 @@ interface CryptoState {
   error: string | null
 }
 
+interface MarketDominance {
+  categories: string[]
+  series: { name: string; data: number[] }[]
+}
+
 // ** Initial State
-const initialState: CryptoState = {
+const initialState: CryptoState & { marketDominance: MarketDominance | null } = {
   marketCapChange: null,
   dailyChanges: null,
   priceChange: null,
   loading: false,
-  error: null
+  error: null,
+  marketDominance: null
 }
+
+// ** Fetch Market Dominance Data
+export const fetchMarketDominance = createAsyncThunk('crypto/fetchMarketDominance', async () => {
+  const specifiedCategories = [
+    'Liquid Staking',
+    'Dog-Themed',
+    'Smart Contract Platform',
+    'Centralized Exchange (CEX)',
+    'Decentralized Exchange (DEX)',
+    'Meme',
+    'Automated Market Maker (AMM)',
+    'Gaming (GameFi)'
+  ]
+
+  const response = await axios.get('https://api.coingecko.com/api/v3/coins/categories')
+  const data = response.data
+
+  const filteredCategories = data.filter((item: any) =>
+    specifiedCategories.includes(item.name)
+  )
+
+  const categories = filteredCategories.map((item: any) => item.name)
+  const series = [{
+    name: 'Market Cap',
+    data: filteredCategories.map((item: any) => item.market_cap)
+  }]
+
+  return { categories, series }
+})
 
 // ** Fetch Market Cap Change
 export const fetchMarketCapChange = createAsyncThunk('crypto/fetchMarketCapChange', async () => {
@@ -130,6 +165,19 @@ const cryptoSlice = createSlice({
       .addCase(fetchPriceChange.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || 'Failed to fetch price changes'
+      })
+    builder
+      .addCase(fetchMarketDominance.pending, state => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchMarketDominance.fulfilled, (state, action) => {
+        state.marketDominance = action.payload
+        state.loading = false
+      })
+      .addCase(fetchMarketDominance.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message || 'Failed to fetch market dominance data'
       })
   }
 })

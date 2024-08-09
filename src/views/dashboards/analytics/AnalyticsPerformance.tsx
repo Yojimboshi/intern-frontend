@@ -146,7 +146,7 @@ const AnalyticsPerformance = () => {
           </div>
         )}
       </CardContent>
-    </Card>
+    </Card >
   )
 }
 
