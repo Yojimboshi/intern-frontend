@@ -4,7 +4,6 @@ import { Button, Grid, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ChannelList from 'src/views/apps/chat/admin/channelList';
 import ChannelForm from 'src/views/apps/chat/admin/channelForm';
-import ChannelMessages from 'src/views/apps/chat/channelMessage'; // Import the new component
 import useChat from 'src/hooks/useChat';
 import { ChannelType } from 'src/types/apps/chatType';
 
@@ -30,7 +29,6 @@ const ChatEditorPage = () => {
   const [editingChannel, setEditingChannel] = useState<ChannelType | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [viewingChannel, setViewingChannel] = useState<ChannelType | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,13 +55,6 @@ const ChatEditorPage = () => {
     fetchChannelData();
   };
 
-  const handleViewMessages = (channelId: number) => {
-    const channel = channelData.find((c) => c.id === channelId);
-    if (channel) {
-      setViewingChannel(channel);
-    }
-  };
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -85,17 +76,15 @@ const ChatEditorPage = () => {
       <Grid item xs={12}>
         {loading ? (
           <Typography>Loading channels...</Typography>
-        ) : viewingChannel ? (
-          <ChannelMessages channel={viewingChannel} onBack={() => setViewingChannel(null)} />
         ) : (
           <ChannelList
+
             channels={channelData}
             onEdit={(channel: ChannelType) => {
               setEditingChannel(channel);
               setShowForm(true);
             }}
             onDelete={handleDeleteChannel}
-            onViewMessages={handleViewMessages}
           />
         )}
       </Grid>

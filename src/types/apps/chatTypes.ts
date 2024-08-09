@@ -175,3 +175,17 @@ export type MessageGroupType = {
   senderName: string
   messages: ChatLogChatType[]
 }
+
+export interface UserProfile {
+  avatar: string
+  name: string
+  username: string
+  role: string
+  email: string
+}
+
+export interface UserProfileSidebarProps {
+  user: UserProfile | null
+  open: boolean
+  onClose: () => void
+}

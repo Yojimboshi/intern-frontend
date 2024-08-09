@@ -66,7 +66,8 @@ const useChat = () => {
           chatType: 'channel',
           unseenMsgs: 0,
           lastMessage: 0,
-          about: channel.about
+          about: channel.about,
+          active: channel.active
         });
       setChannelData((prevChannels) => [...prevChannels, response.data]);
     } catch (error) {

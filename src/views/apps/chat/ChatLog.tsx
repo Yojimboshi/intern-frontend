@@ -130,7 +130,8 @@ const ChatLog = (props: ChatLogType) => {
               {...(isSender
                 ? {
                   src: data.userContact.avatar,
-                  alt: data.userContact.name
+                  alt: data.userContact.name,
+
                 }
                 : {})}
             >
@@ -150,6 +151,7 @@ const ChatLog = (props: ChatLogType) => {
                       ml: isSender ? 'auto' : undefined,
                       mr: !isSender ? 'auto' : undefined,
                       mb: 1,
+                      textAlign: isSender ? 'right' : 'left', // Align the text based on sender
                     }}
                   >
                     {item.senderName}
